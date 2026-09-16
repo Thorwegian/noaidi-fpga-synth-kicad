@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "noaidi-fpga-synth") (type "KiCad") (uri "${KIPRJMOD}/noaidi-fpga-synth.kicad_sym") (options "") (descr ""))
+)
