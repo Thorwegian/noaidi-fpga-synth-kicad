@@ -2741,6 +2741,22 @@
 		(color 0 0 0 0)
 		(uuid "f8dd792f-9fe5-4a60-88fc-db866e46ee7e")
 	)
+	(no_connect
+		(at 215.9 99.06)
+		(uuid "571117d5-a97b-4aae-9e92-6012012f9160")
+	)
+	(no_connect
+		(at 215.9 121.92)
+		(uuid "71bb3b0c-152c-4a8f-9666-75fbfa0c4c59")
+	)
+	(no_connect
+		(at 215.9 83.82)
+		(uuid "e4c66c43-779f-494e-b8d3-49a202675ec7")
+	)
+	(no_connect
+		(at 215.9 137.16)
+		(uuid "eb3ec4d2-fd5d-4ca7-a2cc-316675153b78")
+	)
 	(wire
 		(pts
 			(xy 193.04 83.82) (xy 193.04 88.9)

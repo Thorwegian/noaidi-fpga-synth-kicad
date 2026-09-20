@@ -34,7 +34,7 @@
 					)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "noaidi-fpga-synth:GCT_USB4085-GF-A_REVB"
 				(at 3.81 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -421,7 +421,7 @@
 						)
 					)
 				)
-				(pin passive line
+				(pin power_out line
 					(at 15.24 15.24 180)
 					(length 5.08)
 					(name "VBUS"
@@ -1346,6 +1346,14 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "59d2d7ff-3e87-44ea-b3d7-e112e3273086")
+	)
+	(no_connect
+		(at 146.05 109.22)
+		(uuid "976e89bc-1fb2-4fc9-8e93-a67857713f78")
+	)
+	(no_connect
+		(at 146.05 111.76)
+		(uuid "a33fbb20-a10f-4f9c-88a5-5cd36eeef9a4")
 	)
 	(wire
 		(pts

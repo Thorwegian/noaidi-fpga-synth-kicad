@@ -2640,7 +2640,7 @@
 	)
 	(wire
 		(pts
-			(xy 128.27 123.19) (xy 134.62 123.19)
+			(xy 113.03 123.19) (xy 134.62 123.19)
 		)
 		(stroke
 			(width 0)
@@ -2670,7 +2670,7 @@
 	)
 	(wire
 		(pts
-			(xy 128.27 120.65) (xy 134.62 120.65)
+			(xy 113.03 120.65) (xy 134.62 120.65)
 		)
 		(stroke
 			(width 0)
@@ -2730,7 +2730,7 @@
 	)
 	(wire
 		(pts
-			(xy 128.27 125.73) (xy 134.62 125.73)
+			(xy 113.03 125.73) (xy 134.62 125.73)
 		)
 		(stroke
 			(width 0)
@@ -2800,7 +2800,7 @@
 	)
 	(wire
 		(pts
-			(xy 127 128.27) (xy 134.62 128.27)
+			(xy 111.76 128.27) (xy 134.62 128.27)
 		)
 		(stroke
 			(width 0)
@@ -3168,7 +3168,7 @@
 	)
 	(global_label "SPI_MOSI"
 		(shape input)
-		(at 128.27 125.73 180)
+		(at 113.03 125.73 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3178,7 +3178,7 @@
 		)
 		(uuid "06fff8d1-5acd-479a-b798-5b57ca824741")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 116.6367 125.73 0)
+			(at 101.3967 125.73 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3360,7 +3360,7 @@
 	)
 	(global_label "SPI_MISO"
 		(shape output)
-		(at 127 128.27 180)
+		(at 111.76 128.27 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3370,7 +3370,7 @@
 		)
 		(uuid "78700a48-0180-49e8-a232-39bd4e10bc08")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.3667 128.27 0)
+			(at 100.1267 128.27 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3456,7 +3456,7 @@
 	)
 	(global_label "SPI_SCLK"
 		(shape input)
-		(at 128.27 123.19 180)
+		(at 113.03 123.19 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3466,7 +3466,7 @@
 		)
 		(uuid "dd664593-d410-4de2-8f23-0b71fef05432")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 116.4553 123.19 0)
+			(at 101.2153 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3480,7 +3480,7 @@
 	)
 	(global_label "SPI_CS_N"
 		(shape input)
-		(at 128.27 120.65 180)
+		(at 113.03 120.65 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3490,7 +3490,7 @@
 		)
 		(uuid "e2c22aaa-8ead-4324-8a00-8daf573ef6bf")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 116.4553 120.65 0)
+			(at 101.2153 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
