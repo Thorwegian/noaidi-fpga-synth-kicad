@@ -668,9 +668,14 @@
         "filename": "tang_nano_20k.kicad_sch",
         "name": "Tang Nano 20K",
         "uuid": "549f0467-9724-4494-baa6-490c1a442987"
+      },
+      {
+        "filename": "usb.kicad_sch",
+        "name": "USB",
+        "uuid": "ac0f489c-9b9e-476a-83a1-244c132c2581"
       }
     ],
-    "used_designators": "#PWR1-26,D1-2,JP1,R1-11,RV1,J1-7,U1-5",
+    "used_designators": "FB1-2,C1-2,#PWR1-46,D1-2,JP1,R1-14,RV1,J1-9,U1-7",
     "variants": []
   },
   "sheets": [
@@ -681,6 +686,10 @@
     [
       "549f0467-9724-4494-baa6-490c1a442987",
       "Tang Nano 20K"
+    ],
+    [
+      "ac0f489c-9b9e-476a-83a1-244c132c2581",
+      "USB"
     ]
   ],
   "text_variables": {},

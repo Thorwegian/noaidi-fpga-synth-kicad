@@ -14,8 +14,8 @@
 			(on_board yes)
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "J"
-				(at 0 22.225 0)
+			(property "Reference" "J9"
+				(at 0 22.86 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -25,7 +25,7 @@
 				)
 			)
 			(property "Value" "USB_C_Receptacle_USB2.0_16P"
-				(at 0 19.685 0)
+				(at 0 20.32 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -45,7 +45,7 @@
 					)
 				)
 			)
-			(property "Datasheet" "https://www.usb.org/sites/default/files/documents/usb_type-c.zip"
+			(property "Datasheet" "https://gct.co/files/specs/usb4085-spec.pdf"
 				(at 3.81 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -56,7 +56,7 @@
 					)
 				)
 			)
-			(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
+			(property "Description" "GCT USB4085 USB receptacle"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -707,7 +707,64 @@
 							)
 						)
 					)
-					(number "SH"
+					(number "S1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 -22.86 90)
+					(length 5.08)
+					(hide yes)
+					(name "SHIELD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "S2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 -22.86 90)
+					(length 5.08)
+					(hide yes)
+					(name "SHIELD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "S3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 -22.86 90)
+					(length 5.08)
+					(hide yes)
+					(name "SHIELD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "S4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1392,16 +1449,6 @@
 	)
 	(wire
 		(pts
-			(xy 123.19 127) (xy 123.19 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9a540944-bd6f-4c2c-abb6-6becd5fb6416")
-	)
-	(wire
-		(pts
 			(xy 146.05 101.6) (xy 148.59 101.6)
 		)
 		(stroke
@@ -1429,6 +1476,16 @@
 			(type default)
 		)
 		(uuid "c207715b-1ac9-447c-86f9-365a4ef7a2a6")
+	)
+	(wire
+		(pts
+			(xy 123.19 127) (xy 123.19 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c29b4c06-b2ea-4591-8952-da57760ddfe7")
 	)
 	(wire
 		(pts
@@ -1697,7 +1754,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "noaidi-fpga-synth:GCT_USB4085-GF-A_REVB"
 			(at 134.62 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -1739,7 +1796,7 @@
 		(pin "B5"
 			(uuid "b0eeddda-244f-46d3-b5f6-03e5e0020af5")
 		)
-		(pin "SH"
+		(pin "S4"
 			(uuid "8054b6fa-5265-443a-84bb-cb53a41e9ab1")
 		)
 		(pin "B6"
@@ -1780,6 +1837,15 @@
 		)
 		(pin "B1"
 			(uuid "57f44b22-7de8-4dd9-8605-52f2f353fa10")
+		)
+		(pin "S2"
+			(uuid "8bbe12d4-f6ad-4d2a-b24d-a497ce21d5e4")
+		)
+		(pin "S3"
+			(uuid "9b8d512c-2107-48e8-9ec6-bc2083ca91ac")
+		)
+		(pin "S1"
+			(uuid "3818ed2e-c8e2-45e3-b507-85070b6a4e50")
 		)
 		(instances
 			(project "noaidi-fpga-synth"
