@@ -3300,7 +3300,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "LED_THT:LED_D5.0mm_IRGrey"
+		(property "Footprint" ""
 			(at 210.82 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -4904,7 +4904,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "LED_THT:LED_D5.0mm_IRGrey"
+		(property "Footprint" ""
 			(at 210.82 91.44 0)
 			(hide yes)
 			(show_name no)
