@@ -1472,29 +1472,27 @@
 			(on_board yes)
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "U"
-				(at -12.7 29.845 0)
+			(property "Reference" "U2"
+				(at 0 31.75 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify right)
 				)
 			)
 			(property "Value" "Tang_Nano_20K"
-				(at -12.7 27.305 0)
+				(at 0 29.21 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify right)
 				)
 			)
-			(property "Footprint" "0my_project:DIP-40_TangNano20K"
+			(property "Footprint" "noaidi-fpga-synth:DIP-40_TangNano20K"
 				(at -12.7 26.67 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1690,7 +1688,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin output line
 					(at -17.78 6.35 0)
 					(length 5.08)
 					(name "27_IOB8A"
@@ -1708,7 +1706,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin input line
 					(at -17.78 3.81 0)
 					(length 5.08)
 					(name "28_IOB8B"
@@ -1726,7 +1724,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin input line
 					(at -17.78 1.27 0)
 					(length 5.08)
 					(name "25_IOB6A"
@@ -1744,7 +1742,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin input line
 					(at -17.78 -1.27 0)
 					(length 5.08)
 					(name "26_IOB6B"
@@ -1762,7 +1760,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin output line
 					(at -17.78 -3.81 0)
 					(length 5.08)
 					(name "29_IOB14A"
@@ -2050,7 +2048,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin output line
 					(at 17.78 -6.35 180)
 					(length 5.08)
 					(name "86_IOT4A"
@@ -2086,7 +2084,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin output line
 					(at 17.78 -1.27 180)
 					(length 5.08)
 					(name "55_IOR36B"
@@ -2140,7 +2138,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin output line
 					(at 17.78 6.35 180)
 					(length 5.08)
 					(name "54_IOR38A"
@@ -2158,7 +2156,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin output line
 					(at 17.78 8.89 180)
 					(length 5.08)
 					(name "56_IOR36A"
@@ -2587,6 +2585,126 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e6076ca2-dba5-469e-985a-952ae4dd904e")
+	)
+	(no_connect
+		(at 134.62 107.95)
+		(uuid "0044c540-4632-4624-8615-65dab400ff75")
+	)
+	(no_connect
+		(at 170.18 107.95)
+		(uuid "09bb5e07-6e43-4e25-8376-596731225965")
+	)
+	(no_connect
+		(at 134.62 140.97)
+		(uuid "1286d48a-b231-4c21-9e93-baf7a716f91a")
+	)
+	(no_connect
+		(at 140.97 71.12)
+		(uuid "2536812e-c8f5-4310-bf4f-a5f5660933b6")
+	)
+	(no_connect
+		(at 170.18 113.03)
+		(uuid "2e1810c5-d7c2-442d-b7ee-825add0f8a21")
+	)
+	(no_connect
+		(at 140.97 66.04)
+		(uuid "31e539b2-3d71-4244-99eb-31d3c9ce7974")
+	)
+	(no_connect
+		(at 170.18 105.41)
+		(uuid "3913625b-2896-46db-9cf9-c94e80885de7")
+	)
+	(no_connect
+		(at 170.18 148.59)
+		(uuid "5ac0e924-4758-46b4-86bc-1cb971d53995")
+	)
+	(no_connect
+		(at 140.97 60.96)
+		(uuid "63ee32c0-cac5-4a0a-9cae-ef3eb67a04c8")
+	)
+	(no_connect
+		(at 134.62 133.35)
+		(uuid "6894eb53-7203-4786-a7f5-c9e80db4ed8d")
+	)
+	(no_connect
+		(at 140.97 63.5)
+		(uuid "68aeec38-951c-44ee-9ddf-24e782cd7046")
+	)
+	(no_connect
+		(at 170.18 120.65)
+		(uuid "75e781ca-a43b-4d53-9b5b-a8f360bc0c10")
+	)
+	(no_connect
+		(at 134.62 115.57)
+		(uuid "7696d1af-20b5-48db-bcce-cc03a0f1f217")
+	)
+	(no_connect
+		(at 134.62 110.49)
+		(uuid "8c943462-9030-406c-9826-3731fe0197bb")
+	)
+	(no_connect
+		(at 134.62 100.33)
+		(uuid "a7657c31-8657-4a65-ab7d-66620b182327")
+	)
+	(no_connect
+		(at 170.18 143.51)
+		(uuid "aaf3767d-a84f-4bf1-9443-75e3e1078da0")
+	)
+	(no_connect
+		(at 134.62 113.03)
+		(uuid "b9c49fa0-cf9c-429e-a268-7f1a89802318")
+	)
+	(no_connect
+		(at 134.62 130.81)
+		(uuid "c1c1fc23-0a91-4733-b986-ac291f664ce5")
+	)
+	(no_connect
+		(at 134.62 102.87)
+		(uuid "cbc48538-abe3-4869-8061-a39dd859382a")
+	)
+	(no_connect
+		(at 170.18 123.19)
+		(uuid "cd366276-ebb2-43fb-ae0f-10d7cbc7211c")
+	)
+	(no_connect
+		(at 134.62 135.89)
+		(uuid "cf8f2268-f66c-4695-b82f-091e3de44db8")
+	)
+	(no_connect
+		(at 170.18 133.35)
+		(uuid "d836dbb6-0eeb-478c-b1d9-50e5d594fb36")
+	)
+	(no_connect
+		(at 140.97 68.58)
+		(uuid "d883d087-e8e9-4702-bb0f-a2f6c3dc9270")
+	)
+	(no_connect
+		(at 134.62 105.41)
+		(uuid "dcc2cd9b-7958-4d1f-99ad-2f647a31e3b5")
+	)
+	(no_connect
+		(at 170.18 146.05)
+		(uuid "de27ffef-adbf-47ff-82fd-badd25029470")
+	)
+	(no_connect
+		(at 170.18 128.27)
+		(uuid "e04e41c9-c77d-473a-8eb2-bde297b3786a")
+	)
+	(no_connect
+		(at 134.62 138.43)
+		(uuid "e2923e4f-9d69-45e2-aeb8-17da46d2ae59")
+	)
+	(no_connect
+		(at 134.62 143.51)
+		(uuid "ee012ce5-e06b-486b-94c2-bc97cc9496c5")
+	)
+	(no_connect
+		(at 170.18 110.49)
+		(uuid "f847ae7e-b4d4-45bf-b0f1-cc1aa68ada6b")
+	)
+	(no_connect
+		(at 170.18 140.97)
+		(uuid "fc2ad517-c2ce-4ab5-a603-50dcf10fc5eb")
 	)
 	(wire
 		(pts
