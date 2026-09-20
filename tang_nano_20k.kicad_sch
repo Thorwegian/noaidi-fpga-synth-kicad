@@ -3300,7 +3300,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical_SMD_Pin1Left"
 			(at 210.82 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -3622,7 +3622,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
 			(at 210.82 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -3956,7 +3956,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.kycon.com/Catalog_PDF/KLPX.pdf"
 			(at 68.58 115.57 0)
 			(hide yes)
 			(show_name no)
@@ -3967,7 +3967,7 @@
 				)
 			)
 		)
-		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+		(property "Description" "Kycon KLPX-0848A RCA card-edge female RCA connector"
 			(at 68.58 115.57 0)
 			(hide yes)
 			(show_name no)
@@ -4904,7 +4904,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
 			(at 210.82 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -5393,7 +5393,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.kycon.com/Catalog_PDF/KLPX.pdf"
 			(at 220.98 128.27 0)
 			(hide yes)
 			(show_name no)
@@ -5404,7 +5404,7 @@
 				)
 			)
 		)
-		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+		(property "Description" "Kycon KLPX-0848A RCA card-edge female RCA connector"
 			(at 220.98 128.27 0)
 			(hide yes)
 			(show_name no)

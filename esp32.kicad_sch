@@ -4618,7 +4618,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
+		(property "Datasheet" "https://www.farnell.com/datasheets/2181792.pdf"
 			(at 196.85 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -4629,7 +4629,7 @@
 				)
 			)
 		)
-		(property "Description" "5-pin DIN connector (5-pin DIN-5 stereo)"
+		(property "Description" "Lumberg 0105 05 female 5-pin DIN connector (180 degrees)"
 			(at 196.85 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -4789,7 +4789,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
+		(property "Datasheet" "https://www.farnell.com/datasheets/2181792.pdf"
 			(at 196.85 121.92 0)
 			(hide yes)
 			(show_name no)
@@ -4800,7 +4800,7 @@
 				)
 			)
 		)
-		(property "Description" "5-pin DIN connector (5-pin DIN-5 stereo)"
+		(property "Description" "Lumberg 0105 05 female 5-pin DIN connector (180 degrees)"
 			(at 196.85 121.92 0)
 			(hide yes)
 			(show_name no)
