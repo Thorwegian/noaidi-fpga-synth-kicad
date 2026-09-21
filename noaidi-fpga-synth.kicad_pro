@@ -260,7 +260,16 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [],
+    "erc_exclusions": [
+      [
+        "pin_to_pin|1574800|546100|41d27200-f71f-44ce-9364-92187ff588fe|afbd9fd8-2aad-4882-9ec9-254335f5848f|/2d9f22c5-89d1-4483-a813-1bb0a493733a|/2d9f22c5-89d1-4483-a813-1bb0a493733a|/ac0f489c-9b9e-476a-83a1-244c132c2581",
+        "Datasheet says connect ST to GND if unused"
+      ],
+      [
+        "pin_to_pin|762000|482600|ddd7b7da-5420-46cb-88de-529e132d73ac|afbd9fd8-2aad-4882-9ec9-254335f5848f|/549f0467-9724-4494-baa6-490c1a442987|/549f0467-9724-4494-baa6-490c1a442987|/ac0f489c-9b9e-476a-83a1-244c132c2581",
+        "Datasheet says connect ST to GND if unused"
+      ]
+    ],
     "meta": {
       "version": 0
     },
@@ -615,12 +624,42 @@
           "label": "Datasheet",
           "name": "Datasheet",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Pins",
+          "name": "Sim.Pins",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Description",
+          "name": "Description",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Device",
+          "name": "Sim.Device",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "#",
+          "name": "${ITEM_NUMBER}",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Akizuki",
+          "name": "Akizuki",
+          "show": false
         }
       ],
       "filter_string": "",
       "group_symbols": true,
       "include_excluded_from_bom": true,
-      "name": "Default Editing",
+      "name": "",
       "sort_asc": true,
       "sort_field": "Reference"
     },
@@ -680,7 +719,7 @@
         "uuid": "cdb67adb-92dd-404c-89af-7e06e4562fd6"
       }
     ],
-    "used_designators": "FB1-2,C1-2,#PWR1-59,D1-2,JP1,R1-16,RV1,J1-13,TP1-27,U1-7",
+    "used_designators": "#FLG1,FB1-2,C1-2,#PWR1-61,D1-2,JP1-2,R1-16,RV1,J1-13,TP1-29,U1-7",
     "variants": []
   },
   "sheets": [

@@ -650,6 +650,31 @@
 			)
 		)
 	)
+	(global_label "ESP_UART0_RX"
+		(shape input)
+		(at 148.59 52.07 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(face "STIX Two Math")
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "1ed927e2-c9bd-4067-baec-1d5a8dae26ea")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 131.6954 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "SPI2_CS_N"
 		(shape input)
 		(at 148.59 83.82 180)
@@ -1034,6 +1059,30 @@
 			)
 		)
 	)
+	(global_label "ESP_UART0_RX"
+		(shape input)
+		(at 148.59 45.72 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "e0332119-be23-408a-b9c2-6e96580a06bd")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 131.6954 45.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "SPDIF0"
 		(shape input)
 		(at 209.55 127 180)
@@ -1092,7 +1141,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -1171,7 +1220,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 138.43 0)
 			(hide yes)
 			(show_name no)
@@ -1250,7 +1299,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 132.08 0)
 			(hide yes)
 			(show_name no)
@@ -1329,7 +1378,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -1564,7 +1613,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 138.43 0)
 			(hide yes)
 			(show_name no)
@@ -1643,7 +1692,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 139.7 0)
 			(hide yes)
 			(show_name no)
@@ -1722,7 +1771,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -1801,7 +1850,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -1880,7 +1929,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -1959,7 +2008,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -2117,7 +2166,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -2196,7 +2245,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -2275,7 +2324,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -2354,7 +2403,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 68.58 0)
 			(hide yes)
 			(show_name no)
@@ -2511,7 +2560,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 119.38 0)
 			(hide yes)
 			(show_name no)
@@ -2590,7 +2639,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 69.85 0)
 			(hide yes)
 			(show_name no)
@@ -2748,7 +2797,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -2827,7 +2876,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -2874,6 +2923,85 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
+		(at 148.59 52.07 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "76354a9d-2fe4-43a1-9563-a23a1b74f321")
+		(property "Reference" "TP29"
+			(at 153.67 50.7999 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 153.67 53.3399 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
+			(at 148.59 57.15 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 148.59 57.15 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 148.59 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "6d3e6ccd-b900-407d-9fea-b725a304ccce")
+		)
+		(instances
+			(project "noaidi-fpga-synth"
+				(path "/cdb67adb-92dd-404c-89af-7e06e4562fd6"
+					(reference "TP29")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
 		(at 87.63 71.12 270)
 		(unit 1)
 		(body_style 1)
@@ -2906,7 +3034,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -2985,7 +3113,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 127 0)
 			(hide yes)
 			(show_name no)
@@ -3064,7 +3192,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -3143,7 +3271,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 106.68 0)
 			(hide yes)
 			(show_name no)
@@ -3183,6 +3311,85 @@
 			(project "noaidi-fpga-synth"
 				(path "/cdb67adb-92dd-404c-89af-7e06e4562fd6"
 					(reference "TP5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 148.59 45.72 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c182854e-c600-4752-979f-75fcdde1492b")
+		(property "Reference" "TP28"
+			(at 153.67 44.4499 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 153.67 46.9899 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
+			(at 148.59 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 148.59 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 148.59 45.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "776c1f4f-5c76-4699-b04b-8f04ec9c8973")
+		)
+		(instances
+			(project "noaidi-fpga-synth"
+				(path "/cdb67adb-92dd-404c-89af-7e06e4562fd6"
+					(reference "TP28")
 					(unit 1)
 				)
 			)
@@ -3457,7 +3664,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -3536,7 +3743,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 127 0)
 			(hide yes)
 			(show_name no)
@@ -3615,7 +3822,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 87.63 69.85 0)
 			(hide yes)
 			(show_name no)
@@ -3694,7 +3901,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 148.59 133.35 0)
 			(hide yes)
 			(show_name no)
@@ -3773,7 +3980,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
 			(at 209.55 87.63 0)
 			(hide yes)
 			(show_name no)
