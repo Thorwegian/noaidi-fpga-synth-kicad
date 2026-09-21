@@ -650,9 +650,9 @@
 			)
 		)
 	)
-	(global_label "ESP_UART0_RX"
+	(global_label "ESP_UART0_TX"
 		(shape input)
-		(at 148.59 52.07 180)
+		(at 148.59 34.29 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -662,7 +662,7 @@
 		)
 		(uuid "1ed927e2-c9bd-4067-baec-1d5a8dae26ea")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 131.6954 52.07 0)
+			(at 131.6954 34.29 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -711,6 +711,30 @@
 		(uuid "36d93148-1bad-4af4-ae25-2f8c73c45058")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 136.7753 121.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "ESP_UART2_RX"
+		(shape input)
+		(at 148.59 64.77 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4a0ce30e-e93e-47a2-89c4-dd23c06ccd63")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 131.6954 64.77 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -820,7 +844,7 @@
 	)
 	(global_label "ESP_UART1_RX"
 		(shape input)
-		(at 148.59 64.77 180)
+		(at 148.59 46.99 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -830,7 +854,7 @@
 		)
 		(uuid "80f9f83d-acb7-4769-88f3-57bd6eef3461")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 131.6954 64.77 0)
+			(at 131.6954 46.99 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -855,30 +879,6 @@
 		(uuid "841d5433-76c3-4c48-870b-acc96b0eb1ef")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 136.9567 102.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(global_label "ESP_UART2_RX"
-		(shape input)
-		(at 148.59 71.12 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "8dfbdd6a-1ec3-4806-a7e7-963402e15d27")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 131.6954 71.12 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1060,7 +1060,7 @@
 	)
 	(global_label "ESP_UART0_RX"
 		(shape input)
-		(at 148.59 45.72 180)
+		(at 148.59 27.94 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1070,7 +1070,7 @@
 		)
 		(uuid "e0332119-be23-408a-b9c2-6e96580a06bd")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 131.6954 45.72 0)
+			(at 131.6954 27.94 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1896,85 +1896,6 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 148.59 71.12 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "336cbd5b-2746-481b-9a88-fae9442450c4")
-		(property "Reference" "TP17"
-			(at 153.67 69.8499 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 153.67 72.3899 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
-			(at 148.59 76.2 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 148.59 76.2 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "test point"
-			(at 148.59 71.12 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "83a162e8-527d-400f-83ed-870ac52397c1")
-		)
-		(instances
-			(project "noaidi-fpga-synth"
-				(path "/cdb67adb-92dd-404c-89af-7e06e4562fd6"
-					(reference "TP17")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
 		(at 148.59 83.82 270)
 		(unit 1)
 		(body_style 1)
@@ -2606,7 +2527,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 148.59 64.77 270)
+		(at 148.59 46.99 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2617,7 +2538,7 @@
 		(fields_autoplaced yes)
 		(uuid "6a111875-eb9e-4b80-91a1-9ebafb3b1259")
 		(property "Reference" "TP16"
-			(at 153.67 63.4999 90)
+			(at 153.67 45.7199 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2628,7 +2549,8 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 153.67 66.0399 90)
+			(at 153.67 48.2599 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2639,7 +2561,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
-			(at 148.59 69.85 0)
+			(at 148.59 52.07 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2650,7 +2572,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 148.59 69.85 0)
+			(at 148.59 52.07 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2661,7 +2583,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 148.59 64.77 0)
+			(at 148.59 46.99 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2922,7 +2844,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 148.59 52.07 270)
+		(at 148.59 34.29 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2933,7 +2855,7 @@
 		(fields_autoplaced yes)
 		(uuid "76354a9d-2fe4-43a1-9563-a23a1b74f321")
 		(property "Reference" "TP29"
-			(at 153.67 50.7999 90)
+			(at 153.67 33.0199 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2944,7 +2866,7 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 153.67 53.3399 90)
+			(at 153.67 35.5599 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2955,7 +2877,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
-			(at 148.59 57.15 0)
+			(at 148.59 39.37 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2966,7 +2888,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 148.59 57.15 0)
+			(at 148.59 39.37 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2977,7 +2899,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 148.59 52.07 0)
+			(at 148.59 34.29 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3317,7 +3239,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 148.59 45.72 270)
+		(at 148.59 27.94 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3328,7 +3250,7 @@
 		(fields_autoplaced yes)
 		(uuid "c182854e-c600-4752-979f-75fcdde1492b")
 		(property "Reference" "TP28"
-			(at 153.67 44.4499 90)
+			(at 153.67 26.6699 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3339,7 +3261,7 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 153.67 46.9899 90)
+			(at 153.67 29.2099 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3350,7 +3272,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
-			(at 148.59 50.8 0)
+			(at 148.59 33.02 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3361,7 +3283,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 148.59 50.8 0)
+			(at 148.59 33.02 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3372,7 +3294,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 148.59 45.72 0)
+			(at 148.59 27.94 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3782,6 +3704,85 @@
 			(project "noaidi-fpga-synth"
 				(path "/cdb67adb-92dd-404c-89af-7e06e4562fd6"
 					(reference "TP12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 148.59 64.77 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e8059826-01b9-45a0-89e7-dcb202d835d9")
+		(property "Reference" "TP30"
+			(at 153.67 63.4999 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 153.67 66.0399 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Plated_Hole_D2.0mm"
+			(at 148.59 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 148.59 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 148.59 64.77 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f4b07240-fd8f-4f54-8e77-66c5bd8d1c66")
+		)
+		(instances
+			(project "noaidi-fpga-synth"
+				(path "/cdb67adb-92dd-404c-89af-7e06e4562fd6"
+					(reference "TP30")
 					(unit 1)
 				)
 			)

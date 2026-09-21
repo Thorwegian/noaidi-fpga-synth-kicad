@@ -3078,6 +3078,10 @@
 		(uuid "f847ae7e-b4d4-45bf-b0f1-cc1aa68ada6b")
 	)
 	(no_connect
+		(at 125.73 154.94)
+		(uuid "fb281877-5717-4aff-88dd-7bd525c82d33")
+	)
+	(no_connect
 		(at 161.29 149.86)
 		(uuid "fc2ad517-c2ce-4ab5-a603-50dcf10fc5eb")
 	)
@@ -3250,16 +3254,6 @@
 			(type default)
 		)
 		(uuid "328c0d13-aacb-443f-922e-19d433262af3")
-	)
-	(wire
-		(pts
-			(xy 120.65 154.94) (xy 125.73 154.94)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "360d8cee-92e3-49aa-9732-3d014f6346fd")
 	)
 	(wire
 		(pts
@@ -5087,85 +5081,6 @@
 			(project "noaidi-fpga-synth"
 				(path "/549f0467-9724-4494-baa6-490c1a442987"
 					(reference "#PWR025")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+5V")
-		(at 120.65 154.94 90)
-		(mirror x)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "5a4ef032-db69-40af-9c62-07a5f9798955")
-		(property "Reference" "#PWR016"
-			(at 124.46 154.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "NANO_3V3"
-			(at 116.84 154.9399 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 120.65 154.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 120.65 154.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 120.65 154.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "9acaf9d9-3790-45b4-a20b-c704ed5d7be4")
-		)
-		(instances
-			(project "noaidi-fpga-synth"
-				(path "/549f0467-9724-4494-baa6-490c1a442987"
-					(reference "#PWR016")
 					(unit 1)
 				)
 			)
