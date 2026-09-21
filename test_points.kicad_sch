@@ -656,7 +656,6 @@
 		(fields_autoplaced yes)
 		(effects
 			(font
-				(face "STIX Two Math")
 				(size 1.27 1.27)
 			)
 			(justify right)
