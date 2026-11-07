@@ -10,7 +10,7 @@ B=build
 mkdir -p $B
 PCB=noaidi-fpga-synth.kicad_pcb
 kicad-cli pcb render --side top --rotate "-40,0,20" --perspective --width 2000 --height 1400 \
-    --background opaque --quality high --floor -o $B/pcb-iso.png $PCB
+    --background opaque --quality high --floor --pan "0.8,-0.8,0" -o $B/pcb-iso.png $PCB
 kicad-cli pcb render --side top --width 2000 --height 1600 \
     --background opaque --quality high --floor --zoom 1.1 -o $B/pcb-top.png $PCB
 kicad-cli pcb export svg --layers F.Cu,F.SilkS,F.Mask,Edge.Cuts --page-size-mode 2 \
