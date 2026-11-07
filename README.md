@@ -59,7 +59,7 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
   project's own symbols and footprints (the two modules, the DAC, the
   DIN sockets, the RCA and USB-C connectors)
 - `render.sh`: regenerates the images above into `build/` with
-  `kicad-cli` (KiCad 10)
+  `kicad-cli` (KiCad 10); `crop.py` trims the 3D renders to the board
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)
