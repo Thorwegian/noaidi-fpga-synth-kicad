@@ -1,18 +1,18 @@
 # Noaidi FPGA Synth: the board
 
-![The prototype: a Tang Nano 20K and an ESP32-C3 Super Mini on perfboard, two DIN MIDI inputs through optocouplers, audio out on optical](https://thj.no/synth/images/prototype-board.jpg)
+![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso.jpg)
 
-The KiCad project for the Noaidi synthesizer's circuit board. The board is
-in progress; the perfboard prototype above is what it is based on. The
-gateware and firmware that run on it live in
+The KiCad project for the Noaidi synthesizer's circuit board, in
+progress. The gateware and firmware that run on it live in
 [Thorwegian/noaidi-fpga-synth](https://github.com/Thorwegian/noaidi-fpga-synth),
 and the synth itself is presented at [thj.no/synth](https://thj.no/synth/).
 
 ## What is on it
 
-![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso.jpg)
+![The prototype: a Tang Nano 20K and an ESP32-C3 Super Mini on perfboard, two DIN MIDI inputs through optocouplers, audio out on optical](https://thj.no/synth/images/prototype-board.jpg)
 
-A carrier for two off-the-shelf modules and the few parts around them:
+The perfboard prototype the board is based on. The board is a carrier for
+two off-the-shelf modules and the few parts around them:
 
 - **Tang Nano 20K** (U2) on headers: the sound engine.
 - **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, patches and the
