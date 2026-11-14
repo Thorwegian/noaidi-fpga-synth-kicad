@@ -20,6 +20,8 @@
 
 - A figure is measured, taken from a named document (file, section or table, page), or labelled as a bound or a guess. Catalogue stock and prices, and the fab's limits, are fetched the day they are quoted.
 
+- Sources are not equal, and a claim says which kind it rests on. A part's data sheet is the authority on its limits and ratings; its test circuit states the conditions those limits are measured under and is not an application circuit. The maker's application notes and the standard for a bus (the MIDI specification, USB) are the authority on how a part or a bus is used. The published schematic of a product that a reputable vendor ships in volume is evidence of what works in practice. Hobby write-ups and forum posts are anecdote: they say where to look, and settle nothing. A fab's or a distributor's blog is vendor copy and is labelled as such. When sources disagree, the stronger one wins. A proposal that goes against what the manufacturers recommend says why, and "it is already drawn" is not a reason.
+
 - Dimensions are *never* taken from a photo. They come from the vendor's drawing, the data sheet, the footprint, or a measurement made with the part in hand. Photos are for reading labels and markings.
 
 - A picture an agent looks at to reach a conclusion (a render, a crop of a schematic or a data sheet, a photo) is sent to the chat with the conclusion.
