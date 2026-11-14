@@ -9,7 +9,8 @@ Run from build/skidl/ with the environment of scripts/requirements.txt:
 
     KICAD10_SYMBOL_DIR=/usr/share/kicad/symbols ../../skidl/usb.py
 
-Writes usb.net, usb.svg and a KiCad schematic into the current directory.
+Writes usb.net and usb.svg, a quick look at the circuit, into the current
+directory.
 """
 import os
 from skidl import *
@@ -42,5 +43,3 @@ power_in["SBU1", "SBU2"] += NC
 
 generate_netlist(file_="usb.net")
 generate_svg(file_="usb")
-# Without auto_stub the router gives up on this sheet (RoutingFailure).
-generate_schematic(filepath=".", top_name="usb", auto_stub=True, retries=5)
