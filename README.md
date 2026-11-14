@@ -53,13 +53,17 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
 
 ## Files
 
+The root folder holds the KiCad project, this README and the licence.
+Scripts go in `scripts/`, documents in `docs/`.
+
 - `noaidi-fpga-synth.kicad_pro`, `.kicad_sch` and the four sheet files,
   `.kicad_pcb`, `.kicad_dru`
 - `noaidi-fpga-synth.kicad_sym` and `noaidi-fpga-synth.pretty/`: the
   project's own symbols and footprints (the two modules, the DAC, the
   DIN sockets, the RCA and USB-C connectors)
-- `render.sh`: regenerates the images above into `build/` with
-  `kicad-cli` (KiCad 10); `crop.py` trims the 3D renders to the board
+- `scripts/render.sh`: regenerates the images above into `build/` with
+  `kicad-cli` (KiCad 10); `scripts/crop.py` trims the 3D renders to the
+  board
 - `docs/requirements.md`: what the board has to do; the schematic and
   the layout are checked against it.
 - `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
