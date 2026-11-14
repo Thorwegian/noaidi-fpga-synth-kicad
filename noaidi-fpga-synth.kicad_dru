@@ -1,1 +1,22 @@
 (version 1)
+
+# Copyright © 2026 Thor H. Linløkken <thj@thj.no>
+# License: CERN-OHL-S v2
+#
+# JLCPCB's limits for a two-layer board in 1 oz copper are the authority on
+# the design rules (https://jlcpcb.com/capabilities/pcb-capabilities).
+# The board setup holds the figures that apply to every object. The rules
+# here hold the limits the fab states for component holes, which are wider
+# than its limits for vias.
+
+(rule "annular ring of a component hole"
+	(constraint annular_width (min 0.18mm))
+	(condition "A.Type == 'Pad'"))
+
+(rule "component hole to component hole"
+	(constraint hole_to_hole (min 0.45mm))
+	(condition "A.Type == 'Pad' && B.Type == 'Pad'"))
+
+(rule "track to a component hole"
+	(constraint hole_clearance (min 0.28mm))
+	(condition "A.Type == 'Pad' && B.Type == 'Track'"))
