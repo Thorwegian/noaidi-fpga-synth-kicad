@@ -67,9 +67,13 @@ Not settled; this part of the board may need a redesign.
 - **Several sources at once must not conflict.** With the full lab jig
   connected, the modules' own USB ports and the board's USB socket can
   all be powered at the same time.
-- **The front panel board** may draw quite a bit of current and
-  probably gets a power connector of its own, leaving the USB socket
-  as the USB MIDI connection. Where its power comes from is undecided.
+- **A main power connector on the base board**, separate from the USB
+  socket, may be better than taking power from the USB port; the USB
+  socket then stays the USB MIDI connection.
+- **The front panel board is powered from the base board:** power is
+  forwarded to it board to board from the base board's main power
+  connector. It has no supply or power connector of its own, and it
+  may draw quite a bit of current.
 
 What is known of the budget: a USB 2.0 port supplies 500 mA by
 default. The ESP32-S3 alone peaks at 340 mA while its radio transmits
@@ -94,7 +98,8 @@ measured.
 ## Open
 
 - **Power**, as above: the budget, the sources and how they coexist,
-  and the front panel board's supply. The pin headers of requirement 8
+  the main power connector, and the board-to-board path that forwards
+  power to the front panel board. The pin headers of requirement 8
   carry signals and ground only; the supply rails reach test points,
   not headers.
 - **The USB socket.** The part drawn (GCT USB4085, through-hole) may
