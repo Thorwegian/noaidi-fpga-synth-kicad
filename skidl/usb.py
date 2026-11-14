@@ -18,17 +18,18 @@ from skidl import *
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 lib_search_paths[KICAD10].append(REPO)
 
-power_in = Part("noaidi-fpga-synth", "USB_C_Receptacle_USB2.0_16P", ref="J9",
+power_in = Part("noaidi-fpga-synth", "USB_C_Receptacle_USB2.0_16P", ref="J9", tag="power_in",
                 footprint="noaidi-fpga-synth:GCT_USB4085-GF-A_REVB")
-cc1_pulldown = Part("Device", "R", ref="R13", value="5.1k",
+cc1_pulldown = Part("Device", "R", ref="R13", value="5.1k", tag="cc1_pulldown",
                     footprint="Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
-cc2_pulldown = Part("Device", "R", ref="R14", value="5.1k",
+cc2_pulldown = Part("Device", "R", ref="R14", value="5.1k", tag="cc2_pulldown",
                     footprint="Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
-shield_bead = Part("Device", "FerriteBead", ref="FB2",
+shield_bead = Part("Device", "FerriteBead", ref="FB2", tag="shield_bead",
                    footprint="Inductor_SMD:L_0805_2012Metric_Pad1.05x1.20mm_HandSolder")
 
 ext_5v = Net("EXT_5V")
 gnd = Net("GND")
+gnd.drive = POWER
 usb_d_plus = Net("USB_D+")
 usb_d_minus = Net("USB_D-")
 
@@ -41,5 +42,6 @@ power_in["CC2"] += cc2_pulldown[1]
 power_in["SHIELD"] += shield_bead[1]
 power_in["SBU1", "SBU2"] += NC
 
+ERC()
 generate_netlist(file_="usb.net")
 generate_svg(file_="usb")
