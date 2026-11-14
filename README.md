@@ -19,20 +19,23 @@ two off-the-shelf modules and the few parts around them:
   console. The prototype runs an ESP32-C3 Super Mini; the board moves to
   the S3 (the firmware port is tracked in the synth repository,
   `docs/esp32s3_hw678.md`).
-- **Two DIN MIDI inputs** (J1, J2) through 6N138 optocouplers (U3, U4):
+- **Two DIN MIDI inputs** (J1, J2) through H11L1 optocouplers (U3, U4):
   one for the keyboard, one for the dev host.
-- **Audio out**: an Adafruit PCM510x I2S DAC module (U5) for analog, two
-  RCA sockets (J3, J4) for S/PDIF.
-- **USB-C** (J9) for power, into each module's 5 V rail through an
-  LM66100 ideal diode (U6, U7), and the data pair to the ESP32.
+- **Audio out**: an Adafruit PCM510x I2S DAC module (U5) for analog, an
+  RCA socket (J3) for S/PDIF.
+- **Two USB-C sockets**: J9 for power, into each module's 5 V rail
+  through an LM66100 ideal diode (U6, U7), and J14 next to it for the
+  ESP32's USB data pair.
 - Pin headers for the second SPI bus, two I2C buses, UART0, I2S and
   S/PDIF, and 29 test points.
 
-Two layers, 130.85 × 121.25 mm, through-hole apart from the two LM66100
-(SC-70) and the ferrite bead.
+Two layers, 130.85 × 121.25 mm. The modules, the DIN and RCA sockets,
+the pin headers and the test points are through-hole; the other parts
+are surface-mount.
 
-That is the board as drawn. The circuit in text holds the parts chosen
-for fabrication and differs from it: see The circuit in text, below.
+The board is made from the circuit in text by script; the drawn
+schematic still holds the through-hole circuit: see The circuit in
+text, below.
 
 ## Layout
 
@@ -77,8 +80,15 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/netlist_summary.py`: compares netlists and the board by
   connectivity.
 - `scripts/check.sh`: checks that the circuit in text, the drawn sheets
-  and the drawn board are one board, and counts the findings of KiCad's
-  own checks with `scripts/rule_counts.py`.
+  and the board are one board, and counts the findings of KiCad's own
+  checks with `scripts/rule_counts.py`.
+- `scripts/board_from_circuit.py`: brings the board up to the circuit
+  in text: removes, swaps and adds footprints and sets every pad's net.
+- `circuit/fixed_positions.toml`: where the parts a person interacts
+  with sit, for `scripts/board_from_circuit.py`.
+- `scripts/route.sh`: lays the board's copper anew with Freerouting and
+  prints what KiCad's DRC finds; `scripts/route_board.py` writes the
+  board for the router and reads its result back.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.
@@ -109,8 +119,11 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 
 ## Build tools
 
-`kicad-cli` (KiCad 10) and `pdfunite` (poppler-utils) come from the
-system's packages. The Python tools are listed in
+`kicad-cli` (KiCad 10), `pdfunite` (poppler-utils) and `java` (25, for
+Freerouting, whose jar `scripts/route.sh` fetches into `build/tools/`)
+come from the system's packages, and so does the Python with KiCad's
+`pcbnew` module that the two board scripts run under. The other Python
+tools are listed in
 `scripts/requirements.txt` and live in a virtual environment, `.venv/`
 at the root, which is not committed:
 
@@ -130,10 +143,11 @@ circuit is designed. It holds the parts chosen for fabrication: 0805
 resistors and capacitors, H11L1 optocouplers, two surface-mount USB-C
 sockets (one for power, one for the ESP32's USB data), no ferrite
 bead, and one S/PDIF coaxial output (J3, the 96 kHz stream; the 48 kHz
-stream is on its header only). The drawn schematic and the drawn board
-hold the through-hole circuit the board was laid out from; they are
-brought up to the text, and `scripts/check.sh` lists where they differ
-from it. Parts have a descriptive name in the code and a regular
+stream is on its header only). The board is made from it:
+`scripts/board_from_circuit.py` sets its parts and nets and
+`scripts/route.sh` lays its copper. The drawn schematic holds the
+through-hole circuit the board was first laid out from; it is brought
+up to the text, and `scripts/check.sh` lists where it differs from it. Parts have a descriptive name in the code and a regular
 designator on the board.
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
