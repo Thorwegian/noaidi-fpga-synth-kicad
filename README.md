@@ -64,6 +64,13 @@ Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/render.sh`: regenerates the images above into `build/` with
   `kicad-cli` (KiCad 10); `scripts/crop.py` trims the 3D renders to the
   board
+- `circuit/`: the same circuit described in Python with SKiDL, one file
+  per sheet (`usb.py`, `esp32.py`, `tang_nano_20k.py`, `test_points.py`),
+  the nets that cross sheets in `global_nets.py`, the parts used on more
+  than one sheet in `parts.py`, and `board.py` for the whole board. See
+  The circuit in text, below.
+- `scripts/netlist_summary.py`: compares netlists and the board by
+  connectivity.
 - `docs/requirements.md`: what the board has to do; the schematic and
   the layout are checked against it.
 - `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
@@ -100,6 +107,31 @@ at the root, which is not committed:
   It finds KiCad's symbol libraries through the environment variable
   `KICAD10_SYMBOL_DIR` (`/usr/share/kicad/symbols` on Ubuntu).
 - `pillow`: for `scripts/crop.py`.
+
+## The circuit in text
+
+`circuit/` describes the board's circuit in Python. The drawn schematic
+is still the one the board was laid out from; the text has to produce
+the same netlist, designator for designator, and is checked against the
+drawn sheets and the drawn board. Parts have a descriptive name in the
+code and keep their designator on the board.
+
+Run it from a directory under `build/`, because SKiDL writes its log
+files where it is run:
+
+    mkdir -p build/skidl && cd build/skidl
+    export KICAD10_SYMBOL_DIR=/usr/share/kicad/symbols
+    ../../circuit/board.py
+
+That runs SKiDL's rule check and writes `board.net`. Each sheet's file
+runs the same way and writes `<sheet>.net`. To check the result:
+
+    cd ../..
+    scripts/netlist_summary.py build/skidl/board.net noaidi-fpga-synth.kicad_pcb
+
+It prints the differences and ends with a count; `identical` is the
+result wanted. With `--within`, a single sheet's netlist is checked
+against the whole board.
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)

@@ -47,3 +47,4 @@ build/
 
 # The Python build tools (scripts/requirements.txt)
 .venv/
+__pycache__/
