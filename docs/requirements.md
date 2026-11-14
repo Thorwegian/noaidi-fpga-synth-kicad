@@ -84,6 +84,12 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 - The modules, the DIN and RCA sockets and the pin headers are
   through-hole and soldered by hand: those connectors take a beating,
   and surface-mount versions are neither as durable nor as available.
+- The USB-C sockets are surface-mount and placed by JLCPCB. The
+  through-hole rule is for the large connectors with a high insertion
+  force; a USB-C socket is a small connector that is handled with care.
+  The through-hole socket in the schematic (GCT USB4085) is replaced:
+  its footprint's 0.125 mm annular ring is under JLCPCB's 0.18 mm
+  minimum.
 - Everything else is surface-mount where a part exists.
 
 ## Not required of this board
@@ -102,9 +108,6 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 - **What the board does on a weak supply.** Through a USB-A to USB-C
   cable, or from a computer's port, the source may offer only 0.5 to
   1.5 A.
-- **The USB-C sockets' part.** The one drawn (GCT USB4085,
-  through-hole) may not be one JLCPCB can make or supply, and is
-  expected to be replaced.
 - **Whether the 48 kHz stream keeps its coaxial output (J4).** With
   the divider and the jig's LED both on FPGA pin 86, the divider adds
   12.4 mA to the LED's current; the pin's largest drive setting is
