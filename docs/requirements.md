@@ -87,9 +87,6 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 - The USB-C sockets are surface-mount and placed by JLCPCB. The
   through-hole rule is for the large connectors with a high insertion
   force; a USB-C socket is a small connector that is handled with care.
-  The through-hole socket in the schematic (GCT USB4085) is replaced:
-  its footprint's 0.125 mm annular ring is under JLCPCB's 0.18 mm
-  minimum.
 - Everything else is surface-mount where a part exists. The chip parts
   (resistors and capacitors) are 0805 on hand-solder footprints: JLCPCB
   places them, and the size keeps a board repairable by hand.
