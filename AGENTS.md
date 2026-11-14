@@ -42,7 +42,7 @@
 
 - The circuit in text (`circuit/`) leads. It holds the circuit with the parts chosen for fabrication; the drawn sheets and the drawn board hold the through-hole circuit the board was laid out from, and are brought up to the text. Until they are, `scripts/check.sh` exits 1, and the differences it lists between the text and the drawn files are the work left on them. A change to the circuit is made in `circuit/`, and is done when the rule check that `scripts/check.sh` runs first is clean and the regenerated `docs/pins.md` is committed with it. A change to the drawn sheets or the board keeps those two identical to each other, makes that list shorter and adds nothing to it; the counts the script prints for KiCad's DRC and ERC are the same as on `main`, type for type, or the pull request explains the difference.
 
-- The board is routed by hand, and agents' work on placement and routing has not started yet. Until it has, a change that needs copper or a footprint to move is raised with Thor before it is made, together with the alternative that moves nothing, if there is one.
+- Agents place and route the board. Thor states where the parts a person interacts with sit: the connectors at the board's edge, lights, buttons. Every other position, and the copper, is the agent's to decide, from the fab's limits, the parts' data sheets and the makers' application notes. A layout is judged by KiCad's DRC and `scripts/check.sh`, never by a router's own report, and reaches Thor as a picture of the copper with its counts (track segments, vias, track length, DRC findings by type, missing connections) beside those of the layout it replaces.
 
 - SKiDL's SVG and the KiCad schematic it generates are not used for this board: neither draws it legibly. Agents use Mermaid.js for diagrams and Matplotlib for graphs.
 
@@ -91,7 +91,7 @@ License: CERN-OHL-S v2
 
 # Division of labour
 
-Thor decides, draws in the KiCad GUI, solders the through-hole parts and places the order. JLCPCB fabricates and places the surface-mount parts. Agents work headless: the circuit in text, the checks, candidates for parts, the documents. Placement and routing by agents comes later.
+Thor decides, draws in the KiCad GUI, solders the through-hole parts and places the order. JLCPCB fabricates and places the surface-mount parts. Agents work headless: the circuit in text, placement and routing, the checks, candidates for parts, the documents.
 
 The top agent is Claude Fable, with DeepSeek V4 Flash as the fallback. Subagents run on DeepSeek V4 Flash.
 
