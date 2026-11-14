@@ -42,7 +42,7 @@
 
 - The board is routed by hand, and agents' work on placement and routing has not started yet. Until it has, a change that needs copper or a footprint to move is raised with Thor before it is made, together with the alternative that moves nothing, if there is one.
 
-- SKiDL's SVG and the KiCad schematic it generates are not used for this board: both came out badly on it. Agents use Mermaid.js for diagrams and Matplotlib for graphs.
+- SKiDL's SVG and the KiCad schematic it generates are not used for this board: neither draws it legibly. Agents use Mermaid.js for diagrams and Matplotlib for graphs.
 
 - A part has a descriptive name in the code (`cc1_pulldown`) and a regular designator on the board (`R13`). The descriptive name is also the part's `tag`. A new part takes the next free number; existing designators are not renumbered, and a gap stays a gap.
 
@@ -73,6 +73,8 @@
 - Always look for dead code, duplicates, similar code in two places that could live in one and inconsistent code patterns, and bring these to the attention of the user.
 
 - Agents *must* update comments and docs so they match the design before *every* commit. A document changes in the same pull request as the number or the rule it states.
+
+- Files in the repository document *state*: what the design is and why it is so. They never say what something was before, what it replaced, or when and by whom it changed. Change is recorded where it happens: in the chat, the issue, the pull request and the commit message, and Git keeps the log. The only file that lists changes is one that is a changelog by name.
 
 - The README is for a person who wants to know what the board is. The routines of developing it go in `scripts/` as scripts and in this file as rules, not in the README.
 

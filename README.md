@@ -85,8 +85,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   ESP32-S3-DevKitC-1 are, measured: the pins the module takes, the
   free pins, the USB bridge and the open USB-OTG pads, and the header
   pins read from two photos of the board, `docs/esp32s3_hw678_top.jpg`
-  and `docs/esp32s3_hw678_bottom.jpg`. The synth repository's file with
-  the Header pins section added.
+  and `docs/esp32s3_hw678_bottom.jpg`. The synth repository carries the
+  same file without the Header pins section.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), and the Adafruit PCM510x's fab print with its
