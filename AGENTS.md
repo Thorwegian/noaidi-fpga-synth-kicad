@@ -91,8 +91,6 @@ License: CERN-OHL-S v2
 
 Thor decides, draws in the KiCad GUI, solders the through-hole parts and places the order. JLCPCB fabricates and places the surface-mount parts. Agents work headless: the circuit in text, placement and routing, the checks, candidates for parts, the documents.
 
-The most important thing made here is the skills and workflows for agentic PCB design; the board is where they are tried.
-
 The top agent is Claude Fable, with DeepSeek V4 Flash as the fallback. Subagents run on DeepSeek V4 Flash.
 
 A subagent's output is delivered to the lead agent, never to a commit or a PR. The lead agent verifies before acting on it.
