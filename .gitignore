@@ -42,5 +42,5 @@ fp-info-cache
 # Local project settings
 *.kicad_prl
 
-# render.sh output
+# scripts/render.sh output
 build/
