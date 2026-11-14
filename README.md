@@ -65,13 +65,15 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
 - `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
   ESP32-S3-DevKitC-1 are, measured: the pins the module takes, the
   free pins, the USB bridge and the open USB-OTG pads, and the header
-  pins read from `docs/esp32s3_hw678_top.jpg`, a photo of the board.
-  The synth repository's file with the Header pins section added.
+  pins read from two photos of the board, `docs/esp32s3_hw678_top.jpg`
+  and `docs/esp32s3_hw678_bottom.jpg`. The synth repository's file with
+  the Header pins section added.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), and the Adafruit PCM510x's fab print with its
   dimensions. Electrical: the Tang Nano 20K's schematic and pinout, the
-  GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide and pinouts, the
+  GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide, pinouts and
+  schematic (v1.1), the
   Adafruit PCM510x guide and schematic, the 6N138 MIDI input circuit and
   the TOTX1950A optical transmitter's data sheet. The board's own parts,
   from the links in the schematic's Datasheet fields: the LM66100 ideal
