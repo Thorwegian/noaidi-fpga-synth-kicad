@@ -4341,7 +4341,7 @@
 		)
 		(uuid "fb181d34-c9c1-4f10-a3fe-7a431057a59d")
 	)
-	(global_label "I2C0_SCL"
+	(global_label "I2C0_SDA"
 		(shape input)
 		(at 92.71 93.98 0)
 		(fields_autoplaced yes)
@@ -4461,7 +4461,7 @@
 			)
 		)
 	)
-	(global_label "I2C0_SDA"
+	(global_label "I2C0_SCL"
 		(shape bidirectional)
 		(at 92.71 96.52 0)
 		(fields_autoplaced yes)
@@ -4701,7 +4701,7 @@
 			)
 		)
 	)
-	(global_label "I2C0_SCL"
+	(global_label "I2C0_SDA"
 		(shape input)
 		(at 223.52 52.07 180)
 		(fields_autoplaced yes)
@@ -4941,7 +4941,7 @@
 			)
 		)
 	)
-	(global_label "I2C0_SDA"
+	(global_label "I2C0_SCL"
 		(shape bidirectional)
 		(at 223.52 49.53 180)
 		(fields_autoplaced yes)

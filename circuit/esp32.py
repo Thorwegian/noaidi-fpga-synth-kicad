@@ -51,16 +51,16 @@ def midi_input(name, uart_rx, supply, gnd, socket_ref, series_ref, clamp_ref, op
 
 
 @subcircuit
-def i2c_port(scl, sda, supply, gnd, header_ref, scl_pin, sda_pin, scl_pullup_ref,
-             sda_pullup_ref):
-    """An I2C bus on a three-pin header (pin 1 is ground), with its pull-ups."""
+def i2c_port(scl, sda, supply, gnd, header_ref, scl_pullup_ref, sda_pullup_ref):
+    """An I2C bus on a three-pin header, with its pull-ups. The header reads
+    ground, clock, data: the clock sits next to ground."""
     header = pin_header(3, ref=header_ref, tag="header")
     scl_pullup = resistor(ref=scl_pullup_ref, value="4.7k", tag="scl_pullup")
     sda_pullup = resistor(ref=sda_pullup_ref, value="4.7k", tag="sda_pullup")
 
     gnd += header[1]
-    scl += header[scl_pin], scl_pullup[2]
-    sda += header[sda_pin], sda_pullup[2]
+    scl += header[2], scl_pullup[2]
+    sda += header[3], sda_pullup[2]
     supply += scl_pullup[1], sda_pullup[1]
 
 
@@ -90,13 +90,13 @@ with SubCircuit("esp32", tag="esp32"):
     SPI3_MOSI += esp["GPIO7"], spi3_header[4]
     SPI3_MISO += esp["GPIO9"], spi3_header[5]
 
-    I2C0_SCL += esp["GPIO4"]
-    I2C0_SDA += esp["GPIO5"]
+    I2C0_SCL += esp["GPIO5"]
+    I2C0_SDA += esp["GPIO4"]
     I2C1_SCL += esp["GPIO14"]
     I2C1_SDA += esp["GPIO17"]
-    i2c_port(I2C0_SCL, I2C0_SDA, ESP_3V3, GND, header_ref="J8", scl_pin=3, sda_pin=2,
-             scl_pullup_ref="R12", sda_pullup_ref="R11", tag="i2c0_port")
-    i2c_port(I2C1_SCL, I2C1_SDA, ESP_3V3, GND, header_ref="J11", scl_pin=2, sda_pin=3,
+    i2c_port(I2C0_SCL, I2C0_SDA, ESP_3V3, GND, header_ref="J8",
+             scl_pullup_ref="R11", sda_pullup_ref="R12", tag="i2c0_port")
+    i2c_port(I2C1_SCL, I2C1_SDA, ESP_3V3, GND, header_ref="J11",
              scl_pullup_ref="R15", sda_pullup_ref="R16", tag="i2c1_port")
 
     uart0_header = pin_header(3, ref="J12", tag="uart0_header")
