@@ -53,9 +53,11 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
 
 ## Files
 
-The root folder holds the KiCad project, this README and the licence.
-Scripts go in `scripts/`, documents in `docs/`.
+The root folder holds the KiCad project, this README, `AGENTS.md` and
+the licence. Scripts go in `scripts/`, documents in `docs/`.
 
+- `AGENTS.md`: the rules for AI agents working in this repository, who
+  does what, and where to start reading.
 - `noaidi-fpga-synth.kicad_pro`, `.kicad_sch` and the four sheet files,
   `.kicad_pcb`, `.kicad_dru`
 - `noaidi-fpga-synth.kicad_sym` and `noaidi-fpga-synth.pretty/`: the
@@ -137,6 +139,29 @@ writes `<sheet>.net`. To check the result:
 It prints the differences and ends with a count; `identical` is the
 result wanted. With `--within`, a single sheet's netlist is checked
 against the whole board.
+
+A change to the circuit is made in the text, the drawn sheets and the
+drawn board together, and the three are then compared with each other.
+Export the drawn sheets' netlists and compare them with the board and
+with the text's netlist:
+
+    mkdir -p build/kicad-net
+    for sheet in usb esp32 tang_nano_20k test_points; do
+        kicad-cli sch export netlist --format kicadsexpr \
+            -o build/kicad-net/$sheet.net $sheet.kicad_sch
+    done
+    drawn=build/kicad-net/usb.net+build/kicad-net/esp32.net
+    drawn=$drawn+build/kicad-net/tang_nano_20k.net+build/kicad-net/test_points.net
+    scripts/netlist_summary.py $drawn noaidi-fpga-synth.kicad_pcb
+    scripts/netlist_summary.py build/skidl/board.net $drawn
+
+KiCad's own checks, to compare by count and type before and after a
+change:
+
+    kicad-cli pcb drc --severity-all --format json -o build/drc.json \
+        noaidi-fpga-synth.kicad_pcb
+    kicad-cli sch erc --severity-all --format json -o build/erc-esp32.json \
+        esp32.kicad_sch
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)
