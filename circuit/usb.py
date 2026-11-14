@@ -43,7 +43,9 @@ with SubCircuit("usb", tag="usb"):
                                cc2_pulldown_ref="R18", tag="data_socket")
     USB_D_PLUS += data_socket["D+"]
     USB_D_MINUS += data_socket["D-"]
-    data_socket["VBUS"] += NC
+    # The data socket's supply pins feed no rail. They are one net all the
+    # same: the footprint's pads for them lie on each other in pairs.
+    Net("USB_DATA_VBUS").connect(data_socket["VBUS"])
 
 if __name__ == "__main__":
     generate_netlist(file_="usb.net")

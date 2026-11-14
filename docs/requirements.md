@@ -103,8 +103,9 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   specified.
 - **A connector at the board's edge sits where its plug can be
   inserted.** The mechanics set its distance to the edge, not a
-  figure. The positions on the drawn board are placed by eye to that
-  end and carry no precision.
+  figure. The DIN and RCA sockets and the modules are placed by eye to
+  that end, and their positions carry no precision; a USB-C socket
+  sits on its maker's board-edge line (`circuit/fixed_positions.toml`).
 - **The USB MIDI socket (J14) sits next to the power socket (J9), at
   the same edge.**
 

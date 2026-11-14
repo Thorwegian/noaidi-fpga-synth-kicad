@@ -9,6 +9,8 @@ name: a second Net("GND") made elsewhere would become GND1 and stay apart.
 """
 from skidl import *
 
+from net_classes import SUPPLY, USB_DATA_PAIR
+
 EXT_5V = Net("EXT_5V")
 ESP_5V = Net("ESP_5V")
 NANO_5V = Net("NANO_5V")
@@ -18,9 +20,13 @@ PCM_3V3 = Net("PCM_3V3")
 GND = Net("GND")
 for supply in (EXT_5V, ESP_5V, NANO_5V, ESP_3V3, NANO_3V3, PCM_3V3, GND):
     supply.drive = POWER
+    supply.netclasses = SUPPLY
 
+# KiCad takes the two for a differential pair by their names: one base name, ending in + and -.
 USB_D_PLUS = Net("USB_D+")
 USB_D_MINUS = Net("USB_D-")
+for line in (USB_D_PLUS, USB_D_MINUS):
+    line.netclasses = USB_DATA_PAIR
 
 SPI2_CS_N = Net("SPI2_CS_N")
 SPI2_SCLK = Net("SPI2_SCLK")

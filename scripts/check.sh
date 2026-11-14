@@ -3,7 +3,7 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-# check.sh -- is the circuit in text, the drawn sheets and the drawn board one board?
+# check.sh -- is the circuit in text, the drawn sheets and the board one board?
 #
 #     scripts/check.sh
 #
@@ -53,9 +53,9 @@ compare() {
     "$python" scripts/netlist_summary.py "$2" "$3" | sed 's/^/    /'
     [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 }
-compare "drawn sheets against the drawn board" "$drawn" $board
+compare "drawn sheets against the board" "$drawn" $board
 compare "circuit in text against the drawn sheets" $out/skidl/board.net "$drawn"
-compare "circuit in text against the drawn board" $out/skidl/board.net $board
+compare "circuit in text against the board" $out/skidl/board.net $board
 
 if git diff --quiet -- docs/pins.md; then
     echo "docs/pins.md: unchanged"

@@ -1,0 +1,27 @@
+# Copyright © 2026 Thor H. Linløkken <thj@thj.no>
+# License: CERN-OHL-S v2
+#
+# fixed_positions.toml -- where the parts a person interacts with sit
+# (docs/requirements.md, Where the parts sit). scripts/board_from_circuit.py
+# puts these parts where this file says; nothing else moves them.
+#
+#   edge          the board's edge the part's opening is at: left, top, right, bottom.
+#                 The part keeps its place along the edge and the way it is turned.
+#   edge_line_mm  from the footprint's origin to the maker's board-edge line.
+#   beside        the part it sits next to, at the same edge and turned the same way.
+#   pitch_mm      centre to centre from that part, at least.
+
+# The power socket. Hroparts' drawing of the TYPE-C-31-M-12
+# (docs/thirdparty/Hroparts_TYPE-C-31-M-12_drawing.pdf, recommended PCB
+# layout) puts the PCB edge 5.79 mm in front of the centres of the rear shell
+# slots; the footprint has those at y = -3.13 mm: 5.79 - 3.13 = 2.66 mm.
+[J9]
+edge = "bottom"
+edge_line_mm = 2.66
+
+# The USB MIDI socket. The USB Type-C Cable and Connector Specification,
+# release 2.0, appendix D.3.1.2 (figure D-6), has sockets side by side at
+# 12.85 mm centre to centre at the least. 15 mm leaves room for fingers.
+[J14]
+beside = "J9"
+pitch_mm = 15.0

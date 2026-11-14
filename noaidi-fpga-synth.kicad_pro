@@ -565,6 +565,19 @@
         "tuning_profile": "",
         "via_diameter": 1.2,
         "via_drill": 0.6
+      },
+      {
+        "clearance": 0.2,
+        "diff_pair_gap": 0.2,
+        "diff_pair_width": 0.3,
+        "name": "USB",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.3,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3
       }
     ],
     "meta": {
@@ -575,15 +588,39 @@
     "netclass_patterns": [
       {
         "netclass": "Power",
+        "pattern": "ESP_3V3"
+      },
+      {
+        "netclass": "Power",
+        "pattern": "ESP_5V"
+      },
+      {
+        "netclass": "Power",
+        "pattern": "EXT_5V"
+      },
+      {
+        "netclass": "Power",
         "pattern": "GND"
       },
       {
         "netclass": "Power",
-        "pattern": "*_5V"
+        "pattern": "NANO_3V3"
       },
       {
         "netclass": "Power",
-        "pattern": "*_3V3"
+        "pattern": "NANO_5V"
+      },
+      {
+        "netclass": "Power",
+        "pattern": "PCM_3V3"
+      },
+      {
+        "netclass": "USB",
+        "pattern": "USB_D+"
+      },
+      {
+        "netclass": "USB",
+        "pattern": "USB_D-"
       }
     ]
   },
