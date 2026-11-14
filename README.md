@@ -85,5 +85,21 @@ Scripts go in `scripts/`, documents in `docs/`.
   socket (J1, J2), the Kycon KLPX RCA socket (J3, J4) and the GCT
   USB4085 USB-C receptacle (J9; specification and drawing).
 
+## Build tools
+
+`kicad-cli` (KiCad 10) and `pdfunite` (poppler-utils) come from the
+system's packages. The Python tools are listed in
+`scripts/requirements.txt` and live in a virtual environment, `.venv/`
+at the root, which is not committed:
+
+    python3 -m venv .venv
+    .venv/bin/pip install -r scripts/requirements.txt
+    source .venv/bin/activate
+
+- `skidl`: circuits described in Python. It is not in Ubuntu's packages.
+  It finds KiCad's symbol libraries through the environment variable
+  `KICAD10_SYMBOL_DIR` (`/usr/share/kicad/symbols` on Ubuntu).
+- `pillow`: for `scripts/crop.py`.
+
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)

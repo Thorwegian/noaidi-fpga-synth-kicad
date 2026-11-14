@@ -44,3 +44,6 @@ fp-info-cache
 
 # scripts/render.sh output
 build/
+
+# The Python build tools (scripts/requirements.txt)
+.venv/
