@@ -94,6 +94,20 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   (resistors and capacitors) are 0805 on hand-solder footprints: JLCPCB
   places them, and the size keeps a board repairable by hand.
 
+## Where the parts sit
+
+- **A pin header sits near what it belongs to:** the connector, the
+  pin or the part its signals come from, so that an engineer finds it
+  by looking when probing or connecting during development. A place
+  near the board's edge is a plus; no distance to the edge is
+  specified.
+- **A connector at the board's edge sits where its plug can be
+  inserted.** The mechanics set its distance to the edge, not a
+  figure. The positions on the drawn board are placed by eye to that
+  end and carry no precision.
+- **The USB MIDI socket (J14) sits next to the power socket (J9), at
+  the same edge.**
+
 ## Not required of this board
 
 - The front panel, or any control on the board itself.
