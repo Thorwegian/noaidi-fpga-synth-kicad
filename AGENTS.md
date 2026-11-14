@@ -62,6 +62,8 @@
 
 - JLCPCB fabricates the board and places the surface-mount parts. The modules, the DIN and RCA sockets and the pin headers are through-hole and soldered by hand (`docs/requirements.md`, How it is made).
 
+- JLCPCB's published limits are the authority on the design rules, and a layout never undercuts one. The figures that apply to every object are in the board setup (`noaidi-fpga-synth.kicad_pro`); the fab's limits for component holes, which are wider than its limits for vias, are rules in `noaidi-fpga-synth.kicad_dru`. Where the fab's minimum is the edge of its process the layout stays above it: a track and its spacing are 0.2 mm, twice the fab's minimum, and 0.4 mm on the supply nets, and a track narrows to 0.15 mm only where it has to pass between pins.
+
 - Chip parts are 0805 on KiCad's hand-solder footprints (the ones named `..._HandSolder`), so that a board can be repaired by hand, and come from JLCPCB's basic library where it has the value. A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
 
 - Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files; Thor orders.
