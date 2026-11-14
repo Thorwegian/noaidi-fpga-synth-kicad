@@ -38,11 +38,11 @@
 
 ## The circuit
 
-- The circuit in text (`circuit/`), the drawn sheets and the drawn board describe one board. While the drawn files exist, a change to the circuit is made in all three, in one pull request. It is done when the drawn sheets, the netlist from `circuit/board.py` and the board are identical three ways by `scripts/netlist_summary.py`, the rule check in `board.py` is clean, and `kicad-cli`'s DRC and ERC counts are the same as before, type for type, or the pull request explains the difference. The commands are in the README, The circuit in text.
+- The circuit in text (`circuit/`), the drawn sheets and the drawn board describe one board. While the drawn files exist, a change to the circuit is made in all three, in one pull request. It is done when `scripts/check.sh` passes (the rule check is clean, and the drawn sheets, the netlist from `circuit/board.py` and the board are identical three ways) and the counts it prints for KiCad's DRC and ERC are the same as on `main`, type for type, or the pull request explains the difference.
 
-- Agents do not place or route. A change to the board file is limited to what a change to the netlist needs: net names, values, fields. A change that would move copper or a footprint is put to Thor first, together with the alternative that moves nothing, if there is one.
+- The board is routed by hand, and agents' work on placement and routing has not started yet. Until it has, a change that needs copper or a footprint to move is raised with Thor before it is made, together with the alternative that moves nothing, if there is one.
 
-- No generated drawings of the circuit: no SKiDL SVG, no generated KiCad schematic, no graph of the netlist. The circuit is read from the code and from generated tables. For other diagrams agents use Mermaid.js, and Matplotlib for graphs.
+- SKiDL's SVG and the KiCad schematic it generates are not used for this board: both came out badly on it. Agents use Mermaid.js for diagrams and Matplotlib for graphs.
 
 - A part has a descriptive name in the code (`cc1_pulldown`) and a regular designator on the board (`R13`). The descriptive name is also the part's `tag`. A new part takes the next free number; existing designators are not renumbered, and a gap stays a gap.
 
@@ -74,7 +74,7 @@
 
 - Agents *must* update comments and docs so they match the design before *every* commit. A document changes in the same pull request as the number or the rule it states.
 
-- A stored or loaded sound is a *preset*. "Patch" means a change to code or a tool, never a sound.
+- The README is for a person who wants to know what the board is. The routines of developing it go in `scripts/` as scripts and in this file as rules, not in the README.
 
 - All source files shall carry the following copyright notice:
 
@@ -85,33 +85,17 @@ License: CERN-OHL-S v2
 
 # Division of labour
 
-Thor decides, draws and lays out the board in the KiCad GUI, solders the through-hole parts and places the order. JLCPCB fabricates and places the surface-mount parts. Agents work headless: the circuit in text, the checks, candidates for parts, the documents.
+Thor decides, draws in the KiCad GUI, solders the through-hole parts and places the order. JLCPCB fabricates and places the surface-mount parts. Agents work headless: the circuit in text, the checks, candidates for parts, the documents. Placement and routing by agents comes later.
 
-The top agent is Claude Fable, with Deepseek V4 Pro as the fallback. Subagents run on DeepSeek Flash. Deepseek V4 Pro failed on the gateware's RTL in the synth repository. Until it has shown otherwise here, the circuit, the KiCad files and the arithmetic behind a part's value are split the same way.
-
-Suitable for DeepSeek Flash:
-- Web and data sheet research.
-- Catalogue searches: stock, price, package.
-- Running the checks and reporting the numbers.
-- Doc edits whose content is already specified.
-- Reading document screenshots, data sheet figures and board photos (labels and markings, never dimensions).
-
-Not suitable:
-- Writing or changing the circuit in text.
-- Editing KiCad files.
-- Anything touching levels, currents, power or tolerances.
-- Choosing a part.
-- PR review verdicts.
+The top agent is Claude Fable, with DeepSeek V4 Flash as the fallback. Subagents run on DeepSeek V4 Flash.
 
 A subagent's output is delivered to the lead agent, never to a commit or a PR. The lead agent verifies before acting on it.
-
-If any DeepSeek agent finds itself editing `circuit/` or a KiCad file, it stops and reports instead.
 
 # Finding your feet
 
 - **The words:** the *base board* is this board, which sits at the bottom of the enclosure; the *front panel board* is the later one it will power and talk to. A *module* is a bought board that sits on headers: the Tang Nano 20K, the ESP32-S3 board, the DAC. The *lab jig* is the lab's set of connections to the board for the automated tests, among them the modules' USB ports and the LED into the optical capture. The *drawn sheets* and the *drawn board* are the KiCad files made in the GUI; the *circuit in text* is `circuit/`. A *designator* is a part's name on the board (`R13`). The synth repository's `docs/glossary.md` defines the project's other terms.
-- **The board:** `README.md` (what is on it, the files, the build tools, how the circuit in text is run and checked); `docs/requirements.md` is what the board has to do and is the reference the design is checked against; `docs/pins.md` (which pin of which module carries what, the connectors, the test points, each part's name in the code); `docs/esp32s3_hw678.md` (the ESP32-S3 boards in hand, which stand in for Espressif's ESP32-S3-DevKitC-1: same pins, same footprint); `docs/thirdparty/` (the vendors' drawings, schematics and data sheets).
+- **The board:** `README.md` (what is on it, the files, the build tools); `docs/requirements.md` is what the board has to do and is the reference the design is checked against; `docs/pins.md` (which pin of which module carries what, the connectors, the test points, each part's name in the code); `docs/esp32s3_hw678.md` (the ESP32-S3 boards in hand, which stand in for Espressif's ESP32-S3-DevKitC-1: same pins, same footprint); `docs/thirdparty/` (the vendors' drawings, schematics and data sheets).
 - **The work:** the goal is issue #5, labelled `meta`: get the board fabricated at JLCPCB, so development moves onto it. Its sub-issues are the open work. Closed issue #1 is an earlier agent's review of the schematic; its claims are not the agreed state.
 - **For those who know the gateware:** the circuit in text is the RTL and `global_nets.py` its package; a block written as a function is a module with ports; the netlist comparison is the equivalence check; the fixed positions (edge connectors, outline, mounting holes) are the constraints file; a SPICE bench is a simulation bench; layout is place and route, and DRC is its timing report; `docs/pins.md` is the debug symbols.
-- **The tools:** `kicad-cli` (KiCad 10) and `pdfunite` come from the system's packages; the Python tools (SKiDL among them) live in a virtual environment built from `scripts/requirements.txt`. SKiDL writes its log files where it is run, so it is run from a directory under `build/`.
+- **The tools:** `kicad-cli` (KiCad 10) and `pdfunite` come from the system's packages; the Python tools (SKiDL among them) live in a virtual environment built from `scripts/requirements.txt`. `scripts/check.sh` is the one command to run after a change: it runs the circuit in text, compares it with the drawn sheets and the drawn board, and counts the findings of KiCad's own checks; its exit code is 0 when the three agree. `scripts/render.sh` regenerates the README's pictures. Everything generated lands under `build/`.
 - **Two machines:** the cloud box (thj.no) holds this repository and runs everything headless: `kicad-cli`, the circuit in text, the checks, the renders. It has no KiCad GUI and no board. Thor draws in the GUI on his own machine and his edits arrive on `main`, so pull before reading the design. The main checkout rests on `main` and is only ever pulled. Every session's work, a one-line docs pull request included, happens in its own worktree (`git worktree add ~/wt/wt-<issue> -b <branch> main`), which holds its own `build/`. The Python environment is built once, in the main checkout's `.venv/`, and serves every worktree: `source ~/noaidi-fpga-synth-kicad/.venv/bin/activate`. The session that made a worktree removes it when its pull request merges.
