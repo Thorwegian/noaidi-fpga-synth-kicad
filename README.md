@@ -83,7 +83,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   and the board are one board, and counts the findings of KiCad's own
   checks with `scripts/rule_counts.py`.
 - `scripts/board_from_circuit.py`: brings the board up to the circuit
-  in text: removes, swaps and adds footprints and sets every pad's net.
+  in text: removes, swaps and adds footprints, sets every pad's net and
+  writes the net classes into the KiCad project.
+- `circuit/net_classes.py`: the net classes, each with its track
+  width, clearance and via.
 - `circuit/fixed_positions.toml`: where the parts a person interacts
   with sit, for `scripts/board_from_circuit.py`.
 - `scripts/route.sh`: lays the board's copper anew with Freerouting and
@@ -144,7 +147,7 @@ resistors and capacitors, H11L1 optocouplers, two surface-mount USB-C
 sockets (one for power, one for the ESP32's USB data), no ferrite
 bead, and one S/PDIF coaxial output (J3, the 96 kHz stream; the 48 kHz
 stream is on its header only). The board is made from it:
-`scripts/board_from_circuit.py` sets its parts and nets and
+`scripts/board_from_circuit.py` sets its parts, nets and net classes and
 `scripts/route.sh` lays its copper. The drawn schematic holds the
 through-hole circuit the board was first laid out from; it is brought
 up to the text, and `scripts/check.sh` lists where it differs from it. Parts have a descriptive name in the code and a regular

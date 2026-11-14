@@ -5,10 +5,11 @@
 #
 """board_from_circuit.py -- bring the board up to the circuit in text.
 
-    scripts/board_from_circuit.py <netlist> <board>
+    scripts/board_from_circuit.py <netlist> <net classes> <board>
 
-Reads the netlist that circuit/board.py writes and makes the board's parts
-and nets the same as the netlist's, moving as little as possible:
+Reads the netlist and the net classes that circuit/board.py writes
+(board.net and net_classes.json) and makes the board's parts and nets the
+same as the netlist's, moving as little as possible:
 
   - a part that is not in the netlist leaves the board;
   - a part whose footprint differs gets the netlist's footprint, the middle
@@ -19,12 +20,17 @@ and nets the same as the netlist's, moving as little as possible:
   - every pad gets the net the netlist gives it, and a track on a net that
     has no pad left is removed.
 
+The net classes go into the KiCad project file beside the board: each class
+with its widths, clearance and via, and each net that is in one by its name.
+A class the circuit does not have leaves the project.
+
 No part enters another's courtyard: one that would is put in the nearest
 free place. Tracks are otherwise left alone, so where a footprint has
 changed the copper no longer meets the pads; scripts/route.sh lays it anew.
 
 Runs under the system's Python, which has KiCad's pcbnew module.
 """
+import json
 import math
 import os
 import sys
@@ -50,7 +56,8 @@ EDGES = {"left": LEFT, "top": TOP, "right": RIGHT, "bottom": BOTTOM}
 
 def read_circuit(path):
     """The netlist's parts, as {designator: {value, footprint, lcsc, block}},
-    and its nets, as {name: [(designator, pad number), ...]}."""
+    its nets, as {name: [(designator, pad number), ...]}, and the class of
+    each net that is in one, as {name: class}."""
     root = parse(open(path, encoding="utf-8").read())
     parts = {}
     for component in kids(kids(root, "components")[0], "comp"):
@@ -64,7 +71,40 @@ def read_circuit(path):
         }
     nets = {val(net, "name"): [(val(node, "ref"), val(node, "pin")) for node in kids(net, "node")]
             for net in kids(kids(root, "nets")[0], "net")}
-    return parts, nets
+    class_of_net = {}
+    for net in kids(kids(root, "nets")[0], "net"):
+        classes = [name for name in val(net, "class").split(",") if name != "Default"]
+        if len(classes) > 1:
+            sys.exit(f"the net {val(net, 'name')} is in more than one class: {', '.join(classes)}")
+        if classes:
+            class_of_net[val(net, "name")] = classes[0]
+    return parts, nets, class_of_net
+
+
+def write_net_classes(project_path, classes, class_of_net):
+    """Put the circuit's net classes and their nets into the KiCad project
+    file. A class keeps what the project has for it beyond the circuit's
+    figures (its colours); KiCad gives the lowest priority number the say
+    where a net is in several classes, and Default has the highest."""
+    missing = sorted((set(class_of_net.values()) | {"Default"}) - set(classes))
+    if missing:
+        sys.exit(f"the circuit's net classes have no {', '.join(missing)}")
+    project = json.load(open(project_path, encoding="utf-8"))
+    settings = project["net_settings"]
+    in_project = {net_class["name"]: net_class for net_class in settings["classes"]}
+    settings["classes"] = []
+    for priority, name in enumerate(["Default"] + sorted(set(classes) - {"Default"}), -1):
+        net_class = in_project.get(name, {"name": name, "pcb_color": "rgba(0, 0, 0, 0.000)",
+                                          "schematic_color": "rgba(0, 0, 0, 0.000)", "tuning_profile": ""})
+        net_class.update(classes[name])
+        if name != "Default":
+            net_class["priority"] = priority
+        settings["classes"].append(dict(sorted(net_class.items())))
+    settings["netclass_patterns"] = [{"netclass": class_of_net[name], "pattern": name}
+                                     for name in sorted(class_of_net)]
+    with open(project_path, "w", encoding="utf-8") as file:
+        json.dump(project, file, indent=2)
+        file.write("\n")
 
 
 def load_footprint(footprint_id):
@@ -148,10 +188,13 @@ def displacement(dx, dy, pads):
     return math.hypot(dx, dy)
 
 
-def main(netlist_path, board_path):
-    parts, nets = read_circuit(netlist_path)
+def main(netlist_path, net_classes_path, board_path):
+    parts, nets, class_of_net = read_circuit(netlist_path)
     net_of_pad = {pad: name for name, pads in nets.items() for pad in pads}
     fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
+    # KiCad reads the project file when it loads the board.
+    write_net_classes(os.path.splitext(board_path)[0] + ".kicad_pro",
+                      json.load(open(net_classes_path, encoding="utf-8")), class_of_net)
     board = pcbnew.LoadBoard(board_path)
     outline = board_outline(board)
 
@@ -203,6 +246,10 @@ def main(netlist_path, board_path):
                 pad.SetNet(board.FindNet(name))
             else:
                 pad.SetNetCode(0)
+    for name in nets:
+        in_kicad = board.FindNet(name).GetNetClassName().split(",")[0]
+        if in_kicad != class_of_net.get(name, "Default"):
+            sys.exit(f"KiCad has the net {name} in the class {in_kicad}, the circuit in {class_of_net.get(name, 'Default')}")
     nets_with_pads = {pad.GetNetname() for footprint in board.GetFootprints() for pad in footprint.Pads()}
     stale_tracks = [track for track in board.GetTracks() if track.GetNetname() not in nets_with_pads]
     for track in stale_tracks:
@@ -274,10 +321,11 @@ def main(netlist_path, board_path):
     # The third argument keeps KiCad from rewriting the project file with the board.
     pcbnew.SaveBoard(board_path, board, True)
     print(f"{len(stale_tracks)} tracks removed with their nets; "
-          f"{len(list(board.GetFootprints()))} parts, {len(nets)} nets")
+          f"{len(list(board.GetFootprints()))} parts, {len(nets)} nets, "
+          f"{len(class_of_net)} of them in {len(set(class_of_net.values()))} classes besides Default")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         sys.exit(__doc__)
     main(*sys.argv[1:])
