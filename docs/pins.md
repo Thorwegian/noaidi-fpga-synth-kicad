@@ -196,18 +196,22 @@ Not connected: A6 (`D+`), A7 (`D-`), A8 (`SBU1`), B6 (`D+`), B7 (`D-`), B8 (`SBU
 | Pin | Name | Net | Also on the net |
 |---|---|---|---|
 | A1 | `GND` | `GND` | supply net, 38 other pins |
+| A4 | `VBUS` | `USB_DATA_VBUS` |  |
 | A5 | `CC1` | `USB_DATA_CC1` | R17 |
 | A6 | `D+` | `USB_D+` | U1.26 (GPIO20) |
 | A7 | `D-` | `USB_D-` | U1.25 (GPIO19) |
+| A9 | `VBUS` | `USB_DATA_VBUS` |  |
 | A12 | `GND` | `GND` | supply net, 38 other pins |
 | B1 | `GND` | `GND` | supply net, 38 other pins |
+| B4 | `VBUS` | `USB_DATA_VBUS` |  |
 | B5 | `CC2` | `USB_DATA_CC2` | R18 |
 | B6 | `D+` | `USB_D+` | U1.26 (GPIO20) |
 | B7 | `D-` | `USB_D-` | U1.25 (GPIO19) |
+| B9 | `VBUS` | `USB_DATA_VBUS` |  |
 | B12 | `GND` | `GND` | supply net, 38 other pins |
 | SH | `SHIELD` | `GND` | supply net, 38 other pins |
 
-Not connected: A4 (`VBUS`), A8 (`SBU1`), A9 (`VBUS`), B4 (`VBUS`), B8 (`SBU2`), B9 (`VBUS`).
+Not connected: A8 (`SBU1`), B8 (`SBU2`).
 
 ### JP1, `tang_nano_20k/filter_jumper`
 
