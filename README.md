@@ -64,8 +64,9 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
   the layout are checked against it.
 - `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
   ESP32-S3-DevKitC-1 are, measured: the pins the module takes, the
-  free pins, the USB bridge and the open USB-OTG pads. A copy of the
-  synth repository's file, which is where it is maintained.
+  free pins, the USB bridge and the open USB-OTG pads, and the header
+  pins read from `docs/esp32s3_hw678_top.jpg`, a photo of the board.
+  The synth repository's file with the Header pins section added.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), and the Adafruit PCM510x's fab print with its
