@@ -39,11 +39,14 @@ with an ARM processor to drive the user interface.
    pin 86): it drives an LED into the optical input of the lab
    computer's USB audio interface, which the automated tests record
    from. On the prototype that is 68 Ω and a red LED in parallel with
-   the output. The schematic also gives this stream a coaxial output
-   (J4) with the same divider; it may not need to be one.
+   the output. This stream has no coaxial output: with a divider and
+   the LED both on the pin, the divider adds 12.4 mA to the LED's
+   current, the pin's largest drive setting is 24 mA (GW2AR data sheet,
+   `thirdparty/DS226-2.7E`, table 3-11), and the prototype's LED
+   circuit is noted at about 28 mA peaks.
 6. **Both S/PDIF signals straight from the FPGA pins on pin headers**
-   (J5, J6), ahead of the dividers, so the lab jig's LED can hang
-   there.
+   (J5, J6), to tap in the lab: the 96 kHz stream ahead of its
+   divider, and the 48 kHz stream for the lab jig's LED.
 7. **A USB connection to a computer** as a USB MIDI class device, on
    the ESP32's own USB data pair, through a USB-C socket of its own.
    That socket's supply pin feeds no rail.
@@ -107,10 +110,5 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 - **What the board does on a weak supply.** Through a USB-A to USB-C
   cable, or from a computer's port, the source may offer only 0.5 to
   1.5 A.
-- **Whether the 48 kHz stream keeps its coaxial output (J4).** With
-  the divider and the jig's LED both on FPGA pin 86, the divider adds
-  12.4 mA to the LED's current; the pin's largest drive setting is
-  24 mA (GW2AR data sheet, `thirdparty/DS226-2.7E`, table 3-11), and
-  the prototype's LED circuit is noted at about 28 mA peaks.
 - **The fixed positions:** which connectors sit at which edge, the
   board's outline and its mounting holes wait for the enclosure.

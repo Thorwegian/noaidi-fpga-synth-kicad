@@ -128,11 +128,13 @@ at the root, which is not committed:
 `circuit/` describes the board's circuit in Python, and it is where the
 circuit is designed. It holds the parts chosen for fabrication: 0805
 resistors and capacitors, H11L1 optocouplers, two surface-mount USB-C
-sockets (one for power, one for the ESP32's USB data), and no ferrite
-bead. The drawn schematic and the drawn board hold the through-hole
-circuit the board was laid out from; they are brought up to the text,
-and `scripts/check.sh` lists where they differ from it. Parts have a
-descriptive name in the code and a regular designator on the board.
+sockets (one for power, one for the ESP32's USB data), no ferrite
+bead, and one S/PDIF coaxial output (J3, the 96 kHz stream; the 48 kHz
+stream is on its header only). The drawn schematic and the drawn board
+hold the through-hole circuit the board was laid out from; they are
+brought up to the text, and `scripts/check.sh` lists where they differ
+from it. Parts have a descriptive name in the code and a regular
+designator on the board.
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)

@@ -3,8 +3,8 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-"""tang_nano_20k.py -- the tang_nano_20k sheet: the FPGA module, the DAC module
-and the two S/PDIF outputs.
+"""tang_nano_20k.py -- the tang_nano_20k sheet: the FPGA module, the DAC module,
+the 96 kHz S/PDIF stream's coaxial output and the 48 kHz stream's header.
 
 The FPGA's pins are named as on the symbol, chip pin number first
 (27_IOB8A is chip pin 27), the number the gateware's constraints use.
@@ -62,8 +62,11 @@ with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
     SPDIF1 += fpga["86_IOT4A"]
     spdif_output(SPDIF0, GND, series_ref="R7", shunt_ref="R8", socket_ref="J3", tap_ref="J5",
                  tag="spdif0_output")
-    spdif_output(SPDIF1, GND, series_ref="R10", shunt_ref="R9", socket_ref="J4", tap_ref="J6",
-                 tag="spdif1_output")
+    # The 48 kHz stream has no coaxial output: its pin drives the lab's LED
+    # from this header, and cannot drive a divider as well.
+    lab_capture_tap = pin_header(2, ref="J6", tag="lab_capture_tap")
+    GND += lab_capture_tap[1]
+    SPDIF1 += lab_capture_tap[2]
 
     analog_out = pin_header(3, ref="J13", tag="analog_out")
     dac_out_g, dac_out_l, dac_out_r = Net("DAC_OUT_G"), Net("DAC_OUT_L"), Net("DAC_OUT_R")
