@@ -60,7 +60,7 @@
 
 - JLCPCB fabricates the board and places the surface-mount parts. The modules, the DIN and RCA sockets and the pin headers are through-hole and soldered by hand (`docs/requirements.md`, How it is made).
 
-- Chip parts are 0805 and come from JLCPCB's basic library where it has the value. A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
+- Chip parts are 0805 on KiCad's hand-solder footprints (the ones named `..._HandSolder`), so that a board can be repaired by hand, and come from JLCPCB's basic library where it has the value. A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
 
 - Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files; Thor orders.
 
