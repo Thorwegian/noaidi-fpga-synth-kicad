@@ -92,6 +92,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/route.sh`: lays the board's copper anew with Freerouting and
   prints what KiCad's DRC finds; `scripts/route_board.py` writes the
   board for the router and reads its result back.
+- `scripts/layout_pictures.py`: pictures of the board's copper to judge
+  a layout by: the whole board, its quarters, and tiles small enough
+  for an agent to see every track.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.
@@ -122,10 +125,11 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 
 ## Build tools
 
-`kicad-cli` (KiCad 10), `pdfunite` (poppler-utils) and `java` (25, for
-Freerouting, whose jar `scripts/route.sh` fetches into `build/tools/`)
-come from the system's packages, and so does the Python with KiCad's
-`pcbnew` module that the two board scripts run under. The other Python
+`kicad-cli` (KiCad 10), `pdfunite` and `pdftoppm` (poppler-utils) and
+`java` (25, for Freerouting, whose jar `scripts/route.sh` fetches into
+`build/tools/`) come from the system's packages, and so does the Python
+with KiCad's `pcbnew` module and Pillow (python3-pil) that the scripts
+which read the board file run under. The other Python
 tools are listed in
 `scripts/requirements.txt` and live in a virtual environment, `.venv/`
 at the root, which is not committed:
