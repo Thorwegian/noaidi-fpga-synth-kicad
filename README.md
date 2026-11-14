@@ -71,6 +71,9 @@ Scripts go in `scripts/`, documents in `docs/`.
   The circuit in text, below.
 - `scripts/netlist_summary.py`: compares netlists and the board by
   connectivity.
+- `docs/pins.md`: which pin of which module carries what, the
+  connectors, the test points, and each part's name in the code.
+  Written by `circuit/board.py`; not edited by hand.
 - `docs/requirements.md`: what the board has to do; the schematic and
   the layout are checked against it.
 - `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
@@ -123,8 +126,10 @@ files where it is run:
     export KICAD10_SYMBOL_DIR=/usr/share/kicad/symbols
     ../../circuit/board.py
 
-That runs SKiDL's rule check and writes `board.net`. Each sheet's file
-runs the same way and writes `<sheet>.net`. To check the result:
+That runs SKiDL's rule check, writes `board.net` and rewrites
+`docs/pins.md`, so a change to the circuit shows up as a change to that
+file, to be committed with it. Each sheet's file runs the same way and
+writes `<sheet>.net`. To check the result:
 
     cd ../..
     scripts/netlist_summary.py build/skidl/board.net noaidi-fpga-synth.kicad_pcb
