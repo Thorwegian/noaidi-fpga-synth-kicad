@@ -40,7 +40,7 @@
 
 ## The circuit
 
-- The circuit in text (`circuit/`), the drawn sheets and the drawn board describe one board. While the drawn files exist, a change to the circuit is made in all three, in one pull request. It is done when `scripts/check.sh` passes (the rule check is clean, and the drawn sheets, the netlist from `circuit/board.py` and the board are identical three ways) and the counts it prints for KiCad's DRC and ERC are the same as on `main`, type for type, or the pull request explains the difference.
+- The circuit in text (`circuit/`) leads. It holds the circuit with the parts chosen for fabrication; the drawn sheets and the drawn board hold the through-hole circuit the board was laid out from, and are brought up to the text. Until they are, `scripts/check.sh` exits 1, and the differences it lists between the text and the drawn files are the work left on them. A change to the circuit is made in `circuit/`, and is done when the rule check that `scripts/check.sh` runs first is clean and the regenerated `docs/pins.md` is committed with it. A change to the drawn sheets or the board keeps those two identical to each other, makes that list shorter and adds nothing to it; the counts the script prints for KiCad's DRC and ERC are the same as on `main`, type for type, or the pull request explains the difference.
 
 - The board is routed by hand, and agents' work on placement and routing has not started yet. Until it has, a change that needs copper or a footprint to move is raised with Thor before it is made, together with the alternative that moves nothing, if there is one.
 
