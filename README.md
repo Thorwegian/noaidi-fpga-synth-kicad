@@ -62,6 +62,10 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
   `kicad-cli` (KiCad 10); `crop.py` trims the 3D renders to the board
 - `docs/requirements.md`: what the board has to do; the schematic and
   the layout are checked against it.
+- `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
+  ESP32-S3-DevKitC-1 are, measured: the pins the module takes, the
+  free pins, the USB bridge and the open USB-OTG pads. A copy of the
+  synth repository's file, which is where it is maintained.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), and the Adafruit PCM510x's fab print with its
