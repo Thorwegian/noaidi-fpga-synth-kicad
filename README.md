@@ -60,6 +60,13 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
   DIN sockets, the RCA and USB-C connectors)
 - `render.sh`: regenerates the images above into `build/` with
   `kicad-cli` (KiCad 10); `crop.py` trims the 3D renders to the board
+- `docs/thirdparty/`: the vendors' documents the board is drawn from.
+  Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
+  3D model (`.step`), and the Adafruit PCM510x's fab print with its
+  dimensions. Electrical: the Tang Nano 20K's schematic and pinout, the
+  GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide and pinouts, the
+  Adafruit PCM510x guide and schematic, the 6N138 MIDI input circuit and
+  the TOTX1950A optical transmitter's data sheet.
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)
