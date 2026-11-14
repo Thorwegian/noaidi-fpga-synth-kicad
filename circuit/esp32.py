@@ -15,39 +15,39 @@ from global_nets import (ESP_3V3, ESP_5V, ESP_UART0_RX, ESP_UART0_TX, ESP_UART1_
                          ESP_UART2_RX, EXT_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
                          SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS)
-from parts import PROJECT, ideal_diode_supply, pin_header, resistor
+from parts import PROJECT, capacitor, ideal_diode_supply, jlcpcb_part, pin_header, resistor
 
 
 @subcircuit
 def midi_input(name, uart_rx, supply, gnd, socket_ref, series_ref, clamp_ref, opto_ref,
-               base_ref, pullup_ref):
-    """A DIN MIDI input: the current loop through a 6N138 optocoupler onto a
-    UART receive pin. On the 6N138, pin 2 is the LED's anode and pin 3 its
-    cathode (the symbol calls them C1 and C2)."""
+               pullup_ref, bypass_ref):
+    """A DIN MIDI input: the current loop through an H11L1 optocoupler onto a
+    UART receive pin. The H11L1's output is an open collector that pulls low
+    while the LED is lit. Its pins have no names in the symbol: 1 is the LED's
+    anode, 2 its cathode, 4 the output, 5 ground and 6 the supply; 3 is not
+    connected inside the part."""
     socket = Part("Connector", "DIN-5_180degree", ref=socket_ref, tag="socket",
                   footprint=f"{PROJECT}:Lumberg_0105_05")
     series = resistor(ref=series_ref, value="220", tag="series")
-    clamp = Part("Diode", "1N4148", ref=clamp_ref, value="D", tag="clamp",
-                 footprint="Diode_THT:D_DO-35_SOD27_P10.16mm_Horizontal")
-    opto = Part("Isolator", "6N138", ref=opto_ref, tag="opto",
-                footprint="Package_DIP:DIP-8_W7.62mm")
-    base = resistor(ref=base_ref, value="4.7k", tag="base")
-    pullup = resistor(ref=pullup_ref, value="220", tag="pullup")
+    clamp = jlcpcb_part(Part("Diode", "1N4148W", ref=clamp_ref, tag="clamp",
+                             footprint="Diode_SMD:D_SOD-123"), "C81598")
+    opto = jlcpcb_part(Part("Isolator", "H11L1", ref=opto_ref, tag="opto",
+                            footprint="Package_DIP:SMDIP-6_W9.53mm"), "C78589")
+    pullup = resistor(ref=pullup_ref, value="470", tag="pullup")
+    bypass = capacitor(ref=bypass_ref, value="100n", tag="bypass")
 
     source = Net(f"{name}_SOURCE")
     led_anode = Net(f"{name}_LED_A")
     led_cathode = Net(f"{name}_LED_K")
-    vo1 = Net(f"{name}_VO1")
 
     source += socket[4], series[1]
-    led_anode += series[2], clamp["K"], opto[2]
-    led_cathode += socket[5], clamp["A"], opto[3]
-    vo1 += opto["VO1"], base[1]
-    uart_rx += opto["VO2"], pullup[2]
-    supply += opto["VCC"], pullup[1]
-    gnd += opto["GND"], base[2]
+    led_anode += series[2], clamp["K"], opto[1]
+    led_cathode += socket[5], clamp["A"], opto[2]
+    uart_rx += opto[4], pullup[2]
+    supply += opto[6], pullup[1], bypass[1]
+    gnd += opto[5], bypass[2]
     socket[1, 2, 3] += NC
-    opto[1, 4] += NC
+    opto[3] += NC
 
 
 @subcircuit
@@ -107,9 +107,11 @@ with SubCircuit("esp32", tag="esp32"):
     ESP_UART1_RX += esp["GPIO18"]
     ESP_UART2_RX += esp["GPIO1"]
     midi_input("MIDI1", ESP_UART1_RX, ESP_3V3, GND, socket_ref="J1", series_ref="R1",
-               clamp_ref="D1", opto_ref="U3", base_ref="R5", pullup_ref="R3", tag="midi1_input")
+               clamp_ref="D1", opto_ref="U3", pullup_ref="R3", bypass_ref="C3",
+               tag="midi1_input")
     midi_input("MIDI2", ESP_UART2_RX, ESP_3V3, GND, socket_ref="J2", series_ref="R2",
-               clamp_ref="D2", opto_ref="U4", base_ref="R6", pullup_ref="R4", tag="midi2_input")
+               clamp_ref="D2", opto_ref="U4", pullup_ref="R4", bypass_ref="C4",
+               tag="midi2_input")
 
 if __name__ == "__main__":
     generate_netlist(file_="esp32.net")

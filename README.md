@@ -31,6 +31,9 @@ two off-the-shelf modules and the few parts around them:
 Two layers, 130.85 × 121.25 mm, through-hole apart from the two LM66100
 (SC-70) and the ferrite bead.
 
+That is the board as drawn. The circuit in text holds the parts chosen
+for fabrication and differs from it: see The circuit in text, below.
+
 ## Layout
 
 ![The top of the board, rendered in 3D](https://thj.no/synth/images/pcb-top.jpg)
@@ -66,7 +69,7 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/render.sh`: regenerates the images above into `build/` with
   `kicad-cli` (KiCad 10); `scripts/crop.py` trims the 3D renders to the
   board
-- `circuit/`: the same circuit described in Python with SKiDL, one file
+- `circuit/`: the circuit described in Python with SKiDL, one file
   per sheet (`usb.py`, `esp32.py`, `tang_nano_20k.py`, `test_points.py`),
   the nets that cross sheets in `global_nets.py`, the parts used on more
   than one sheet in `parts.py`, and `board.py` for the whole board. See
@@ -98,7 +101,11 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   from the links in the schematic's Datasheet fields: the LM66100 ideal
   diode (U6, U7), the 6N138 optocoupler (U3, U4), the Lumberg 0105 DIN
   socket (J1, J2), the Kycon KLPX RCA socket (J3, J4) and the GCT
-  USB4085 USB-C receptacle (J9; specification and drawing).
+  USB4085 USB-C receptacle (J9; specification and drawing). The parts
+  of the circuit in text: the H11L1 optocoupler (U3, U4; onsemi's data
+  sheet, which the symbol names, and Everlight's, whose part is the one
+  chosen), the 1N4148W diode (D1, D2) and the Hroparts TYPE-C-31-M-12
+  USB-C socket (J9, J14; drawing).
 
 ## Build tools
 
@@ -118,11 +125,16 @@ at the root, which is not committed:
 
 ## The circuit in text
 
-`circuit/` describes the board's circuit in Python. The drawn schematic
-is still the one the board was laid out from; the text has to produce
-the same netlist, designator for designator, and is checked against the
-drawn sheets and the drawn board. Parts have a descriptive name in the
-code and keep their designator on the board.
+`circuit/` describes the board's circuit in Python, and it is where the
+circuit is designed. It holds the parts chosen for fabrication: 0805
+resistors and capacitors, H11L1 optocouplers, two surface-mount USB-C
+sockets (one for power, one for the ESP32's USB data), no ferrite
+bead, and one S/PDIF coaxial output (J3, the 96 kHz stream; the 48 kHz
+stream is on its header only). The drawn schematic and the drawn board
+hold the through-hole circuit the board was laid out from; they are
+brought up to the text, and `scripts/check.sh` lists where they differ
+from it. Parts have a descriptive name in the code and a regular
+designator on the board.
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)
