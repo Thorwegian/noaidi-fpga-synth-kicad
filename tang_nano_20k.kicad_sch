@@ -4704,7 +4704,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "91"
+		(property "Value" "120"
 			(at 219.71 147.3199 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5348,7 +5348,7 @@
 				)
 			)
 		)
-		(property "Value" "330"
+		(property "Value" "220"
 			(at 213.36 135.89 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6031,7 +6031,7 @@
 				)
 			)
 		)
-		(property "Value" "330"
+		(property "Value" "220"
 			(at 83.82 123.19 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7035,7 +7035,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "91"
+		(property "Value" "120"
 			(at 77.47 134.6199 0)
 			(show_name no)
 			(do_not_autoplace no)
