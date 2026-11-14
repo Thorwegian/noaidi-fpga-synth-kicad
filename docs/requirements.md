@@ -45,7 +45,8 @@ with an ARM processor to drive the user interface.
    (J5, J6), ahead of the dividers, so the lab jig's LED can hang
    there.
 7. **A USB connection to a computer** as a USB MIDI class device, on
-   the ESP32's own USB data pair.
+   the ESP32's own USB data pair, through a USB-C socket of its own.
+   That socket's supply pin feeds no rail.
 8. **Buses on pin headers, for developing the front panel board:**
    the second SPI bus (J10), the two I2C buses (J8, J11), UART0 (J12)
    and I2S (J7).
@@ -56,29 +57,26 @@ They will not necessarily be kept in a final design.
 
 ## Power
 
-Not settled; this part of the board may need a redesign.
-
-- **Today** the prototype draws its power from two sources, the USB
-  ports of the two modules.
-- **Wanted, if the power budget permits:** the board works as a USB
-  peripheral, powered from the same computer port that carries USB
-  MIDI. The schematic does this: the USB-C socket's supply goes to
-  each module's 5 V rail through an ideal diode of its own.
-- **Several sources at once must not conflict.** With the full lab jig
-  connected, the modules' own USB ports and the board's USB socket can
-  all be powered at the same time.
-- **A main power connector on the base board**, separate from the USB
-  socket, may be better than taking power from the USB port; the USB
-  socket then stays the USB MIDI connection.
+- **The main power connector is a USB-C socket of its own**, at 5 V,
+  without Power Delivery: the path the schematic already has, with a
+  5.1 kΩ resistor on each CC pin, from the socket's supply to each
+  module's 5 V rail through an ideal diode of its own. A USB-C source
+  can offer up to 3 A this way, 15 W.
+- **The USB MIDI socket is a second USB-C socket** (requirement 7).
+  It carries data only, so the board has one power entry.
 - **The front panel board is powered from the base board:** power is
-  forwarded to it board to board from the base board's main power
-  connector. It has no supply or power connector of its own, and it
-  may draw quite a bit of current.
+  forwarded to it board to board from the main power connector. It
+  has no supply or power connector of its own, and it may draw quite
+  a bit of current.
+- **Several sources at once must not conflict.** On the prototype the
+  power comes from the two modules' own USB ports, and with the full
+  lab jig connected those ports and the board's power socket can all
+  be powered at the same time.
 
-What is known of the budget: a USB 2.0 port supplies 500 mA by
-default. The ESP32-S3 alone peaks at 340 mA while its radio transmits
-(Espressif's data sheet). The Tang Nano 20K's draw has not been
-measured.
+The budget is a guess until parts are picked and the prototype is
+measured: about 1 A for the base board and about 1 A for the front
+panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
+500 mA by default, so a computer's port does not run the instrument.
 
 ## How it is made
 
@@ -97,14 +95,16 @@ measured.
 
 ## Open
 
-- **Power**, as above: the budget, the sources and how they coexist,
-  the main power connector, and the board-to-board path that forwards
-  power to the front panel board. The pin headers of requirement 8
-  carry signals and ground only; the supply rails reach test points,
-  not headers.
-- **The USB socket.** The part drawn (GCT USB4085, through-hole) may
-  not be one JLCPCB can make or supply, and is expected to be
-  replaced.
+- **Power:** the measured budget, and the board-to-board path that
+  forwards power to the front panel board. The pin headers of
+  requirement 8 carry signals and ground only; the supply rails reach
+  test points, not headers.
+- **What the board does on a weak supply.** Through a USB-A to USB-C
+  cable, or from a computer's port, the source may offer only 0.5 to
+  1.5 A.
+- **The USB-C sockets' part.** The one drawn (GCT USB4085,
+  through-hole) may not be one JLCPCB can make or supply, and is
+  expected to be replaced.
 - **Whether the 48 kHz stream keeps its coaxial output (J4).** With
   the divider and the jig's LED both on FPGA pin 86, the divider adds
   12.4 mA to the LED's current; the pin's largest drive setting is
