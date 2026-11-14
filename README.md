@@ -15,7 +15,7 @@ The perfboard prototype the board is based on. The board is a carrier for
 two off-the-shelf modules and the few parts around them:
 
 - **Tang Nano 20K** (U2) on headers: the sound engine.
-- **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, patches and the
+- **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, presets and the
   console. The prototype runs an ESP32-C3 Super Mini; the board moves to
   the S3 (the firmware port is tracked in the synth repository,
   `docs/esp32s3_hw678.md`).
