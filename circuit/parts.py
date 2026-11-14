@@ -12,12 +12,33 @@ lib_search_paths[KICAD10].append(REPO)
 
 PROJECT = "noaidi-fpga-synth"
 
-resistor = Part("Device", "R", dest=TEMPLATE,
-                footprint="Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
-capacitor = Part("Device", "C", dest=TEMPLATE,
-                 footprint="Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+# The parts JLCPCB places, by LCSC number. A value that is not listed here
+# has no part chosen for it, and asking for it is an error.
+RESISTOR_LCSC = {"120": "C17437", "220": "C17557", "470": "C17710", "4.7k": "C17673",
+                 "5.1k": "C27834"}
+CAPACITOR_LCSC = {"100n": "C49678", "1u": "C28323"}
+
+# 0805 on the footprints with longer pads, so that a board can be repaired by hand.
+resistor_template = Part("Device", "R", dest=TEMPLATE,
+                         footprint="Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+capacitor_template = Part("Device", "C", dest=TEMPLATE,
+                          footprint="Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
 ideal_diode = Part("Power_Management", "LM66100DCK", dest=TEMPLATE,
                    footprint="Package_TO_SOT_SMD:SOT-363_SC-70-6")
+
+
+def jlcpcb_part(part, lcsc_number):
+    """Mark a part as one JLCPCB places: its LCSC number goes in the LCSC field."""
+    part.fields["LCSC"] = lcsc_number
+    return part
+
+
+def resistor(value, **attributes):
+    return jlcpcb_part(resistor_template(value=value, **attributes), RESISTOR_LCSC[value])
+
+
+def capacitor(value, **attributes):
+    return jlcpcb_part(capacitor_template(value=value, **attributes), CAPACITOR_LCSC[value])
 
 
 def pin_header(pins, **attributes):
@@ -34,7 +55,7 @@ def ideal_diode_supply(source, rail, gnd, diode_ref, capacitor_ref):
     the diode opens when the rail is below the source and closes when the rail
     is held above it, as when the module runs from its own USB port.
     """
-    diode = ideal_diode(ref=diode_ref, tag="diode")
+    diode = jlcpcb_part(ideal_diode(ref=diode_ref, tag="diode"), "C2869734")
     input_capacitor = capacitor(ref=capacitor_ref, value="1u", tag="input_capacitor")
 
     source += diode["VIN"], input_capacitor[1]
