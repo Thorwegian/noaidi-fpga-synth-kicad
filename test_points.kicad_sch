@@ -890,7 +890,7 @@
 			)
 		)
 	)
-	(global_label "I2C0_SDA"
+	(global_label "I2C0_SCL"
 		(shape input)
 		(at 209.55 69.85 180)
 		(fields_autoplaced yes)
@@ -1010,7 +1010,7 @@
 			)
 		)
 	)
-	(global_label "I2C0_SCL"
+	(global_label "I2C0_SDA"
 		(shape input)
 		(at 209.55 63.5 180)
 		(fields_autoplaced yes)
