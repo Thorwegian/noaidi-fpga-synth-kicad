@@ -15,7 +15,7 @@ The perfboard prototype the board is based on. The board is a carrier for
 two off-the-shelf modules and the few parts around them:
 
 - **Tang Nano 20K** (U2) on headers: the sound engine.
-- **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, patches and the
+- **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, presets and the
   console. The prototype runs an ESP32-C3 Super Mini; the board moves to
   the S3 (the firmware port is tracked in the synth repository,
   `docs/esp32s3_hw678.md`).
@@ -53,9 +53,11 @@ five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
 
 ## Files
 
-The root folder holds the KiCad project, this README and the licence.
-Scripts go in `scripts/`, documents in `docs/`.
+The root folder holds the KiCad project, this README, `AGENTS.md` and
+the licence. Scripts go in `scripts/`, documents in `docs/`.
 
+- `AGENTS.md`: the rules for AI agents working in this repository, who
+  does what, and where to start reading.
 - `noaidi-fpga-synth.kicad_pro`, `.kicad_sch` and the four sheet files,
   `.kicad_pcb`, `.kicad_dru`
 - `noaidi-fpga-synth.kicad_sym` and `noaidi-fpga-synth.pretty/`: the
@@ -71,6 +73,9 @@ Scripts go in `scripts/`, documents in `docs/`.
   The circuit in text, below.
 - `scripts/netlist_summary.py`: compares netlists and the board by
   connectivity.
+- `scripts/check.sh`: checks that the circuit in text, the drawn sheets
+  and the drawn board are one board, and counts the findings of KiCad's
+  own checks with `scripts/rule_counts.py`.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.
@@ -118,25 +123,6 @@ is still the one the board was laid out from; the text has to produce
 the same netlist, designator for designator, and is checked against the
 drawn sheets and the drawn board. Parts have a descriptive name in the
 code and keep their designator on the board.
-
-Run it from a directory under `build/`, because SKiDL writes its log
-files where it is run:
-
-    mkdir -p build/skidl && cd build/skidl
-    export KICAD10_SYMBOL_DIR=/usr/share/kicad/symbols
-    ../../circuit/board.py
-
-That runs SKiDL's rule check, writes `board.net` and rewrites
-`docs/pins.md`, so a change to the circuit shows up as a change to that
-file, to be committed with it. Each sheet's file runs the same way and
-writes `<sheet>.net`. To check the result:
-
-    cd ../..
-    scripts/netlist_summary.py build/skidl/board.net noaidi-fpga-synth.kicad_pcb
-
-It prints the differences and ends with a count; `identical` is the
-result wanted. With `--within`, a single sheet's netlist is checked
-against the whole board.
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)
