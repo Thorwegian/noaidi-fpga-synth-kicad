@@ -78,8 +78,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   The circuit in text, below.
 - `scripts/netlist_summary.py`: compares netlists and the board by
   connectivity.
-- `scripts/check.sh`: checks that the board is the circuit in text, and
-  counts the findings of KiCad's DRC with `scripts/rule_counts.py`.
+- `scripts/check.sh`: checks that the board is the circuit in text,
+  counts the findings of KiCad's DRC with `scripts/rule_counts.py`, and
+  measures the print against the pads with
+  `scripts/silkscreen_clearance.py`.
 - `scripts/board_from_circuit.py`: brings the board up to the circuit
   in text: removes, swaps and adds footprints, sets every pad's net and
   writes the net classes into the KiCad project.
@@ -97,6 +99,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/place_designators.py`: puts each part's designator at the
   free place nearest its part, where no part covers it and no pad, hole
   or other print cuts it.
+- `scripts/silkscreen_clearance.py`: measures every print on the
+  silkscreen against every pad's solder mask opening and lists the ones
+  nearer than JLCPCB's 0.15 mm, which KiCad's DRC does not report;
+  `scripts/check.sh` runs it.
 - `scripts/layout_pictures.py`: pictures of the board's copper and print to judge
   a layout by: the whole board, its quarters, tiles small enough for an
   agent to see every track, each layer with its fill, and the fills

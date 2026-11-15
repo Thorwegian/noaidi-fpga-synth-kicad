@@ -10,13 +10,15 @@
 # Runs circuit/board.py (SKiDL's rule check, the netlist, docs/pins.md)
 # and compares the netlist with the board. Then counts the findings of
 # KiCad's DRC by type into build/check/counts.txt, for comparing with
-# the same file from main.
+# the same file from main, and measures the board's print against its
+# pads, which KiCad's DRC does not (scripts/silkscreen_clearance.py).
 #
-# Exit code 0 when the rule check is clean and the board agrees with the
-# circuit.
+# Exit code 0 when the rule check is clean, the board agrees with the
+# circuit and no print is nearer a pad than JLCPCB prints it.
 #
-# Needs kicad-cli (KiCad 10) and the Python environment of
-# scripts/requirements.txt in the main checkout's .venv/.
+# Needs kicad-cli (KiCad 10), the Python environment of
+# scripts/requirements.txt in the main checkout's .venv/, and the system's
+# Python with KiCad's pcbnew module.
 
 set -u
 cd "$(dirname "$0")/.."
@@ -56,5 +58,10 @@ kicad-cli pcb drc --severity-all --format json -o $out/drc.json $board > /dev/nu
 "$python" scripts/rule_counts.py $out/drc.json > $out/counts.txt
 echo "KiCad's DRC, by type ($out/counts.txt):"
 sed 's/^/    /' $out/counts.txt
+
+echo "the print against the pads:"
+# pcbnew writes its own chatter to the standard error stream.
+scripts/silkscreen_clearance.py $board 2> /dev/null | sed 's/^/    /'
+[ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
 exit $failed
