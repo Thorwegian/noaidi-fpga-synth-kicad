@@ -2096,7 +2096,7 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" "PCM_Espressif:ESP32-S3-DevKitC"
+			(property "Footprint" "noaidi-fpga-synth:ESP32-S3-DevKitC"
 				(at 0 -57.15 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -7668,7 +7668,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Espressif:ESP32-S3-DevKitC"
+		(property "Footprint" "noaidi-fpga-synth:ESP32-S3-DevKitC"
 			(at 63.5 163.83 0)
 			(hide yes)
 			(show_name no)

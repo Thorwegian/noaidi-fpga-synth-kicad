@@ -4561,7 +4561,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(footprint "PCM_Espressif:ESP32-S3-DevKitC"
+	(footprint "noaidi-fpga-synth:ESP32-S3-DevKitC"
 		(layer "F.Cu")
 		(uuid "423fb6f6-c3e9-4be9-bdf9-cb53cd449f21")
 		(at 174.77 134.75 -90)
