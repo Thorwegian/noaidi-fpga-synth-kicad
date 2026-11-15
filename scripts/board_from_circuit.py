@@ -135,17 +135,26 @@ def pad_centre(footprint):
 
 def keep_out(footprint):
     """The rectangle (left, top, right, bottom) no other part may enter: the
-    courtyard's, or the whole drawing's for a footprint without a courtyard
-    (a module on headers)."""
+    one around the part's courtyard, its outline on the silkscreen and the
+    fabrication layer, and its rule areas. A part covers what is under it,
+    and a module's outline reaches past its courtyard where the module
+    overhangs its pins; in a rule area that keeps the fills out (the one
+    under a module's antenna) a pad has no fill to join. For a footprint
+    that has none of these, the whole drawing's."""
     footprint.BuildCourtyardCaches()
     courtyard = footprint.GetCourtyard(pcbnew.F_CrtYd)
-    box = courtyard.BBox() if courtyard.OutlineCount() else footprint.GetBoundingBox(False)
-    return (box.GetLeft(), box.GetTop(), box.GetRight(), box.GetBottom())
+    boxes = [courtyard.BBox()] if courtyard.OutlineCount() else []
+    boxes += [item.GetBoundingBox() for item in footprint.GraphicalItems()
+              if item.GetClass() == "PCB_SHAPE" and item.GetLayer() in (pcbnew.F_SilkS, pcbnew.F_Fab)]
+    boxes += [area.GetBoundingBox() for area in footprint.Zones() if area.GetIsRuleArea()]
+    boxes = boxes or [footprint.GetBoundingBox(False)]
+    return (min(box.GetLeft() for box in boxes), min(box.GetTop() for box in boxes),
+            max(box.GetRight() for box in boxes), max(box.GetBottom() for box in boxes))
 
 
-def too_close(a, b):
-    return (a[LEFT] < b[RIGHT] + COURTYARD_GAP and b[LEFT] < a[RIGHT] + COURTYARD_GAP
-            and a[TOP] < b[BOTTOM] + COURTYARD_GAP and b[TOP] < a[BOTTOM] + COURTYARD_GAP)
+def too_close(a, b, gap):
+    return (a[LEFT] < b[RIGHT] + gap and b[LEFT] < a[RIGHT] + gap
+            and a[TOP] < b[BOTTOM] + gap and b[TOP] < a[BOTTOM] + gap)
 
 
 def on_board(box, outline, open_edge):
@@ -207,11 +216,12 @@ def set_layers(board, layers):
     return True
 
 
-def settle(board, footprint, cost, moves, turns=None, open_edge=None):
+def settle(board, footprint, cost, moves, turns=None, open_edge=None, gap=COURTYARD_GAP):
     """Move the footprint to the free place of lowest cost. moves lists the
     candidates as (dx, dy) from where the footprint is; cost(dx, dy, pads)
     prices one, pads being the footprint's [(number, x, y)] there; turns
-    lists the orientations to try, the footprint's own when left out."""
+    lists the orientations to try, the footprint's own when left out; gap
+    is what the footprint keeps to every other part."""
     outline = board_outline(board)
     others = [keep_out(other) for other in board.GetFootprints()
               if other.GetReference() != footprint.GetReference()]
@@ -226,7 +236,7 @@ def settle(board, footprint, cost, moves, turns=None, open_edge=None):
             if best and price >= best[0]:
                 continue
             moved = (box[LEFT] + dx, box[TOP] + dy, box[RIGHT] + dx, box[BOTTOM] + dy)
-            if on_board(moved, outline, open_edge) and not any(too_close(moved, other) for other in others):
+            if on_board(moved, outline, open_edge) and not any(too_close(moved, other, gap) for other in others):
                 best = (price, turn, dx, dy)
     if not best:
         sys.exit(f"no free place for {footprint.GetReference()}")
@@ -238,10 +248,11 @@ def displacement(dx, dy, pads):
     return math.hypot(dx, dy)
 
 
-def settle_at_its_connections(board, footprint, reach):
+def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP):
     """Move the footprint to the free place where its pads are nearest to the
     pads they connect to, turned whichever way brings them nearest. reach
-    holds, for each of its pads by number, the places of those pads."""
+    holds, for each of its pads by number, the places of those pads; gap is
+    what the footprint keeps to every other part."""
     targets = [target for group in reach.values() for target in group]
     footprint.SetPosition(pcbnew.VECTOR2I(sum(target.x for target in targets) // len(targets),
                                           sum(target.y for target in targets) // len(targets)))
@@ -250,7 +261,7 @@ def settle_at_its_connections(board, footprint, reach):
         return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
                    for number, x, y in pads if number in reach)
 
-    settle(board, footprint, distance_to_reach, NEARBY, turns=QUARTER_TURNS)
+    settle(board, footprint, distance_to_reach, NEARBY, turns=QUARTER_TURNS, gap=gap)
 
 
 def main(netlist_path, net_classes_path, board_path):

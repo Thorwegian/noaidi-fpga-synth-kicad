@@ -13,8 +13,9 @@ leaves them as they are, 0 brings each to its neighbour's courtyard.
 
 The parts at the edges are those circuit/fixed_positions.toml names: what a
 person plugs into. Their arrangement stays. It is read off the board, a
-relation for every two of them whose rectangles (the courtyard's,
-scripts/board_from_circuit.py's keep_out) face each other:
+relation for every two of them whose rectangles (the one around a part's
+courtyard, drawn outline and rule areas, scripts/board_from_circuit.py's
+keep_out) face each other:
 
   - beside each other (their heights overlap): the left one stays left;
   - above each other (their widths overlap): the upper one stays above;
@@ -44,6 +45,12 @@ for in the part's own block of the circuit (its SubCircuit), and on the
 whole board when the block has none on that net. A pad on the net of a fill
 counts only for a part that has no other pad to go by, since a fill is
 everywhere. Where such a part sits on the board that is read plays no role.
+
+A part placed so keeps room for a via to every other part: the via of the
+default net class and that class's clearance on both sides of it. A
+surface-mount pad on the net of a fill is joined to the fill by a via
+beside the part (scripts/join_fills.py), and a pad between two parts that
+stand courtyard to courtyard has no place for one.
 
 The tracks and vias are removed: they no longer meet the pads, and
 scripts/route.sh lays them anew. Whether the squeezed board can be routed
@@ -215,6 +222,8 @@ def main(netlist_path, board_path, squeeze):
         board.Delete(track)
 
     # The other parts leave the board and come back one at a time, each beside what it connects to.
+    default_class = board.GetDesignSettings().m_NetSettings.GetDefaultNetclass()
+    room_for_a_via = default_class.GetViaDiameter() + 2 * default_class.GetClearance()
     waiting = sorted(set(footprints) - set(fixed), key=lambda name: (-footprints[name].GetPadCount(), name))
     off_the_board = pcbnew.VECTOR2I(outline[LEFT] - 10 * extent[X], outline[TOP])
     for name in waiting:
@@ -227,7 +236,7 @@ def main(netlist_path, board_path, squeeze):
                 break
         else:
             sys.exit(f"these connect to nothing that is placed: {' '.join(waiting)}")
-        settle_at_its_connections(board, footprints[name], reach)
+        settle_at_its_connections(board, footprints[name], reach, gap=room_for_a_via)
         furthest = max(furthest, (furthest_connection(footprints[name], reach), name))
         placed.add(name)
         waiting.remove(name)
