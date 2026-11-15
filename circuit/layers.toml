@@ -12,6 +12,12 @@
 #
 # No track is laid on the net of a fill: its pads are joined by the fill
 # (scripts/route.sh).
+#
+# A fill on a layer with tracks is cut into pieces by them, and a piece is
+# joined to the rest only through another layer filled with the same net.
+# Ground is therefore the one net filled on the layers with tracks, and it
+# has the inner layer under the front as well. One inner layer is left for a
+# supply: ESP_3V3 has 13 pads, NANO_5V has 5 and is joined by tracks.
 
 [[layer]]
 name = "F.Cu"
@@ -20,12 +26,12 @@ tracks = true
 
 [[layer]]
 name = "In1.Cu"
-fill = "ESP_3V3"
+fill = "GND"
 tracks = false
 
 [[layer]]
 name = "In2.Cu"
-fill = "NANO_5V"
+fill = "ESP_3V3"
 tracks = false
 
 [[layer]]

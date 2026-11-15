@@ -101,16 +101,19 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   inner layer next to it (https://jlcpcb.com/impedance).
   `circuit/layers.toml` states what each carries:
   - front and back: the signals, with ground filled around them;
-  - inner layer 1: `ESP_3V3`, one unbroken fill;
-  - inner layer 2: `NANO_5V`, one unbroken fill.
+  - inner layer 1, under the front: ground, one unbroken fill;
+  - inner layer 2, over the back: `ESP_3V3`, one unbroken fill.
+- **The signals on the front run over ground.** Ground under the
+  layer that carries most of the tracks comes before a layer for a
+  second supply: `NANO_5V` has five pads and is joined by tracks.
 - **Ground is one net everywhere.** A fill on a layer that also takes
-  tracks is cut into pieces by them. The two ground fills are tied
+  tracks is cut into pieces by them. The three ground fills are tied
   together by a via every 10 mm and by every through-hole ground pad,
-  so that a piece of one is joined through the other.
-- **A supply with a layer of its own reaches a pad through a via
-  beside the pad,** and no track is laid for it.
-- **The USB data pair is 0.3 mm tracks 0.2 mm apart,** which over a
-  layer 0.21 mm below comes to about 87 Ω between the two lines by the
+  so that a piece of one is joined through the others.
+- **A net with a layer of its own reaches a pad through a via beside
+  the pad,** and no track is laid for it.
+- **The USB data pair is 0.3 mm tracks 0.2 mm apart,** which over the
+  ground 0.21 mm below the front comes to about 87 Ω between the two lines by the
   microstrip approximation JLCPCB prints
   (https://jlcpcb.com/blog/standard-pcb-thickness), with their
   dielectric constant of 4.6. Espressif's hardware design guidelines
@@ -151,7 +154,8 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   cable, or from a computer's port, the source may offer only 0.5 to
   1.5 A.
 - **The USB data pair's impedance,** by JLCPCB's own calculator for
-  the stackup: the figure above is an approximation, and the layer under
-  the pair is `ESP_3V3`, where Espressif recommends ground.
+  the stackup: the figure above is an approximation. Where a line of
+  the pair is on the back it runs over `ESP_3V3`, and Espressif
+  recommends ground.
 - **The fixed positions:** which connectors sit at which edge, the
   board's outline and its mounting holes wait for the enclosure.

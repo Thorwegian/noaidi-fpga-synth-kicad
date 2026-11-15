@@ -27,7 +27,7 @@ SUPPLY = NetClass("Power", track_width=0.4, clearance=0.2, via_diameter=1.2, via
 
 # The USB data pair is meant to be 90 ohm between its two lines (Espressif's
 # hardware design guidelines for the ESP32-S3). 0.3 mm tracks 0.2 mm apart
-# come to about 87 ohm over the inner layer 0.21 mm below them
+# come to about 87 ohm over the ground 0.21 mm below the front
 # (docs/requirements.md, The layers). 0.3 mm is also the width of the
 # socket's pads, and is kept the whole way so that the two lines stay alike.
 USB_DATA_PAIR = NetClass("USB", track_width=0.3, clearance=0.2, via_diameter=0.6, via_drill=0.3,
