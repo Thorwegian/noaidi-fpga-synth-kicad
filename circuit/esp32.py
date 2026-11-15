@@ -66,7 +66,7 @@ def i2c_port(scl, sda, supply, gnd, header_ref, scl_pullup_ref, sda_pullup_ref):
 
 with SubCircuit("esp32", tag="esp32"):
     esp = Part(PROJECT, "ESP32-S3-DevKitC", ref="U1", tag="esp", pin_splitters="/",
-               footprint="PCM_Espressif:ESP32-S3-DevKitC")
+               footprint="noaidi-fpga-synth:ESP32-S3-DevKitC")
     esp[:] += NC
 
     ideal_diode_supply(EXT_5V, ESP_5V, GND, diode_ref="U6", capacitor_ref="C1",
