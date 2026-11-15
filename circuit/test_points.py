@@ -27,7 +27,7 @@ TEST_POINTS = (
 
 with SubCircuit("test_points", tag="test_points"):
     test_point = Part("Connector", "TestPoint", dest=TEMPLATE,
-                      footprint="TestPoint:TestPoint_Plated_Hole_D2.0mm")
+                      footprint="TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm")
     for ref, net in TEST_POINTS:
         net += test_point(ref=ref, tag=ref.lower())[1]
 
