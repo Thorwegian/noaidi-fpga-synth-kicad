@@ -8,8 +8,36 @@
 #   edge          the board's edge the part's opening is at: left, top, right, bottom.
 #                 The part keeps its place along the edge and the way it is turned.
 #   edge_line_mm  from the footprint's origin to the maker's board-edge line.
+#                 A part without it is placed by eye, so that its plug can
+#                 be inserted, and keeps the distance to the edge it is drawn at.
 #   beside        the part it sits next to, at the same edge and turned the same way.
 #   pitch_mm      centre to centre from that part, at least.
+#
+# scripts/squeeze_board.py slides a part with an edge along that edge, and
+# moves a part and the one it sits beside as one.
+
+# The ESP32 module: its USB sockets and buttons.
+[U1]
+edge = "left"
+
+# The Tang Nano 20K: its USB socket and buttons.
+[U2]
+edge = "right"
+
+# The DAC module: its audio output socket.
+[U5]
+edge = "bottom"
+
+# The MIDI sockets.
+[J1]
+edge = "top"
+
+[J2]
+edge = "top"
+
+# The S/PDIF socket.
+[J3]
+edge = "top"
 
 # The power socket. Hroparts' drawing of the TYPE-C-31-M-12
 # (docs/thirdparty/Hroparts_TYPE-C-31-M-12_drawing.pdf, recommended PCB

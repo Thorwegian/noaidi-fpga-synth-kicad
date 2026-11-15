@@ -92,9 +92,13 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `circuit/net_classes.py`: the net classes, each with its track
   width, clearance and via.
 - `circuit/fixed_positions.toml`: where the parts a person interacts
-  with sit, for `scripts/board_from_circuit.py`.
+  with sit, for `scripts/board_from_circuit.py` and
+  `scripts/squeeze_board.py`.
 - `circuit/layers.toml`: the copper layers and the fill of each, for
-  the same script.
+  `scripts/board_from_circuit.py`.
+- `scripts/squeeze_board.py`: moves the parts closer together, keeping
+  which is beside and which above which, and draws the outline around
+  them; one number says how much of the room between them is kept.
 - `scripts/route.sh`: lays the board's signals anew with Freerouting and
   prints what KiCad's DRC finds; `scripts/route_board.py` writes the
   board for the router and reads its result back.

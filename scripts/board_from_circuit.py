@@ -312,6 +312,8 @@ def main(netlist_path, net_classes_path, board_path):
         pitch = 0
         if "edge" in rule:
             open_edge_of[designator] = EDGES[rule["edge"]]
+            if "edge_line_mm" not in rule:
+                continue    # placed by eye: it stays where it is drawn
             inset = pcbnew.FromMM(rule["edge_line_mm"])
             position = footprint.GetPosition()
             footprint.SetPosition({
