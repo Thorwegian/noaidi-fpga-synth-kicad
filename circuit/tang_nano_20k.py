@@ -11,9 +11,9 @@ The FPGA's pins are named as on the symbol, chip pin number first
 """
 from skidl import *
 
-from global_nets import (EXT_5V, GND, I2S_BCK, I2S_DATA, I2S_WS, NANO_3V3, NANO_5V, PCM_3V3,
+from global_nets import (GND, I2S_BCK, I2S_DATA, I2S_WS, NANO_3V3, NANO_5V, PCM_3V3,
                          SPDIF0, SPDIF1, SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK)
-from parts import PROJECT, ideal_diode_supply, pin_header, resistor, test_point
+from parts import PROJECT, pin_header, resistor, test_point
 
 
 @subcircuit
@@ -41,8 +41,6 @@ with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
     fpga[:] += NC
     dac["DE", "MCK", "MU"] += NC
 
-    ideal_diode_supply(EXT_5V, NANO_5V, GND, diode_ref="U7", capacitor_ref="C2",
-                       gnd_test_point_ref="TP18", tag="nano_5v_supply")
     NANO_5V += fpga["5V"], dac["VIN"]
     NANO_3V3 += fpga[25]
     PCM_3V3 += dac["3V"]
