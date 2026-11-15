@@ -12,10 +12,10 @@ The module's pins are named by GPIO number; the symbol's longer names
 from skidl import *
 
 from global_nets import (ESP_3V3, ESP_5V, ESP_UART0_RX, ESP_UART0_TX, ESP_UART1_RX,
-                         ESP_UART2_RX, EXT_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
+                         ESP_UART2_RX, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
                          SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS)
-from parts import PROJECT, capacitor, ideal_diode_supply, jlcpcb_part, pin_header, resistor, test_point
+from parts import PROJECT, capacitor, jlcpcb_part, pin_header, resistor, test_point
 
 
 @subcircuit
@@ -73,8 +73,6 @@ with SubCircuit("esp32", tag="esp32"):
                footprint="noaidi-fpga-synth:ESP32-S3-DevKitC")
     esp[:] += NC
 
-    ideal_diode_supply(EXT_5V, ESP_5V, GND, diode_ref="U6", capacitor_ref="C1",
-                       tag="esp_5v_supply")
     ESP_5V += esp["5V"]
     test_point(ESP_5V, "TP9")
     ESP_3V3 += esp["3V3"]

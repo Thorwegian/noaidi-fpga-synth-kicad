@@ -111,7 +111,7 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   inner layer next to it (https://jlcpcb.com/impedance).
   `circuit/layers.toml` states what each carries:
   - front and back: the signals, with ground filled around them;
-  - inner layer 1: `ESP_3V3`, one unbroken fill;
+  - inner layer 1: `ESP_5V`, one unbroken fill;
   - inner layer 2: `NANO_5V`, one unbroken fill.
 - **Ground is one net everywhere.** A fill on a layer that also takes
   tracks is cut into pieces by them. The two ground fills are tied
@@ -175,11 +175,13 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   parts is stated as a constraint in `circuit/fixed_positions.toml`
   (one below, above, left of or right of the other); how far apart they
   end up is not.
-- **The board has a section along each side.** The three sockets for
-  music are at the top edge. Below them the ESP32 module lies across
-  the board from the left edge; below it the two USB sockets are at the
-  left edge and, at the right edge, the Tang Nano with the DAC module
-  below it.
+- **The board has a section along each side.** The two MIDI sockets
+  are at the top edge. Below them the ESP32 module lies across the
+  board from the left edge; below it the two USB sockets are at the
+  left edge, the power socket with the two ideal diodes that feed the
+  modules' 5 V beside it, and, at the right edge, the Tang Nano with
+  the DAC module below it. The S/PDIF socket is at the bottom edge, so
+  that the Tang Nano and the two audio outputs are one section.
 - **Related connectors at an edge sit together, and a group reads in
   its order from that edge.** Connectors that form a group (port 1 and
   port 2, port A and port B, input L and input R) are next to each
@@ -231,7 +233,7 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   1.5 A.
 - **The USB data pair's impedance,** by JLCPCB's own calculator for
   the stackup: the figure above is an approximation, and the layer under
-  the pair is `ESP_3V3`, where Espressif recommends ground.
+  the pair is `ESP_5V`, where Espressif recommends ground.
 - **The fixed positions:** which connectors sit at which edge, the
   board's outline and its mounting holes wait for the enclosure.
 - **The radio's range with the antenna over the board** is not
