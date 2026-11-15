@@ -11,8 +11,10 @@ mkdir -p $B
 PCB=noaidi-fpga-synth.kicad_pcb
 kicad-cli pcb render --side top --rotate "-40,0,20" --perspective --width 2000 --height 1400 \
     --background opaque --quality high --floor --zoom 0.85 --pan "-0.9,1.47,0" -o $B/pcb-iso.png $PCB
-kicad-cli pcb render --side top --width 2000 --height 1600 \
-    --background opaque --quality high --floor --zoom 1.1 -o $B/pcb-top.png $PCB
+# At zoom 1 kicad-cli scales the board's longer side to the frame's height, so
+# a square frame below zoom 1 holds an outline of any proportion.
+kicad-cli pcb render --side top --width 2000 --height 2000 \
+    --background opaque --quality high --floor --zoom 0.85 -o $B/pcb-top.png $PCB
 kicad-cli pcb export svg --layers F.Cu,F.SilkS,F.Mask,Edge.Cuts --page-size-mode 2 \
     --exclude-drawing-sheet --mode-single -o $B/pcb-front.svg $PCB
 kicad-cli pcb export svg --layers B.Cu,B.SilkS,Edge.Cuts --mirror --page-size-mode 2 \
