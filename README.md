@@ -62,8 +62,9 @@ module's pin headers.
 
 The DIN sockets are rendered from Lumberg's model of the 8-pole
 version of the socket, the 0105 08-1, with the solder pins of poles 6,
-7 and 8 removed (`docs/thirdparty/lumberg_0105_05_from_08-1.stp`): the
-5-pole 0105 05 has the same body and the other seven pins. The model's
+7 and 8 removed and the openings of their contacts in the face closed
+(`docs/thirdparty/lumberg_0105_05_from_08-1.stp`): the 5-pole 0105 05
+has the same body, the other seven pins and five contacts. The model's
 pins are where Lumberg's drawing and the footprint have them, which
 those of Lumberg's own model of the 0105 05 are not. The RCA socket
 renders as a footprint only: the project has no 3D model of it.
