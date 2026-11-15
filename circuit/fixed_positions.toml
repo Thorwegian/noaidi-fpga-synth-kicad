@@ -38,10 +38,10 @@
 #                 middle of these. For a part at an edge that meets the
 #                 other part's edge at a corner.
 #
-# The board this file describes: the three sockets for music along the top;
-# below them the ESP32 module across the board from the left edge; below
-# that the two USB sockets at the left edge and, at the right edge, the Tang
-# Nano with the DAC module below it.
+# The board this file describes: the two MIDI sockets along the top; below
+# them the ESP32 module across the board from the left edge; below that the
+# two USB sockets at the left edge and, at the right edge, the Tang Nano
+# with the DAC module below it; the S/PDIF socket at the bottom.
 
 # The ESP32 module: its USB sockets and buttons.
 [U1]
@@ -89,5 +89,4 @@ side = "right"
 
 # The S/PDIF socket.
 [J3]
-edge = "top"
-right_of = "J1"
+edge = "bottom"
