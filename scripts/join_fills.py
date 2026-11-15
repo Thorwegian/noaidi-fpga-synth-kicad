@@ -120,21 +120,52 @@ class Joiner:
                     return False
         return True
 
-    def track_clear(self, pad, x, y, width):
-        centre = pad.GetPosition()
-        count = max(1, int(math.hypot(x - centre.x, y - centre.y) // STEP))
-        return all(self.clear(centre.x + (x - centre.x) * i // count, centre.y + (y - centre.y) * i // count,
+    def line_clear(self, pad, start, end, width):
+        """True when a track of the pad's net and layer from start to end, as (x, y), keeps its distance from other copper."""
+        count = max(1, int(math.hypot(end[0] - start[0], end[1] - start[1]) // STEP))
+        return all(self.clear(start[0] + (end[0] - start[0]) * i // count, start[1] + (end[1] - start[1]) * i // count,
                               width / 2, pad.GetNetname(), pad.GetPrincipalLayer(), pad)
                    for i in range(count + 1))
 
-    def add_track(self, pad, x, y, width):
+    def track_clear(self, pad, x, y, width):
+        centre = pad.GetPosition()
+        return self.line_clear(pad, (centre.x, centre.y), (x, y), width)
+
+    def add_track(self, pad, x, y, width, start=None):
         track = pcbnew.PCB_TRACK(self.board)
-        track.SetStart(pad.GetPosition())
+        track.SetStart(pad.GetPosition() if start is None else pcbnew.VECTOR2I(*start))
         track.SetEnd(pcbnew.VECTOR2I(x, y))
         track.SetWidth(width)
         track.SetLayer(pad.GetPrincipalLayer())
         track.SetNet(pad.GetNet())
         self.board.Add(track)
+
+    def track_width(self, pad):
+        """The width of a track that ends in the pad: its net class's, no wider than the pad."""
+        box = pad.GetBoundingBox()
+        class_width = self.net_settings.GetEffectiveNetClass(pad.GetNetname()).GetTrackWidth()
+        return max(self.minimum_width, min(class_width, box.GetWidth(), box.GetHeight()))
+
+    def join_pads(self, pad, other):
+        """Lay a track from the pad to another pad of its net on its layer:
+        straight where the two are in line or at 45 degrees, else in two
+        stretches, one of them at 45 degrees or both along the board's
+        directions, the shortest way that keeps its distance from other
+        copper. Returns its length, or None when no such way is clear."""
+        start, end = ((place.x, place.y) for place in (pad.GetPosition(), other.GetPosition()))
+        width = min(self.track_width(pad), self.track_width(other))
+        dx, dy = end[0] - start[0], end[1] - start[1]
+        slant = min(abs(dx), abs(dy))
+        step = (slant if dx > 0 else -slant, slant if dy > 0 else -slant)
+        corners = [(start[0] + step[0], start[1] + step[1]), (end[0] - step[0], end[1] - step[1]),
+                   (end[0], start[1]), (start[0], end[1])]
+        ways = [[start, end]] if slant == 0 or abs(dx) == abs(dy) else [[start, corner, end] for corner in corners]
+        for way in ways:
+            if all(self.line_clear(pad, a, b, width) for a, b in zip(way, way[1:])):
+                for a, b in zip(way, way[1:]):
+                    self.add_track(pad, b[0], b[1], width, start=a)
+                return sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(way, way[1:]))
+        return None
 
     def add_via(self, x, y, net):
         via = pcbnew.PCB_VIA(self.board)
@@ -236,8 +267,7 @@ class Joiner:
         """Join the pad to a via by a track. Returns what was done, or None
         when no via is within reach."""
         net, centre, box = pad.GetNetname(), pad.GetPosition(), pad.GetBoundingBox()
-        class_width = self.net_settings.GetEffectiveNetClass(net).GetTrackWidth()
-        width = max(self.minimum_width, min(class_width, box.GetWidth(), box.GetHeight()))
+        width = self.track_width(pad)
         shared = sorted((math.hypot(via.GetPosition().x - centre.x, via.GetPosition().y - centre.y), via.GetPosition())
                         for via in self.board.GetTracks() if via.Type() == pcbnew.PCB_VIA_T and via.GetNetname() == net)
         for distance, position in shared:
