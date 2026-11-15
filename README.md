@@ -105,8 +105,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/render.sh`: regenerates the images above into `build/` with
   `kicad-cli` (KiCad 10), and with them the view at an angle from the
   other side, the sockets at the board's top edge facing the camera
-  (`build/pcb-iso-rear.jpg`); `scripts/crop.py` trims the 3D renders to
-  the board
+  (`build/pcb-iso-rear.jpg`); `scripts/crop.py` trims each 3D render to
+  the board and the parts on it, what reaches beyond the board's edge
+  included
 - `circuit/`: the circuit described in Python with SKiDL, one file
   per sheet (`usb.py`, `esp32.py`, `tang_nano_20k.py`, `test_points.py`),
   the nets that cross sheets in `global_nets.py`, the parts used on more
