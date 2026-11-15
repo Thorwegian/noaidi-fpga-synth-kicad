@@ -26,6 +26,10 @@ It fills and checks again until the DRC has nothing more of the kind or a
 round changes nothing, and leaves the last DRC report at the path given.
 What it cannot join it names: KiCad's DRC is the verdict, not this script.
 
+Which pads are joined solidly is this script's to decide on every run: it
+begins by giving each pad on a fill's net the connection its fills ask for,
+so that a board with solid pads is joined as one without them is.
+
 Runs under the system's Python, which has KiCad's pcbnew module; needs
 kicad-cli (KiCad 10).
 """
@@ -176,6 +180,11 @@ def main(board_path, report_path):
 
     def name(pad):
         return f"{pad.GetParentFootprint().GetReference()} pad {pad.GetNumber()} [{pad.GetNetname()}]"
+
+    # A solid pad is saved in the board, and a fill that begins with one reaches pads it otherwise does not.
+    for pad in joiner.pads:
+        if pad.GetNetname() in fill_layers:
+            pad.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_INHERITED)
 
     given_up = []
     for attempt in range(ROUNDS + 1):
