@@ -8,13 +8,16 @@
 #     scripts/route.sh
 #
 # Lays the differential pairs along the paths circuit/pair_paths.toml states
-# (scripts/lay_pairs.py), removes every other track and via from the board
-# and has Freerouting lay the other signals anew around the pairs, to the
+# (scripts/lay_pairs.py) and, for each surface-mount pad on the net of a fill
+# on another layer, the via that joins it to that fill
+# (scripts/lay_fill_vias.py). It removes every other track and via from the
+# board and has Freerouting lay the other signals anew around those, to the
 # net classes' widths and clearances, on the layers that take tracks:
 # scripts/route_board.py writes the board for the router and reads its
-# result back. The nets of the board's fills get no track:
-# the fills join their pads, and scripts/join_fills.py joins the pads the
-# fills do not reach. With the vias in place, scripts/place_designators.py
+# result back. The nets of the board's fills get no track from the router:
+# the fills join their pads, and scripts/join_fills.py ties the fills of one
+# net together and joins the pads that are left. With the vias in place,
+# scripts/place_designators.py
 # puts each part's designator where it can be read. Then prints the counts
 # of KiCad's DRC, which are the verdict; the router's own count of
 # violations is not.
@@ -44,6 +47,7 @@ echo "$jar_sha256  $jar" | sha256sum --check --quiet || exit 1
 
 # pcbnew writes its own chatter to the standard error stream.
 scripts/lay_pairs.py $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+scripts/lay_fill_vias.py $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 layers_with_tracks=$(scripts/route_board.py export $board $out/board.dsn 2>> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
 
 if ! java -Djava.awt.headless=true -jar $jar -de $out/board.dsn -do $out/board.ses \

@@ -8,7 +8,9 @@
     scripts/join_fills.py <board> <DRC report>
 
 The router lays no track on the net of a fill (scripts/route_board.py): the
-fill joins that net's pads wherever it reaches them. This script fills the
+fill joins that net's pads wherever it reaches them, and a surface-mount
+pad whose fill is on another layer has its via from before the router ran
+(scripts/lay_fill_vias.py). This script fills the
 board and first ties the fills of one net on different layers together, with
 a via every 10 mm wherever all of them have copper and the via keeps its
 distance from other nets on every layer. Then it has KiCad's DRC say which

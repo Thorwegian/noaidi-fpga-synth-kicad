@@ -100,6 +100,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `circuit/pair_paths.toml`: the path of each differential pair, and
   `scripts/lay_pairs.py`, which lays the pair's two tracks side by side
   along it for the router to work around.
+- `scripts/lay_fill_vias.py`: gives each surface-mount pad on the net
+  of a fill on another layer its via and the track to it, before the
+  router runs, for the router to work around.
 - `scripts/join_fills.py`: ties the fills of one net together with
   vias, and joins the pads the fills do not reach.
 - `scripts/place_designators.py`: puts each part's designator at the
