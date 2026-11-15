@@ -66,7 +66,7 @@
 
 - Chip parts are 0805 on KiCad's hand-solder footprints (the ones named `..._HandSolder`), so that a board can be repaired by hand, and come from JLCPCB's basic library where it has the value. A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
 
-- Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files; Thor orders.
+- Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files with `scripts/fab_files.py`; Thor uploads them and orders.
 
 ## Code and documents
 

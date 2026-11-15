@@ -103,6 +103,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   a layout by: the whole board, its quarters, tiles small enough for an
   agent to see every track, each layer with its fill, and the fills
   laid over each other.
+- `scripts/fab_files.py`: writes what JLCPCB's order page takes into
+  `build/fab/`: the Gerber and drill files as one archive, the list of
+  the parts JLCPCB places, and the list of where each of them sits.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.
