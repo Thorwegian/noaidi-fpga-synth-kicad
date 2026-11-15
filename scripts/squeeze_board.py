@@ -36,7 +36,10 @@ nearest to the pads they connect to on the cluster's parts that are
 placed, turned whichever way brings them nearest. A pad's connections are
 looked for in the part's own block, and in the whole cluster when the
 block has none on that net. A pad on the net of a fill counts only for a
-part that has no other pad to go by, since a fill is everywhere. A part
+part that has no other pad to go by, since a fill is everywhere, and such
+a part waits while another of its nets has a part on it that is still to
+be placed: a capacitor is placed by the pin it serves, after the part
+that has that pin. A part
 that finds no place near its connections is looked for one further away,
 on a coarser grid. A cluster has walls, which are there before any of its
 parts is placed: the board's edge its hub is at, and the room in front of
@@ -109,9 +112,11 @@ FAR = pcbnew.FromMM(300.0)      # where the outline lies on the sides that are n
 EDGE_NAME = {LEFT: "left", TOP: "top", RIGHT: "right", BOTTOM: "bottom"}
 
 
-def connections(designator, footprints, parts, nets, placed, fill_nets):
+def connections(designator, footprints, parts, nets, placed, fill_nets, on_fills_too=True):
     """For each of the part's pads, by number, the pads it connects to on
-    the parts that are placed, as [(part, place)]."""
+    the parts that are placed, as [(part, place)]. The pads on the nets of
+    fills are given only when no other pad has a connection, and not at all
+    when on_fills_too is false."""
     on_signals, on_fills = {}, {}
     for net, pads in nets.items():
         for number in {number for part, number in pads if part == designator}:
@@ -121,7 +126,7 @@ def connections(designator, footprints, parts, nets, placed, fill_nets):
                        for pad in footprints[part].Pads() if pad.GetNumber() == other]
             if targets:
                 (on_fills if net in fill_nets else on_signals)[number] = targets
-    return on_signals or on_fills
+    return on_signals or (on_fills if on_fills_too else {})
 
 
 def size(footprint):
@@ -133,15 +138,29 @@ def size(footprint):
 def in_order(waiting, footprints, parts, nets, placed, fill_nets):
     """The parts in the list, one at a time, each with its connections to
     the parts that are placed and to those of the list before it: the first
-    in the list that has any. Ends when none of those left has."""
+    in the list that has any. A part that has only the net of a fill to go
+    by waits while another of its nets has a part of the list on it, so
+    that it is placed by that net once that part is; it is taken all the
+    same when no other part of the list can be. Ends when none of those
+    left has a connection."""
     waiting, placed = list(waiting), set(placed)
+
+    def has_to_wait(name):
+        return any(net not in fill_nets and any(part == name for part, _ in pads)
+                   and any(part != name and part in waiting for part, _ in pads) for net, pads in nets.items())
+
     while waiting:
         for name in waiting:
-            reach = connections(name, footprints, parts, nets, placed, fill_nets)
+            reach = connections(name, footprints, parts, nets, placed, fill_nets, on_fills_too=not has_to_wait(name))
             if reach:
                 break
         else:
-            return
+            for name in waiting:
+                reach = connections(name, footprints, parts, nets, placed, fill_nets)
+                if reach:
+                    break
+            else:
+                return
         yield name, reach
         placed.add(name)
         waiting.remove(name)
