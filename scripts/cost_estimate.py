@@ -220,7 +220,7 @@ def main():
 
     board = read_board(arguments.board)
     if board.parts_on_back:
-        sys.exit(f"{board.parts_on_back} placed parts are on the back: parts on both sides need JLCPCB's Standard "
+        sys.exit(f"placed parts on the back: {board.parts_on_back}. Parts on both sides need JLCPCB's Standard "
                  "assembly, whose fees this script does not hold")
     fees = assembly_fees()
     lines = [part_line(number, board.values[number], len(designators) * quantity)
