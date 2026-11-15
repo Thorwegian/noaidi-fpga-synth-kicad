@@ -19,7 +19,10 @@ Writes into build/pictures/, or into the folder given:
   fill_<layer>.png         each copper layer with its fill at 600 dpi, the
                            copper black;
   overlay.png              the whole board at 600 dpi with every layer's
-                           fill laid over the others in a pale colour.
+                           fill laid over the others in a pale colour;
+  silk.png                 the front's silkscreen at 600 dpi: what is
+                           printed on the board, to read the designators by;
+  silk_tile_<row>_<column>.png  the same, cut into the tiles' pieces.
 
 The whole board and the quarters are for a person to zoom into, and carry a
 title, the track counts and the legend. The tiles and the details are for an
@@ -36,8 +39,10 @@ filled area. In the overlay the front's fill is pale red, the back's pale
 blue and the inner layers' pale green and yellow, so where a layer has no
 copper its colour is missing from the mix: a band beside a track is the gap
 that track makes in its layer's fill, a ring around a hole the gap in the
-inner fills, and white has no copper on any layer. The board file is not
-changed.
+inner fills, and white has no copper on any layer. In the silkscreen
+picture the print is black, the pads and holes, where nothing is printed,
+are pale red, the courtyards blue and the board's edge green. The board file
+is not changed.
 
 Needs kicad-cli (KiCad 10), pdftoppm (poppler-utils) and the system's
 Python, which has KiCad's pcbnew module and Pillow (python3-pil).
@@ -70,6 +75,16 @@ OVERLAY_LEGEND = (
     "Fills in pale colour, laid over each other: front red, inner layers green and yellow, back blue. Where a layer",
     "has no copper its colour is missing from the mix: a band beside a track is the gap in that layer's fill, a ring",
     "around a hole the gap in the inner fills, white no copper at all.  Tracks and pads: red = front, blue = back.",
+)
+SILK = (
+    ("F.Silkscreen", (0, 0, 0)),
+    ("F.Mask", (245, 170, 170)),
+    ("F.Courtyard", (90, 140, 255)),
+    ("Edge.Cuts", (0, 130, 0)),
+)
+SILK_LEGEND = (
+    "Black = the front's silkscreen, as printed.  Pale red = pads and holes, where nothing is printed.",
+    "Blue = courtyards: a part covers what is inside its own.  Green = board edge.",
 )
 LEGEND = (
     "Red = front copper.  Blue = back copper.  Dark purple = copper on both layers at that spot:",
@@ -112,14 +127,20 @@ def tinted(grey, colour):
                                for part in colour])
 
 
-def cut_to_drawing(picture, extent):
-    """The picture cut to what is drawn in it and the margin, and where its
-    top left corner is on the board, in mm. A part's rectangle also holds
-    what the part has on layers that are not pictured."""
+def drawn(picture):
+    """The rectangle of what is drawn in the picture, with the margin. A
+    part's rectangle also holds what the part has on layers that are not
+    pictured."""
     left, top, right, bottom = ImageChops.invert(picture.convert("L")).getbbox()
     margin = round(MARGIN_MM * DPI / 25.4)
-    box = (max(left - margin, 0), max(top - margin, 0),
-           min(right + margin, picture.width), min(bottom + margin, picture.height))
+    return (max(left - margin, 0), max(top - margin, 0),
+            min(right + margin, picture.width), min(bottom + margin, picture.height))
+
+
+def cut_to_drawing(picture, extent):
+    """The picture cut to what is drawn in it, and where its top left corner
+    is on the board, in mm."""
+    box = drawn(picture)
     return picture.crop(box), (extent[0] + box[0] * 25.4 / DPI, extent[1] + box[1] * 25.4 / DPI)
 
 
@@ -200,6 +221,14 @@ def main():
     overlay = overlay.resize((overlay.width // 2, overlay.height // 2), Image.LANCZOS)
     with_heading(overlay, f"{title}, the fills overlaid", DPI // 2, counts, OVERLAY_LEGEND).save(
         os.path.join(out, "overlay.png"), optimize=True)
+    silk = None
+    for layer, colour in SILK:
+        picture = tinted(layer_image(without_pours, layer, False, extent, os.path.join(out, "layers")), colour)
+        silk = ImageChops.multiply(silk, picture) if silk else picture
+    silk = silk.crop(drawn(close))
+    silk = silk.resize((silk.width // 2, silk.height // 2), Image.LANCZOS)
+    with_heading(silk, f"{title}, the silkscreen", DPI // 2, counts, SILK_LEGEND).save(
+        os.path.join(out, "silk.png"), optimize=True)
     close, origin = cut_to_drawing(close, extent)
     whole = close.resize((close.width // 2, close.height // 2), Image.LANCZOS)
 
@@ -221,6 +250,7 @@ def main():
         for column, x in enumerate(starts(whole.width, TILE[0], overlap), 1):
             tile = whole.crop((x, y, min(x + TILE[0], whole.width), min(y + TILE[1], whole.height)))
             tile.save(os.path.join(out, f"tile_{row}_{column}.png"))
+            silk.crop((x, y, x + tile.width, y + tile.height)).save(os.path.join(out, f"silk_tile_{row}_{column}.png"))
             print(f"tile_{row}_{column}.png  {millimetres(x, y, tile, DPI // 2)}")
     for designator, (centre_x, centre_y) in centres.items():
         x = min(max(round((centre_x - origin[0]) * DPI / 25.4) - TILE[0] // 2, 0), max(close.width - TILE[0], 0))

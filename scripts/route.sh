@@ -12,8 +12,10 @@
 # that take tracks: scripts/route_board.py writes the board for the router
 # and reads its result back. The nets of the board's fills get no track:
 # the fills join their pads, and scripts/join_fills.py joins the pads the
-# fills do not reach. Then prints the counts of KiCad's DRC, which are the
-# verdict; the router's own count of violations is not.
+# fills do not reach. With the vias in place, scripts/place_designators.py
+# puts each part's designator where it can be read. Then prints the counts
+# of KiCad's DRC, which are the verdict; the router's own count of
+# violations is not.
 #
 # The router narrows a track where the going is tight, which is how it gets
 # every connection through between the modules' pins; where it narrows below
@@ -56,5 +58,7 @@ fi
 
 scripts/route_board.py import $board $out/board.ses 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 scripts/join_fills.py $board $out/drc.json 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+scripts/place_designators.py $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+kicad-cli pcb drc --severity-all --format json --output $out/drc.json $board > /dev/null || exit 1
 echo "KiCad's DRC, by type ($out/drc.json):"
 /usr/bin/python3 scripts/rule_counts.py $out/drc.json | sed 's/^/    /'
