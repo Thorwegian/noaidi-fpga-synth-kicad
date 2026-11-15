@@ -79,8 +79,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   (CC-BY-SA 4.0 with the exception KiCad's own libraries have), with a
   keep-out for copper fills under the antenna.
 - `scripts/render.sh`: regenerates the images above into `build/` with
-  `kicad-cli` (KiCad 10); `scripts/crop.py` trims the 3D renders to the
-  board
+  `kicad-cli` (KiCad 10), and with them the view at an angle from the
+  other side, the sockets at the board's top edge facing the camera
+  (`build/pcb-iso-rear.jpg`); `scripts/crop.py` trims the 3D renders to
+  the board
 - `circuit/`: the circuit described in Python with SKiDL, one file
   per sheet (`usb.py`, `esp32.py`, `tang_nano_20k.py`, `test_points.py`),
   the nets that cross sheets in `global_nets.py`, the parts used on more
