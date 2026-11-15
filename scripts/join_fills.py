@@ -18,13 +18,20 @@ pads are left, and joins them:
     which every fill of its net on the other layers then meets. The via is
     one of the net's that is near and can be reached, or else a new one at
     the nearest place that keeps the Default class's clearance from other
-    copper on every layer. The pad's net must have a fill on another layer;
+    copper on every layer. The pad's net must have a fill on another layer.
+    Where there is no such place and the connection that is missing is to
+    a through-hole pad, that pad is joined to its fills solidly, so that
+    its copper meets the surface-mount pad's;
   - a through-hole pad that its fill does not reach, or reaches with fewer
     spokes than the board asks for, is joined to its fills solidly.
 
 It fills and checks again until the DRC has nothing more of the kind or a
 round changes nothing, and leaves the last DRC report at the path given.
 What it cannot join it names: KiCad's DRC is the verdict, not this script.
+
+Which pads are joined solidly is this script's to decide on every run: it
+begins by giving each pad on a fill's net the connection its fills ask for,
+so that a board with solid pads is joined as one without them is.
 
 Runs under the system's Python, which has KiCad's pcbnew module; needs
 kicad-cli (KiCad 10).
@@ -177,6 +184,11 @@ def main(board_path, report_path):
     def name(pad):
         return f"{pad.GetParentFootprint().GetReference()} pad {pad.GetNumber()} [{pad.GetNetname()}]"
 
+    # A solid pad is saved in the board, and a fill that begins with one reaches pads it otherwise does not.
+    for pad in joiner.pads:
+        if pad.GetNetname() in fill_layers:
+            pad.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_INHERITED)
+
     given_up = []
     for attempt in range(ROUNDS + 1):
         pcbnew.ZONE_FILLER(board).Fill(board.Zones())
@@ -196,7 +208,7 @@ def main(board_path, report_path):
                 continue
         report = json.load(open(report_path, encoding="utf-8"))
         starved = [finding for finding in report["violations"] if finding["type"] == "starved_thermal"]
-        to_via, solid = [], []
+        to_via, solid, beside = [], [], {}
         for finding in report["unconnected_items"] + starved:
             found = [pad_of[item["uuid"]] for item in finding["items"] if item["uuid"] in pad_of]
             for pad in found:
@@ -208,6 +220,7 @@ def main(board_path, report_path):
                         solid.append(pad)
                 elif fill_layers[pad.GetNetname()] - {pad.GetPrincipalLayer()}:
                     to_via.append(pad)
+                    beside[pad.m_Uuid.AsString()] = [other for other in found if other.HasHole()]
                 else:
                     given_up.append(pad)
                     print(f"not joined: {name(pad)}, whose net has no fill on another layer")
@@ -215,8 +228,14 @@ def main(board_path, report_path):
             break
         for pad in sorted(to_via, key=name):
             how = joiner.to_via(pad)
+            thermal = [other for other in beside[pad.m_Uuid.AsString()]
+                       if other.GetLocalZoneConnection() != pcbnew.ZONE_CONNECTION_FULL]
             if how:
                 print(f"joined: {name(pad)}, by {how}")
+            elif thermal:
+                for other in thermal:
+                    other.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+                print(f"joined: {name(pad)}, by joining {' and '.join(name(other) for other in thermal)} solidly")
             else:
                 given_up.append(pad)
                 print(f"not joined: {name(pad)}, no clear place for a via within {pcbnew.ToMM(REACH):g} mm")
