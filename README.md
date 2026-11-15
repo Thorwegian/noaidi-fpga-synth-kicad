@@ -33,9 +33,8 @@ Four layers, 130.85 × 121.25 mm. The modules, the DIN and RCA sockets,
 the pin headers and the test points are through-hole; the other parts
 are surface-mount.
 
-The board is made from the circuit in text by script; the drawn
-schematic still holds the through-hole circuit: see The circuit in
-text, below.
+The board is made from the circuit in text by script: see The circuit
+in text, below.
 
 ## Layout
 
@@ -52,11 +51,6 @@ Back copper, mirrored:
 The connector and module bodies render as footprints only: their 3D
 models are not part of the project.
 
-## Schematic
-
-[pcb-schematic.pdf](https://thj.no/synth/images/pcb-schematic.pdf), all
-five sheets: the root, `esp32`, `tang_nano_20k`, `usb` and `test_points`.
-
 ## Files
 
 The root folder holds the KiCad project, this README, `AGENTS.md` and
@@ -64,8 +58,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 
 - `AGENTS.md`: the rules for AI agents working in this repository, who
   does what, and where to start reading.
-- `noaidi-fpga-synth.kicad_pro`, `.kicad_sch` and the four sheet files,
-  `.kicad_pcb`, `.kicad_dru`
+- `noaidi-fpga-synth.kicad_pro`, `.kicad_pcb`, `.kicad_dru`: the KiCad
+  project, which holds the board and its design rules. It has no
+  schematic: the circuit is in `circuit/`.
 - `noaidi-fpga-synth.kicad_sym` and `noaidi-fpga-synth.pretty/`: the
   project's own symbols and footprints (the two modules, the DAC, the
   DIN sockets, the RCA and USB-C connectors). The ESP32 module's
@@ -83,10 +78,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   The circuit in text, below.
 - `scripts/netlist_summary.py`: compares netlists and the board by
   connectivity.
-- `scripts/check.sh`: checks that the circuit in text, the drawn sheets
-  and the board are one board, counts the findings of KiCad's own
-  checks with `scripts/rule_counts.py`, and measures the print against
-  the pads with `scripts/silkscreen_clearance.py`.
+- `scripts/check.sh`: checks that the board is the circuit in text,
+  counts the findings of KiCad's DRC with `scripts/rule_counts.py`, and
+  measures the print against the pads with
+  `scripts/silkscreen_clearance.py`.
 - `scripts/board_from_circuit.py`: brings the board up to the circuit
   in text: removes, swaps and adds footprints, sets every pad's net and
   writes the net classes into the KiCad project.
@@ -122,7 +117,7 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.
-- `docs/requirements.md`: what the board has to do; the schematic and
+- `docs/requirements.md`: what the board has to do; the circuit and
   the layout are checked against it.
 - `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
   ESP32-S3-DevKitC-1 are, measured: the pins the module takes, the
@@ -138,18 +133,18 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   schematic (v1.1), the
   Adafruit PCM510x guide and schematic, the 6N138 MIDI input circuit and
   the TOTX1950A optical transmitter's data sheet. The board's own parts,
-  from the links in the schematic's Datasheet fields: the LM66100 ideal
-  diode (U6, U7), the 6N138 optocoupler (U3, U4), the Lumberg 0105 DIN
-  socket (J1, J2), the Kycon KLPX RCA socket (J3, J4) and the GCT
-  USB4085 USB-C receptacle (J9; specification and drawing). The parts
-  of the circuit in text: the H11L1 optocoupler (U3, U4; onsemi's data
-  sheet, which the symbol names, and Everlight's, whose part is the one
-  chosen), the 1N4148W diode (D1, D2) and the Hroparts TYPE-C-31-M-12
-  USB-C socket (J9, J14; drawing).
+  from the links in their symbols' Datasheet fields: the LM66100 ideal
+  diode (U6, U7), the H11L1 optocoupler (U3, U4; onsemi's data sheet,
+  which the symbol names, and Everlight's, whose part is the one
+  chosen), the 1N4148W diode (D1, D2), the Lumberg 0105 DIN socket
+  (J1, J2), the Kycon KLPX RCA socket (J3) and the Hroparts
+  TYPE-C-31-M-12 USB-C socket (J9, J14; drawing). Two parts that are
+  not on the board: the 6N138 optocoupler and the GCT USB4085 USB-C
+  receptacle (specification and drawing).
 
 ## Build tools
 
-`kicad-cli` (KiCad 10), `pdfunite` and `pdftoppm` (poppler-utils) and
+`kicad-cli` (KiCad 10), `pdftoppm` (poppler-utils) and
 `java` (25, for Freerouting, whose jar `scripts/route.sh` fetches into
 `build/tools/`) come from the system's packages, and so does the Python
 with KiCad's `pcbnew` module and Pillow (python3-pil) that the scripts
@@ -176,10 +171,9 @@ sockets (one for power, one for the ESP32's USB data), no ferrite
 bead, and one S/PDIF coaxial output (J3, the 96 kHz stream; the 48 kHz
 stream is on its header only). The board is made from it:
 `scripts/board_from_circuit.py` sets its parts, nets and net classes and
-`scripts/route.sh` lays its copper. The drawn schematic holds the
-through-hole circuit the board was first laid out from; it is brought
-up to the text, and `scripts/check.sh` lists where it differs from it. Parts have a descriptive name in the code and a regular
-designator on the board.
+`scripts/route.sh` lays its copper, and `scripts/check.sh` says whether
+the board agrees with it. Parts have a descriptive name in the code and
+a regular designator on the board.
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)
