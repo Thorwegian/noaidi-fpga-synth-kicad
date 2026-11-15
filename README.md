@@ -48,13 +48,16 @@ Back copper, mirrored:
 
 ![Back copper, mirrored](https://thj.no/synth/images/pcb-back.svg)
 
-The Tang Nano 20K is rendered from Sipeed's 3D model of the module with
-its pin headers (`docs/thirdparty/Tang_Nano_20K_3921.step`), standing in
-a socket of two rows of female pin headers. Its board's underside is
-11.04 mm above the base board: the 8.5 mm of the socket and the 2.54 mm
-body of the module's pin headers, both from KiCad's models of those
-parts. The ESP32 and DAC modules and the DIN and RCA sockets render as
-footprints only: the project has no 3D models of them.
+The two modules with pin headers are rendered from 3D models of them,
+each standing in a socket of two rows of female pin headers: the
+Tang Nano 20K from Sipeed's model
+(`docs/thirdparty/Tang_Nano_20K_3921.step`), the ESP32 module from the
+model of the ESP32-S3-DevKitC-1-N8R2
+(`docs/thirdparty/ESP32-S3-DEVKITC-1-N8R2.STEP`). Each module's
+underside is 11.04 mm above the base board: the 8.5 mm of the socket,
+from KiCad's model of it, and the 2.54 mm body of the module's pin
+headers. The DAC module and the DIN and RCA sockets render as footprints
+only: the project has no 3D models of them.
 
 ## Files
 
@@ -157,7 +160,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   same file without the Header pins section.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
-  3D model (`.step`), and the Adafruit PCM510x's fab print with its
+  3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
+  and the Adafruit PCM510x's fab print with its
   dimensions. Electrical: the Tang Nano 20K's schematic and pinout, the
   GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide, pinouts and
   schematic (v1.1), the
