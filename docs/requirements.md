@@ -118,7 +118,19 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   together by a via every 10 mm and by every through-hole ground pad,
   so that a piece of one is joined through the other.
 - **A supply with a layer of its own reaches a pad through a via
-  beside the pad,** and no track is laid for it.
+  beside the pad,** and the router lays no track for it.
+- **A bypass capacitor is joined to the pins it serves by a track,**
+  pad to pad on the front, beside the vias to the fills: the way from
+  pin to capacitor does not run through a via, a fill and another via.
+  Analog Devices' MT-101 (figure 6) has the capacitor at the supply pin
+  with both connections as short as possible
+  (https://www.analog.com/media/en/training-seminars/tutorials/MT-101.pdf),
+  and Texas Instruments' notes on decoupling have it joined to the
+  planes by vias and to the device's rail by a short thick track
+  (https://www.ti.com/content/dam/videos/external-videos/en-us/9/3816841626001/6313253251112.mp4/subassets/notes-decoupling_capacitors.pdf).
+  The rule that does it names no kind of part: two pads of one fill's
+  net on two parts of one block of the circuit, no further apart than
+  6 mm, get a track (`scripts/lay_fill_vias.py`).
 - **The USB data pair is 0.3 mm tracks 0.2 mm apart,** which over a
   layer 0.21 mm below comes to about 87 Ω between the two lines by the
   microstrip approximation JLCPCB prints

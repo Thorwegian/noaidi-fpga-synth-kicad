@@ -114,8 +114,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   `scripts/lay_pairs.py`, which lays the pair's two tracks side by side
   for the router to work around.
 - `scripts/lay_fill_vias.py`: gives each surface-mount pad on the net
-  of a fill on another layer its via and the track to it, before the
-  router runs, for the router to work around.
+  of a fill on another layer its via and the track to it, and a track
+  to the pad of its net beside it on another part of its block of the
+  circuit (a bypass capacitor to the pins it serves), before the router
+  runs, for the router to work around.
 - `scripts/join_fills.py`: ties the fills of one net together with
   vias, joins the pads the fills do not reach, and ties back a piece of
   a fill that tracks have cut off from the rest of its net.

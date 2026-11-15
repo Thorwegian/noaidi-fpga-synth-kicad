@@ -9,8 +9,10 @@
 #
 # Lays the differential pairs along the paths circuit/pair_paths.toml states
 # (scripts/lay_pairs.py) and, for each surface-mount pad on the net of a fill
-# on another layer, the via that joins it to that fill
-# (scripts/lay_fill_vias.py). It removes every other track and via from the
+# on another layer, the via that joins it to that fill, with a track to the
+# pad of its net beside it on another part of its block of the circuit
+# (scripts/lay_fill_vias.py, which reads the blocks from the netlist that
+# scripts/check.sh writes). It removes every other track and via from the
 # board and has Freerouting lay the other signals anew around those, to the
 # net classes' widths and clearances, on the layers that take tracks:
 # scripts/route_board.py writes the board for the router and reads its
@@ -38,6 +40,7 @@ out=build/route
 jar=build/tools/freerouting-2.5.0.jar
 jar_url=https://github.com/freerouting/freerouting/releases/download/v2.5.0/freerouting-2.5.0.jar
 jar_sha256=f6f51bb02245e8e717f9359bd260cc9c5c0b1bc0acc8b7cb2cd5b8ffeb5de3c7
+netlist=build/check/skidl/board.net
 mkdir -p $out build/tools
 
 if [ ! -f $jar ]; then
@@ -47,7 +50,11 @@ echo "$jar_sha256  $jar" | sha256sum --check --quiet || exit 1
 
 # pcbnew writes its own chatter to the standard error stream.
 scripts/lay_pairs.py $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
-scripts/lay_fill_vias.py $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+if [ ! -f $netlist ]; then
+    echo "$netlist is missing: scripts/check.sh writes it from the circuit"
+    exit 1
+fi
+scripts/lay_fill_vias.py $board $netlist 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 layers_with_tracks=$(scripts/route_board.py export $board $out/board.dsn 2>> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
 
 if ! java -Djava.awt.headless=true -jar $jar -de $out/board.dsn -do $out/board.ses \
