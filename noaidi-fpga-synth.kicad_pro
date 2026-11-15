@@ -76,20 +76,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        [
-          "unconnected_items|192925000|164120000|F.Cu|4|551d2b7d-e2dc-45be-be23-8722eaa9eb11|d1c1f168-df45-437c-b178-968c99d19db8",
-          "Already routed to shield via S4"
-        ],
-        [
-          "unconnected_items|201575000|164120000|F.Cu|4|1b59ba5e-2614-4be7-be70-5abfb0f7cc46|551d2b7d-e2dc-45be-be23-8722eaa9eb11",
-          "Already routed to shield via S4"
-        ],
-        [
-          "unconnected_items|201575000|167500000|F.Cu|4|50bd1902-f4f3-4339-90b4-6c80d7120821|39c2ce4f-6bb5-4b02-aae6-09ce681434fd",
-          "Already routed to shield via S4"
-        ]
-      ],
+      "drc_exclusions": [],
       "meta": {
         "version": 2
       },
