@@ -6572,91 +6572,99 @@
 			(uuid "40aa17b4-92f2-4960-9a50-a506f2ecacbf")
 		)
 		(fp_text user "VIN"
-			(at -8.89 5.245 0)
+			(at -8.89 6.57 0)
 			(layer "F.SilkS")
 			(uuid "745d047c-1e83-4d68-8afc-9b99fe22823e")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify left)
 			)
 		)
 		(fp_text user "GND"
-			(at -6.35 5.245 0)
+			(at -6.35 6.57 0)
 			(layer "F.SilkS")
 			(uuid "f65480dc-845b-4674-aeeb-a314c0208e07")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
-			)
-		)
-		(fp_text user "DIN"
-			(at -1.27 5.245 0)
-			(layer "F.SilkS")
-			(uuid "5fa0a5b0-9393-4abb-82a0-abc55c61ff27")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.1)
-				)
-			)
-		)
-		(fp_text user "BCK"
-			(at 1.27 5.245 0)
-			(layer "F.SilkS")
-			(uuid "a58be390-d0a3-4471-8ba2-fda39f2f9858")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.1)
-				)
-			)
-		)
-		(fp_text user "GND"
-			(at 6.35 5.245 0)
-			(layer "F.SilkS")
-			(uuid "73269bda-fab4-4691-801b-1609395457ae")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.1)
-				)
+				(justify left)
 			)
 		)
 		(fp_text user "WSEL"
-			(at -3.81 4.87 0)
+			(at -3.81 6.57 0)
 			(layer "F.SilkS")
 			(uuid "e80ac0eb-0577-4cf3-8f0c-e320dfb813bd")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify left)
+			)
+		)
+		(fp_text user "DIN"
+			(at -1.27 6.57 0)
+			(layer "F.SilkS")
+			(uuid "5fa0a5b0-9393-4abb-82a0-abc55c61ff27")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify left)
+			)
+		)
+		(fp_text user "BCK"
+			(at 1.27 6.57 0)
+			(layer "F.SilkS")
+			(uuid "a58be390-d0a3-4471-8ba2-fda39f2f9858")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify left)
 			)
 		)
 		(fp_text user "Lout"
-			(at 3.81 4.87 0)
+			(at 3.81 6.57 0)
 			(layer "F.SilkS")
 			(uuid "8f5515a3-cefb-4971-a846-797ca4a99bd6")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify left)
+			)
+		)
+		(fp_text user "GND"
+			(at 6.35 6.57 0)
+			(layer "F.SilkS")
+			(uuid "73269bda-fab4-4691-801b-1609395457ae")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify left)
 			)
 		)
 		(fp_text user "Rout"
-			(at 8.89 4.87 0)
+			(at 8.89 6.57 0)
 			(layer "F.SilkS")
 			(uuid "d292fade-7a3e-4f97-bc8f-54a123d395d8")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify left)
 			)
 		)
 		(fp_text user "PCM510x DAC"
@@ -6670,70 +6678,76 @@
 				)
 			)
 		)
-		(fp_text user "FIL"
-			(at -3.81 -5.245 0)
-			(layer "F.SilkS")
-			(uuid "a54382ca-082d-44bb-8b30-559363cd694a")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.1)
-				)
-			)
-		)
-		(fp_text user "MCK"
-			(at -1.27 -5.245 0)
-			(layer "F.SilkS")
-			(uuid "0afa312f-f66d-46e8-af3a-e5549222b558")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.1)
-				)
-			)
-		)
 		(fp_text user "DE"
-			(at -6.35 -5.62 0)
+			(at -6.35 -6.57 0)
 			(layer "F.SilkS")
 			(uuid "65e31f06-da03-44a2-a15b-09c64b5a3d77")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify right)
+			)
+		)
+		(fp_text user "FIL"
+			(at -3.81 -6.57 0)
+			(layer "F.SilkS")
+			(uuid "a54382ca-082d-44bb-8b30-559363cd694a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify right)
+			)
+		)
+		(fp_text user "MCK"
+			(at -1.27 -6.57 0)
+			(layer "F.SilkS")
+			(uuid "0afa312f-f66d-46e8-af3a-e5549222b558")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify right)
 			)
 		)
 		(fp_text user "MU"
-			(at 1.27 -5.62 0)
+			(at 1.27 -6.57 0)
 			(layer "F.SilkS")
 			(uuid "6043992d-ed9d-40fd-a4e0-c7d9cd00f6a6")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify right)
 			)
 		)
 		(fp_text user "FM"
-			(at 3.81 -5.62 0)
+			(at 3.81 -6.57 0)
 			(layer "F.SilkS")
 			(uuid "08e4dabf-c5d3-46d3-b749-7e25b941e829")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify right)
 			)
 		)
 		(fp_text user "3V"
-			(at 6.35 -5.62 0)
+			(at 6.35 -6.57 0)
 			(layer "F.SilkS")
 			(uuid "5e8a2b6b-b048-45a5-913c-9845050c37e7")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
+				(justify right)
 			)
 		)
 		(fp_text user "jack"
