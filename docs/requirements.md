@@ -150,9 +150,14 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   sits on its maker's board-edge line (`circuit/fixed_positions.toml`).
 - **Related parts sit together.** Two large parts with many connections
   between them are neighbours. A part that is not at the board's edge
-  sits beside what it connects to; where it sits otherwise is free, and
-  the small parts need no order of their own as long as they are packed
-  well around the large ones.
+  sits in the cluster of the part at an edge that its block of the
+  circuit has: around that part, the larger parts first, each beside
+  what it connects to. A cluster is laid out before the board has a
+  size, with the board's edge that part is at as a wall, and the outline
+  follows from the clusters. A test point is in the block of what it
+  probes, and so in that cluster. Where a part sits otherwise is free,
+  and the small parts need no order of their own as long as they are
+  packed well around the large ones.
 - **A part at the board's edge stays at its edge and may sit anywhere
   along it,** where nothing below says otherwise. An order between two
   parts is stated as a constraint in `circuit/fixed_positions.toml`

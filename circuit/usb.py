@@ -9,11 +9,12 @@ pins feed no rail."""
 from skidl import *
 
 from global_nets import EXT_5V, GND, USB_D_MINUS, USB_D_PLUS
-from parts import jlcpcb_part, resistor
+from parts import jlcpcb_part, resistor, test_point
 
 
 @subcircuit
-def usb_c_socket(name, gnd, socket_ref, cc1_pulldown_ref, cc2_pulldown_ref):
+def usb_c_socket(name, gnd, socket_ref, cc1_pulldown_ref, cc2_pulldown_ref, supply=None,
+                 supply_test_point_ref=None):
     """A USB-C socket on a device: 5.1 kΩ from each CC pin to ground is what
     makes a USB-C source switch its 5 V on. The shell is on ground. Returns
     the socket, for the sheet to connect its supply and data pins."""
@@ -30,13 +31,16 @@ def usb_c_socket(name, gnd, socket_ref, cc1_pulldown_ref, cc2_pulldown_ref):
     cc1 += socket["CC1"], cc1_pulldown[1]
     cc2 += socket["CC2"], cc2_pulldown[1]
     socket["SBU1", "SBU2"] += NC
+    if supply is not None:
+        supply += socket["VBUS"]
+        test_point(supply, supply_test_point_ref)
     return socket
 
 
 with SubCircuit("usb", tag="usb"):
     power_socket = usb_c_socket("USB_POWER", GND, socket_ref="J9", cc1_pulldown_ref="R13",
-                                cc2_pulldown_ref="R14", tag="power_socket")
-    EXT_5V += power_socket["VBUS"]
+                                cc2_pulldown_ref="R14", supply=EXT_5V,
+                                supply_test_point_ref="TP8", tag="power_socket")
     power_socket["D+", "D-"] += NC
 
     data_socket = usb_c_socket("USB_DATA", GND, socket_ref="J14", cc1_pulldown_ref="R17",

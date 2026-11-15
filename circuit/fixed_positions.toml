@@ -4,8 +4,9 @@
 # fixed_positions.toml -- the constraints on where the parts sit
 # (docs/requirements.md, Where the parts sit), as a layout manager takes
 # them: a part has none of them, a few or many, of different kinds. A part
-# this file does not name has none, and is placed beside what it connects
-# to. scripts/squeeze_board.py places the parts to these constraints, and
+# this file does not name has none, and is placed in the cluster of the
+# part at an edge that its block of the circuit has, beside what it
+# connects to. scripts/squeeze_board.py places the parts to these constraints, and
 # scripts/board_from_circuit.py keeps the parts this file names where they
 # are when it brings the board up to the circuit.
 #

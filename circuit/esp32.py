@@ -15,12 +15,12 @@ from global_nets import (ESP_3V3, ESP_5V, ESP_UART0_RX, ESP_UART0_TX, ESP_UART1_
                          ESP_UART2_RX, EXT_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
                          SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS)
-from parts import PROJECT, capacitor, ideal_diode_supply, jlcpcb_part, pin_header, resistor
+from parts import PROJECT, capacitor, ideal_diode_supply, jlcpcb_part, pin_header, resistor, test_point
 
 
 @subcircuit
 def midi_input(name, uart_rx, supply, gnd, socket_ref, series_ref, clamp_ref, opto_ref,
-               pullup_ref, bypass_ref):
+               pullup_ref, bypass_ref, test_point_ref):
     """A DIN MIDI input: the current loop through an H11L1 optocoupler onto a
     UART receive pin. The H11L1's output is an open collector that pulls low
     while the LED is lit. Its pins have no names in the symbol: 1 is the LED's
@@ -48,10 +48,12 @@ def midi_input(name, uart_rx, supply, gnd, socket_ref, series_ref, clamp_ref, op
     gnd += opto[5], bypass[2]
     socket[1, 2, 3] += NC
     opto[3] += NC
+    test_point(uart_rx, test_point_ref)
 
 
 @subcircuit
-def i2c_port(scl, sda, supply, gnd, header_ref, scl_pullup_ref, sda_pullup_ref):
+def i2c_port(scl, sda, supply, gnd, header_ref, scl_pullup_ref, sda_pullup_ref,
+             scl_test_point_ref, sda_test_point_ref):
     """An I2C bus on a three-pin header, with its pull-ups. The header reads
     ground, clock, data: the clock sits next to ground."""
     header = pin_header(3, ref=header_ref, tag="header")
@@ -62,6 +64,8 @@ def i2c_port(scl, sda, supply, gnd, header_ref, scl_pullup_ref, sda_pullup_ref):
     scl += header[2], scl_pullup[2]
     sda += header[3], sda_pullup[2]
     supply += scl_pullup[1], sda_pullup[1]
+    test_point(scl, scl_test_point_ref)
+    test_point(sda, sda_test_point_ref)
 
 
 with SubCircuit("esp32", tag="esp32"):
@@ -72,6 +76,7 @@ with SubCircuit("esp32", tag="esp32"):
     ideal_diode_supply(EXT_5V, ESP_5V, GND, diode_ref="U6", capacitor_ref="C1",
                        tag="esp_5v_supply")
     ESP_5V += esp["5V"]
+    test_point(ESP_5V, "TP9")
     ESP_3V3 += esp["3V3"]
     GND += esp["GND"]
 
@@ -82,6 +87,10 @@ with SubCircuit("esp32", tag="esp32"):
     SPI2_MOSI += esp["GPIO11"]
     SPI2_SCLK += esp["GPIO12"]
     SPI2_MISO += esp["GPIO13"]
+    test_point(SPI2_CS_N, "TP1")
+    test_point(SPI2_SCLK, "TP2")
+    test_point(SPI2_MOSI, "TP3")
+    test_point(SPI2_MISO, "TP4")
 
     spi3_header = pin_header(5, ref="J10", tag="spi3_header")
     GND += spi3_header[1]
@@ -89,29 +98,37 @@ with SubCircuit("esp32", tag="esp32"):
     SPI3_SCLK += esp["GPIO8"], spi3_header[3]
     SPI3_MOSI += esp["GPIO7"], spi3_header[4]
     SPI3_MISO += esp["GPIO9"], spi3_header[5]
+    test_point(SPI3_CS_N, "TP20")
+    test_point(SPI3_SCLK, "TP21")
+    test_point(SPI3_MOSI, "TP22")
+    test_point(SPI3_MISO, "TP23")
 
     I2C0_SCL += esp["GPIO5"]
     I2C0_SDA += esp["GPIO4"]
     I2C1_SCL += esp["GPIO14"]
     I2C1_SDA += esp["GPIO17"]
     i2c_port(I2C0_SCL, I2C0_SDA, ESP_3V3, GND, header_ref="J8",
-             scl_pullup_ref="R11", sda_pullup_ref="R12", tag="i2c0_port")
+             scl_pullup_ref="R11", sda_pullup_ref="R12", scl_test_point_ref="TP25",
+             sda_test_point_ref="TP24", tag="i2c0_port")
     i2c_port(I2C1_SCL, I2C1_SDA, ESP_3V3, GND, header_ref="J11",
-             scl_pullup_ref="R15", sda_pullup_ref="R16", tag="i2c1_port")
+             scl_pullup_ref="R15", sda_pullup_ref="R16", scl_test_point_ref="TP26",
+             sda_test_point_ref="TP27", tag="i2c1_port")
 
     uart0_header = pin_header(3, ref="J12", tag="uart0_header")
     GND += uart0_header[1]
     ESP_UART0_TX += esp["GPIO15"], uart0_header[2]
     ESP_UART0_RX += esp["GPIO16"], uart0_header[3]
+    test_point(ESP_UART0_RX, "TP28")
+    test_point(ESP_UART0_TX, "TP29")
 
     ESP_UART1_RX += esp["GPIO18"]
     ESP_UART2_RX += esp["GPIO1"]
     midi_input("MIDI1", ESP_UART1_RX, ESP_3V3, GND, socket_ref="J1", series_ref="R1",
                clamp_ref="D1", opto_ref="U3", pullup_ref="R3", bypass_ref="C3",
-               tag="midi1_input")
+               test_point_ref="TP16", tag="midi1_input")
     midi_input("MIDI2", ESP_UART2_RX, ESP_3V3, GND, socket_ref="J2", series_ref="R2",
                clamp_ref="D2", opto_ref="U4", pullup_ref="R4", bypass_ref="C4",
-               tag="midi2_input")
+               test_point_ref="TP30", tag="midi2_input")
 
 if __name__ == "__main__":
     generate_netlist(file_="esp32.net")
