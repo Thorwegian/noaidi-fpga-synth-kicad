@@ -27,6 +27,14 @@ pads are left, and joins them:
   - a through-hole pad that its fill does not reach, or reaches with fewer
     spokes than the board asks for, is joined to its fills solidly.
 
+In each round it also looks for pieces of a fill that tracks have cut off
+from the rest of the net with a pad or a via in them, where the net has
+fills on more than one layer: a via can join a small piece on one layer to
+a small piece on another, and neither then reaches the net. Such a piece
+gets a via where it lies over the rest of the net on another layer, at a
+place that keeps its distance from other nets; one that has no such place
+is named.
+
 It fills and checks again until the DRC has nothing more of the kind or a
 round changes nothing, and leaves the last DRC report at the path given.
 What it cannot join it names: KiCad's DRC is the verdict, not this script.
@@ -50,6 +58,7 @@ STEP = pcbnew.FromMM(0.1)           # of the search for a via's place
 REACH = pcbnew.FromMM(4.0)          # how far from its pad a new via may be
 SHARE = pcbnew.FromMM(2.5)          # how far from a pad a via it shares may be
 STITCH = pcbnew.FromMM(10.0)        # between the vias that tie a net's fills together
+TIE_STEP = pcbnew.FromMM(0.25)      # of the search for the place of a via that ties a cut-off piece back
 ROUNDS = 5
 
 
@@ -151,6 +160,78 @@ class Joiner:
                     count += 1
         return count
 
+    def tie_back(self, fills, given_up):
+        """Tie back the pieces of the fills, which are of one net, that
+        tracks have cut off from the rest of the net with a pad or a via in
+        them: a via where such a piece lies over, or under, copper of the
+        rest on another layer, at a place that keeps its distance from other
+        nets on every layer. given_up holds the pieces that have no such
+        place, so that each is named once. Returns what was done, a line
+        for each piece, and how many vias were added."""
+        net = fills[0].GetNet()
+        name = net.GetNetname()
+        pieces = [(fill.GetLayerSet().Seq()[0], copper, index)
+                  for fill in fills for copper in [fill.GetFilledPolysList(fill.GetLayerSet().Seq()[0])]
+                  for index in range(copper.OutlineCount())]
+        boxes = [copper.Outline(index).BBox() for _, copper, index in pieces]
+        areas = [copper.Outline(index).Area() for _, copper, index in pieces]
+        group = list(range(len(pieces)))
+
+        def group_of(piece):
+            while group[piece] != piece:
+                piece = group[piece]
+            return piece
+
+        def pieces_at(point):
+            return [piece for piece, (_, copper, index) in enumerate(pieces)
+                    if boxes[piece].Contains(point) and copper.Contains(point, index)]
+
+        # A via or a through-hole pad joins the pieces it stands in, one on each layer.
+        through = ([(via.GetPosition(), None) for via in self.board.GetTracks()
+                    if via.Type() == pcbnew.PCB_VIA_T and via.GetNetname() == name]
+                   + [(pad.GetPosition(), None if pad.HasHole() else pad.GetPrincipalLayer())
+                      for pad in self.pads if pad.GetNetname() == name])
+        holds = set()
+        for point, layer in through:
+            there = [piece for piece in pieces_at(point) if layer in (None, pieces[piece][0])]
+            holds.update(there)
+            for other in there[1:]:
+                group[group_of(other)] = group_of(there[0])
+        rest = group_of(max(range(len(pieces)), key=lambda piece: areas[piece]))
+
+        done, vias = [], 0
+        for cut_off in sorted({group_of(piece) for piece in holds} - {rest}):
+            members = sorted((piece for piece in range(len(pieces)) if group_of(piece) == cut_off), key=lambda piece: -areas[piece])
+            layer, _, _ = pieces[members[0]]
+            centre = boxes[members[0]].Centre()
+            what = (f"a piece of {name} on {self.board.GetLayerName(layer)}, {areas[members[0]] / 1e12:.1f} mm2 around "
+                    f"{pcbnew.ToMM(centre.x):.1f}, {pcbnew.ToMM(centre.y):.1f} mm, that tracks cut off from the rest")
+            place = None
+            for piece in members:
+                over = [other for other in range(len(pieces)) if group_of(other) == rest and pieces[other][0] != pieces[piece][0]]
+                box = boxes[piece]
+                points = sorted(((x, y) for x in range(box.GetLeft(), box.GetRight(), TIE_STEP)
+                                 for y in range(box.GetTop(), box.GetBottom(), TIE_STEP)),
+                                key=lambda point: math.hypot(point[0] - box.Centre().x, point[1] - box.Centre().y))
+                for x, y in points:
+                    point = pcbnew.VECTOR2I(x, y)
+                    if (pieces[piece][1].Contains(point, pieces[piece][2])
+                            and any(boxes[other].Contains(point) and pieces[other][1].Contains(point, pieces[other][2]) for other in over)
+                            and self.clear(x, y, self.via / 2, name, None, None)):
+                        place = (x, y)
+                        break
+                if place:
+                    break
+            key = (layer, centre.x, centre.y)
+            if place:
+                self.add_via(*place, net)
+                vias += 1
+                done.append(f"tied: {what}, by a via at {pcbnew.ToMM(place[0]):.2f}, {pcbnew.ToMM(place[1]):.2f} mm")
+            elif key not in given_up:
+                given_up.add(key)
+                done.append(f"not tied: {what}: no clear place for a via where it lies over the rest on another layer")
+        return done, vias
+
     def to_via(self, pad):
         """Join the pad to a via by a track. Returns what was done, or None
         when no via is within reach."""
@@ -192,7 +273,7 @@ def main(board_path, report_path):
         if pad.GetNetname() in fill_layers:
             pad.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_INHERITED)
 
-    given_up = []
+    given_up, not_tied = [], set()
     for attempt in range(ROUNDS + 1):
         pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         # The third argument keeps KiCad from rewriting the project file with the board.
@@ -227,7 +308,14 @@ def main(board_path, report_path):
                 else:
                     given_up.append(pad)
                     print(f"not joined: {name(pad)}, whose net has no fill on another layer")
-        if (not to_via and not solid) or attempt == ROUNDS:
+        tied = 0
+        for net, fills in sorted(fills_of.items()):
+            if len(fills) > 1 and attempt < ROUNDS:
+                done, vias = joiner.tie_back(fills, not_tied)
+                tied += vias
+                for line in done:
+                    print(line)
+        if (not to_via and not solid and not tied) or attempt == ROUNDS:
             break
         for pad in sorted(to_via, key=name):
             how = joiner.to_via(pad)
