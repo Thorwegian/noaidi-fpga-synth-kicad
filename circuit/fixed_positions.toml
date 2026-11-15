@@ -6,10 +6,12 @@
 # puts these parts where this file says; nothing else moves them.
 #
 #   edge          the board's edge the part's opening is at: left, top, right, bottom.
-#                 The part keeps its place along the edge and the way it is turned.
+#                 The part keeps the way it is turned.
 #   edge_line_mm  from the footprint's origin to the maker's board-edge line.
-#   beside        the part it sits next to, at the same edge and turned the same way.
-#   pitch_mm      centre to centre from that part, at least.
+#   near          the pads the part sits as near to as it gets along its edge,
+#                 as designator.pad: the middle of its own pads level with the
+#                 middle of these. Without it the part keeps its place along
+#                 the edge.
 
 # The power socket. Hroparts' drawing of the TYPE-C-31-M-12
 # (docs/thirdparty/Hroparts_TYPE-C-31-M-12_drawing.pdf, recommended PCB
@@ -19,9 +21,11 @@
 edge = "bottom"
 edge_line_mm = 2.66
 
-# The USB MIDI socket. The USB Type-C Cable and Connector Specification,
-# release 2.0, appendix D.3.1.2 (figure D-6), has sockets side by side at
-# 12.85 mm centre to centre at the least. 15 mm leaves room for fingers.
+# The USB MIDI socket, the same part on the same board-edge line. It sits
+# below the ESP32 module's two USB pins, where its data pair ends: the pair
+# is then as short as it gets, and the socket is at the far end of the
+# module from its antenna (circuit/antennas.toml).
 [J14]
-beside = "J9"
-pitch_mm = 15.0
+edge = "bottom"
+edge_line_mm = 2.66
+near = ["U1.25", "U1.26"]

@@ -177,7 +177,8 @@ def main(board_path, report_path):
     joiner = Joiner(board)
     pad_of = {pad.m_Uuid.AsString(): pad for pad in joiner.pads}
     fill_layers, fills_of = {}, {}
-    for fill in board.Zones():
+    board_fills = [zone for zone in board.Zones() if not zone.GetIsRuleArea()]
+    for fill in board_fills:
         fill_layers.setdefault(fill.GetNetname(), set()).add(fill.GetLayerSet().Seq()[0])
         fills_of.setdefault(fill.GetNetname(), []).append(fill)
 
@@ -247,7 +248,7 @@ def main(board_path, report_path):
                 pad.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
                 print(f"joined: {name(pad)}, solidly")
 
-    for fill in board.Zones():
+    for fill in board_fills:
         layer = fill.GetLayerSet().Seq()[0]
         pieces = fill.GetFilledPolysList(layer)
         areas = sorted((pieces.Outline(i).Area() / 1e14 for i in range(pieces.OutlineCount())), reverse=True)
