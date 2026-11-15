@@ -29,7 +29,7 @@ two off-the-shelf modules and the few parts around them:
 - Pin headers for the second SPI bus, two I2C buses, UART0, I2S and
   S/PDIF, and 29 test points.
 
-Two layers, 130.85 × 121.25 mm. The modules, the DIN and RCA sockets,
+Four layers, 130.85 × 121.25 mm. The modules, the DIN and RCA sockets,
 the pin headers and the test points are through-hole; the other parts
 are surface-mount.
 
@@ -89,12 +89,16 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   width, clearance and via.
 - `circuit/fixed_positions.toml`: where the parts a person interacts
   with sit, for `scripts/board_from_circuit.py`.
-- `scripts/route.sh`: lays the board's copper anew with Freerouting and
+- `circuit/layers.toml`: the copper layers and the fill of each, for
+  the same script.
+- `scripts/route.sh`: lays the board's signals anew with Freerouting and
   prints what KiCad's DRC finds; `scripts/route_board.py` writes the
   board for the router and reads its result back.
+- `scripts/join_fills.py`: ties the fills of one net together with
+  vias, and joins the pads the fills do not reach.
 - `scripts/layout_pictures.py`: pictures of the board's copper to judge
-  a layout by: the whole board, its quarters, and tiles small enough
-  for an agent to see every track.
+  a layout by: the whole board, its quarters, tiles small enough for an
+  agent to see every track, and each layer with its fill.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.

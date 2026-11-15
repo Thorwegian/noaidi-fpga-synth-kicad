@@ -24,6 +24,13 @@ The net classes go into the KiCad project file beside the board: each class
 with its widths, clearance and via, and each net that is in one by its name.
 A class the circuit does not have leaves the project.
 
+The board gets the copper layers of circuit/layers.toml: a layer without
+tracks is of the type power, and each layer has one fill over the whole
+board on the net that file gives it. Fills that are already those are left
+as they are. A keep-out area that a footprint has on both the front and the
+back (the one under the ESP32 module's antenna) is made to hold on the
+layers between them too.
+
 No part enters another's courtyard: one that would is put in the nearest
 free place. Tracks are otherwise left alone, so where a footprint has
 changed the copper no longer meets the pads; scripts/route.sh lays it anew.
@@ -44,6 +51,7 @@ from netlist_summary import kids, parse, val  # noqa: E402
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KICAD_FOOTPRINT_DIR = os.environ.get("KICAD10_FOOTPRINT_DIR", "/usr/share/kicad/footprints")
 FIXED_POSITIONS = os.path.join(PROJECT_DIR, "circuit", "fixed_positions.toml")
+LAYERS = os.path.join(PROJECT_DIR, "circuit", "layers.toml")
 
 COURTYARD_GAP = pcbnew.FromMM(0.25)     # kept between two parts' courtyards
 GRID = pcbnew.FromMM(0.25)              # the step of the search for a new part's place
@@ -157,6 +165,45 @@ def board_outline(board):
             max(box.GetRight() for box in boxes), max(box.GetBottom() for box in boxes))
 
 
+def set_layers(board, layers):
+    """Give the board the copper layers of circuit/layers.toml and their
+    fills. Returns True when the fills were made anew."""
+    board.SetCopperLayerCount(len(layers))
+    wanted = set()
+    for layer in layers:
+        number = board.GetLayerID(layer["name"])
+        board.SetLayerType(number, pcbnew.LT_SIGNAL if layer["tracks"] else pcbnew.LT_POWER)
+        if not board.FindNet(layer["fill"]):
+            sys.exit(f"{layer['name']} is filled with {layer['fill']}, which is not a net of the circuit")
+        wanted.add((number, layer["fill"]))
+    # A footprint drawn for two layers names both of them where it means the board's whole thickness.
+    for footprint in board.GetFootprints():
+        for area in footprint.Zones():
+            if area.GetIsRuleArea() and area.IsOnLayer(pcbnew.F_Cu) and area.IsOnLayer(pcbnew.B_Cu):
+                area.SetLayerSet(pcbnew.LSET.AllCuMask(len(layers)))
+    fills = list(board.Zones())
+    if sorted((fill.GetLayerSet().Seq()[0], fill.GetNetname()) for fill in fills) == sorted(wanted):
+        return False
+    for fill in fills:
+        board.Delete(fill)
+    left, top, right, bottom = board_outline(board)
+    for number, net in sorted(wanted):
+        fill = pcbnew.ZONE(board)
+        fill.SetLayer(number)
+        fill.SetNet(board.FindNet(net))
+        fill.SetZoneName(f"{net} {board.GetLayerName(number)}")
+        fill.Outline().NewOutline()
+        for x, y in ((left, top), (right, top), (right, bottom), (left, bottom)):
+            fill.Outline().Append(x, y)
+        fill.SetMinThickness(pcbnew.FromMM(0.25))
+        fill.SetThermalReliefGap(pcbnew.FromMM(0.5))
+        fill.SetThermalReliefSpokeWidth(pcbnew.FromMM(0.5))
+        # Through-hole pads are soldered by hand, and the spokes let the pad be heated.
+        fill.SetPadConnection(pcbnew.ZONE_CONNECTION_THT_THERMAL)
+        board.Add(fill)
+    return True
+
+
 def settle(board, footprint, cost, moves, turns=None, open_edge=None):
     """Move the footprint to the free place of lowest cost. moves lists the
     candidates as (dx, dy) from where the footprint is; cost(dx, dy, pads)
@@ -192,6 +239,7 @@ def main(netlist_path, net_classes_path, board_path):
     parts, nets, class_of_net = read_circuit(netlist_path)
     net_of_pad = {pad: name for name, pads in nets.items() for pad in pads}
     fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
+    layers = tomllib.load(open(LAYERS, "rb"))["layer"]
     # KiCad reads the project file when it loads the board.
     write_net_classes(os.path.splitext(board_path)[0] + ".kicad_pro",
                       json.load(open(net_classes_path, encoding="utf-8")), class_of_net)
@@ -250,6 +298,7 @@ def main(netlist_path, net_classes_path, board_path):
         in_kicad = board.FindNet(name).GetNetClassName().split(",")[0]
         if in_kicad != class_of_net.get(name, "Default"):
             sys.exit(f"KiCad has the net {name} in the class {in_kicad}, the circuit in {class_of_net.get(name, 'Default')}")
+    new_fills = set_layers(board, layers)
     nets_with_pads = {pad.GetNetname() for footprint in board.GetFootprints() for pad in footprint.Pads()}
     stale_tracks = [track for track in board.GetTracks() if track.GetNetname() not in nets_with_pads]
     for track in stale_tracks:
@@ -322,7 +371,8 @@ def main(netlist_path, net_classes_path, board_path):
     pcbnew.SaveBoard(board_path, board, True)
     print(f"{len(stale_tracks)} tracks removed with their nets; "
           f"{len(list(board.GetFootprints()))} parts, {len(nets)} nets, "
-          f"{len(class_of_net)} of them in {len(set(class_of_net.values()))} classes besides Default")
+          f"{len(class_of_net)} of them in {len(set(class_of_net.values()))} classes besides Default; "
+          f"{len(layers)} copper layers, their fills {'made anew' if new_fills else 'as they were'}")
 
 
 if __name__ == "__main__":
