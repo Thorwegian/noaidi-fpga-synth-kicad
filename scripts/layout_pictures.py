@@ -22,7 +22,11 @@ Writes into build/pictures/, or into the folder given:
                            fill laid over the others in a pale colour;
   silk.png                 the front's silkscreen at 600 dpi: what is
                            printed on the board, to read the designators by;
-  silk_tile_<row>_<column>.png  the same, cut into the tiles' pieces.
+  silk_tile_<row>_<column>.png  the same, cut into the tiles' pieces;
+  every_layer.png          the whole board at 600 dpi with the fills, the
+                           tracks and vias, the bare copper, the
+                           silkscreen and the courtyards in one picture;
+  every_layer_<where>.png  its four quarters at 1200 dpi.
 
 The whole board and the quarters are for a person to zoom into, and carry a
 title, the track counts and the legend. The tiles and the details are for an
@@ -41,8 +45,13 @@ copper its colour is missing from the mix: a band beside a track is the gap
 that track makes in its layer's fill, a ring around a hole the gap in the
 inner fills, and white has no copper on any layer. In the silkscreen
 picture the print is black, the pads and holes, where nothing is printed,
-are pale red, the courtyards blue and the board's edge green. The board file
-is not changed.
+are pale red, the courtyards blue and the board's edge green. The picture
+of every layer has the overlay's fills and tracks, the silkscreen in black,
+the courtyards in magenta, and the copper that the solder mask leaves bare
+in a darker shade: brown-red for a pad on the front, near black for the ring
+around a hole through the board. The fabrication layer is not in it: its
+copy of each designator would lie on the printed ones. The board file is
+not changed.
 
 Needs kicad-cli (KiCad 10), pdftoppm (poppler-utils) and the system's
 Python, which has KiCad's pcbnew module and Pillow (python3-pil).
@@ -72,7 +81,7 @@ TILE = (1080, 1020)
 TILE_OVERLAP_MM = 1.0
 FILL_FRONT, FILL_BACK, FILL_INNER = (255, 190, 190), (190, 210, 255), ((195, 240, 195), (255, 240, 170))
 OVERLAY_LEGEND = (
-    "Fills in pale colour, laid over each other: front red, inner layers green and yellow, back blue. Where a layer",
+    "Fills in pale colour, laid over each other: front red, inner 1 green, inner 2 yellow, back blue. Where a layer",
     "has no copper its colour is missing from the mix: a band beside a track is the gap in that layer's fill, a ring",
     "around a hole the gap in the inner fills, white no copper at all.  Tracks and pads: red = front, blue = back.",
 )
@@ -81,6 +90,20 @@ SILK = (
     ("F.Mask", (245, 170, 170)),
     ("F.Courtyard", (90, 140, 255)),
     ("Edge.Cuts", (0, 130, 0)),
+)
+EVERY = (
+    ("B.Cu", (40, 110, 230)),
+    ("F.Cu", (225, 45, 45)),
+    ("F.Mask", (255, 215, 120)),
+    ("F.Courtyard", (225, 0, 170)),
+    ("F.Silkscreen", (0, 0, 0)),
+    ("Edge.Cuts", (0, 130, 0)),
+)
+EVERY_LEGEND = (
+    "Tracks: red = front copper, blue = back copper.  Purple disc with a white hole = a via.  Black lines and letters = the silkscreen as printed.",
+    "Copper bare of solder mask, where parts are soldered: brown-red pads on the front, near-black rings with a white hole through the board.",
+    "Magenta = courtyards.  Green = board edge.  Fills, pale and laid over each other: front red, inner 1 green,",
+    "inner 2 yellow, back blue; where a layer has no copper its colour is missing from the mix, and white has none at all.",
 )
 SILK_LEGEND = (
     "Black = the front's silkscreen, as printed.  Pale red = pads and holes, where nothing is printed.",
@@ -161,6 +184,15 @@ def with_heading(picture, title, dpi, counts, legend=LEGEND):
     return out
 
 
+def quarters(picture):
+    """The picture's four overlapping quarters, each with where it lies."""
+    width, height = round(picture.width * QUARTER), round(picture.height * QUARTER)
+    for where, x, y in (("top_left", 0, 0), ("top_right", picture.width - width, 0),
+                        ("bottom_left", 0, picture.height - height),
+                        ("bottom_right", picture.width - width, picture.height - height)):
+        yield where, picture.crop((x, y, x + width, y + height))
+
+
 def starts(length, piece, overlap):
     """Where pieces of one size start so that they cover the length and
     each overlaps the next by the overlap or more."""
@@ -200,7 +232,7 @@ def main():
         name = board.GetLayerName(layer)
         os.makedirs(os.path.join(out, "layers", "filled"), exist_ok=True)
         grey = layer_image(arguments.board, name, True, extent, os.path.join(out, "layers", "filled"))
-        pale = (FILL_FRONT if number == 0 else FILL_BACK if layer == stack[-1] else FILL_INNER[number % 2])
+        pale = (FILL_FRONT if number == 0 else FILL_BACK if layer == stack[-1] else FILL_INNER[(number - 1) % 2])
         fills = ImageChops.multiply(fills, tinted(grey, pale)) if fills else tinted(grey, pale)
         filled = grey.resize((grey.width // 2, grey.height // 2), Image.LANCZOS).convert("RGB")
         ImageDraw.Draw(filled).text((40, 16), f"{title}: {name} with its fill. Black = copper.",
@@ -212,8 +244,15 @@ def main():
     # The third argument keeps KiCad from writing a project file with the board.
     pcbnew.SaveBoard(without_pours, board, True)
 
-    layers = [tinted(layer_image(without_pours, layer, holes, extent, os.path.join(out, "layers")), colour)
-              for layer, colour, holes in LAYERS]
+    greys = {}
+
+    def grey_of(layer):
+        """The layer without the fills, in grey; a copper layer with its holes white."""
+        if layer not in greys:
+            greys[layer] = layer_image(without_pours, layer, layer.endswith(".Cu"), extent, os.path.join(out, "layers"))
+        return greys[layer]
+
+    layers = [tinted(grey_of(layer), colour) for layer, colour, _ in LAYERS]
     close = layers[0]
     for layer in layers[1:]:
         close = ImageChops.multiply(close, layer)
@@ -223,21 +262,32 @@ def main():
         os.path.join(out, "overlay.png"), optimize=True)
     silk = None
     for layer, colour in SILK:
-        picture = tinted(layer_image(without_pours, layer, False, extent, os.path.join(out, "layers")), colour)
+        picture = tinted(grey_of(layer), colour)
         silk = ImageChops.multiply(silk, picture) if silk else picture
+    # Courtyards reach past the copper where a socket overhangs the edge: the whole pictures show them, the tiles are the copper's.
+    whole_silk = silk.crop(drawn(silk))
+    with_heading(whole_silk.resize((whole_silk.width // 2, whole_silk.height // 2), Image.LANCZOS),
+                 f"{title}, the silkscreen", DPI // 2, counts, SILK_LEGEND).save(os.path.join(out, "silk.png"), optimize=True)
     silk = silk.crop(drawn(close))
     silk = silk.resize((silk.width // 2, silk.height // 2), Image.LANCZOS)
-    with_heading(silk, f"{title}, the silkscreen", DPI // 2, counts, SILK_LEGEND).save(
-        os.path.join(out, "silk.png"), optimize=True)
+    every = fills
+    for layer, colour in EVERY:
+        picture = grey_of(layer)
+        if layer == "F.Mask":
+            # The mask's openings only where the front has copper, so that a hole stays white.
+            picture = ImageChops.lighter(picture, grey_of("F.Cu"))
+        every = ImageChops.multiply(every, tinted(picture, colour))
+    every = every.crop(drawn(every))
+    with_heading(every.resize((every.width // 2, every.height // 2), Image.LANCZOS), f"{title}, every layer",
+                 DPI // 2, counts, EVERY_LEGEND).save(os.path.join(out, "every_layer.png"), optimize=True)
+    for where, quarter in quarters(every):
+        with_heading(quarter, f"{title}, every layer, {where.replace('_', ' ')} quarter", DPI, counts, EVERY_LEGEND).save(
+            os.path.join(out, f"every_layer_{where}.png"), optimize=True)
     close, origin = cut_to_drawing(close, extent)
     whole = close.resize((close.width // 2, close.height // 2), Image.LANCZOS)
 
     with_heading(whole, title, DPI // 2, counts).save(os.path.join(out, "whole.png"), optimize=True)
-    width, height = round(close.width * QUARTER), round(close.height * QUARTER)
-    for where, x, y in (("top_left", 0, 0), ("top_right", close.width - width, 0),
-                        ("bottom_left", 0, close.height - height),
-                        ("bottom_right", close.width - width, close.height - height)):
-        quarter = close.crop((x, y, x + width, y + height))
+    for where, quarter in quarters(close):
         with_heading(quarter, f"{title}, {where.replace('_', ' ')} quarter", DPI, counts).save(
             os.path.join(out, f"quarter_{where}.png"), optimize=True)
 

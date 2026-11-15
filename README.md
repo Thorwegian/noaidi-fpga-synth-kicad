@@ -101,8 +101,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   or other print cuts it.
 - `scripts/layout_pictures.py`: pictures of the board's copper and print to judge
   a layout by: the whole board, its quarters, tiles small enough for an
-  agent to see every track, each layer with its fill, and the fills
-  laid over each other.
+  agent to see every track, each layer with its fill, the fills laid
+  over each other, the silkscreen as printed, and every layer in one
+  picture.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.
