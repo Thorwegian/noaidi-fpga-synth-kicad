@@ -267,7 +267,7 @@ def main(netlist_path, board_path, room):
     off_the_board = pcbnew.VECTOR2I(outline[LEFT] - 10 * extent[0], outline[TOP])
     for name in inner:
         footprints[name].SetPosition(off_the_board)
-    furthest = (0, None)
+    furthest, placed_further = (0, None), []
     further = sorted(((dx, dy) for dx in range(-FURTHER, FURTHER + 1, FURTHER_GRID)
                       for dy in range(-FURTHER, FURTHER + 1, FURTHER_GRID)), key=lambda move: math.hypot(*move))
     for name, reach in in_order(inner, footprints, parts, nets, fixed, fill_nets):
@@ -279,6 +279,7 @@ def main(netlist_path, board_path, room):
                 settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via, moves=further)
             except NoFreePlace:
                 sys.exit(f"no free place for {name}")
+            placed_further.append(name)
         furthest = max(furthest, (furthest_connection(footprints[name], reach), name))
     # The third argument keeps KiCad from rewriting the project file with the board.
     pcbnew.SaveBoard(board_path, board, True)
@@ -296,6 +297,8 @@ def main(netlist_path, board_path, room):
               f"{pcbnew.ToMM(margin[name]):4.1f} mm kept free around it")
     print(f"{len(inner)} parts placed beside what they connect to; "
           f"the furthest pad from its connection: {pcbnew.ToMM(furthest[0]):.1f} mm, on {furthest[1]}")
+    if placed_further:
+        print(f"no place near their connections, placed further away, to be looked at: {' '.join(placed_further)}")
 
 
 if __name__ == "__main__":
