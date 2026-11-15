@@ -97,7 +97,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   antenna, and how far, for `scripts/board_from_circuit.py`,
   `scripts/squeeze_board.py` and the rule in
   `noaidi-fpga-synth.kicad_dru` that KiCad's DRC checks it by.
-- `scripts/squeeze_board.py`: makes the board smaller. The parts at
+- `scripts/squeeze_board.py`: places the parts and draws the outline,
+  from the constraints in `circuit/fixed_positions.toml`
+  (`scripts/squeeze_board.py build/check/skidl/board.net
+  noaidi-fpga-synth.kicad_pcb 2`, then `scripts/route.sh`). The parts at
   the edges are packed along them into the smallest outline that leaves
   each the room its own parts need, one number saying how much room
   that is, and a second, if given, how wide the board may be; every
@@ -109,6 +112,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   pair, and its path where it has to go around something, and
   `scripts/lay_pairs.py`, which lays the pair's two tracks side by side
   for the router to work around.
+- `scripts/lay_fill_vias.py`: gives each surface-mount pad on the net
+  of a fill on another layer its via and the track to it, before the
+  router runs, for the router to work around.
 - `scripts/join_fills.py`: ties the fills of one net together with
   vias, and joins the pads the fills do not reach.
 - `scripts/place_designators.py`: puts each part's designator at the
