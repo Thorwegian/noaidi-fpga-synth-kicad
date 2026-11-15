@@ -46,9 +46,11 @@ the edges can be put down so: it finds the smallest height for the board's
 width, then makes the board narrower step by step, raising the height
 whenever the parts no longer fit; for a width and a height it tries the
 places along the edges one part after the other. The right and the bottom
-edge move; the fills follow the outline. The outline is no wider than the
-board is, or than the width given, and as tall as it takes: the smallest
-outline is not the narrowest.
+edge move; the fills follow the outline. The search starts from the parts
+at the edges side by side, the widest outline there is, or from the width
+given, and the outline is as tall as it takes: the smallest outline is not
+the narrowest. Neither bound comes from the board that is read, so the
+outline does not depend on how wide that board is.
 
 Of the ways the parts at the edges can be put down in that outline, the
 script takes the one in which their connections are shortest, taken
@@ -403,10 +405,13 @@ def main(netlist_path, board_path, room, widest=None):
     blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members], near.get(first))
                      for first, members in members_of.items()),
                     key=lambda block: -sum((box[RIGHT] - box[LEFT]) * (box[BOTTOM] - box[TOP]) for _, box in block[1]))
-    # The outline is no wider than the board is, or than the width given, and as tall as it takes:
-    # the parts at the edges one below the other is the tallest it gets.
-    largest = (extent[0] if widest is None else min(extent[0], pcbnew.FromMM(widest)),
-               sum(box[BOTTOM] - box[TOP] + 2 * margin[name] for _, members, _ in blocks for name, box in members))
+    # The outline is as wide and as tall as it takes, and no wider than the width given: the parts at
+    # the edges side by side is the widest it gets, one below the other the tallest. Neither is taken
+    # from the board that is read, so that a board made from a narrow one is the one made from a wide one.
+    side_by_side, one_below_the_other = (-(-sum(box[high] - box[low] + 2 * margin[name]
+                                                for _, members, _ in blocks for name, box in members) // STEP) * STEP
+                                         for low, high in ((LEFT, RIGHT), (TOP, BOTTOM)))
+    largest = (side_by_side if widest is None else min(side_by_side, pcbnew.FromMM(widest)), one_below_the_other)
     new_extent, slides = smallest_outline(blocks, margin, closed, order, links, room_for_a_via, extent, largest)
     for (edge, members, _), slide in zip(blocks, slides):
         dx = slide if edge in (TOP, BOTTOM) else (new_extent[0] - extent[0] if edge == RIGHT else 0)
