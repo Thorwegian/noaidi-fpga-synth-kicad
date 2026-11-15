@@ -7,10 +7,12 @@
 #
 #     scripts/route.sh
 #
-# Removes every track and via from the board and has Freerouting lay the
-# signals anew, to the net classes' widths and clearances, on the layers
-# that take tracks: scripts/route_board.py writes the board for the router
-# and reads its result back. The nets of the board's fills get no track:
+# Lays the differential pairs along the paths circuit/pair_paths.toml states
+# (scripts/lay_pairs.py), removes every other track and via from the board
+# and has Freerouting lay the other signals anew around the pairs, to the
+# net classes' widths and clearances, on the layers that take tracks:
+# scripts/route_board.py writes the board for the router and reads its
+# result back. The nets of the board's fills get no track:
 # the fills join their pads, and scripts/join_fills.py joins the pads the
 # fills do not reach. With the vias in place, scripts/place_designators.py
 # puts each part's designator where it can be read. Then prints the counts
@@ -41,7 +43,8 @@ fi
 echo "$jar_sha256  $jar" | sha256sum --check --quiet || exit 1
 
 # pcbnew writes its own chatter to the standard error stream.
-layers_with_tracks=$(scripts/route_board.py export $board $out/board.dsn 2> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
+scripts/lay_pairs.py $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+layers_with_tracks=$(scripts/route_board.py export $board $out/board.dsn 2>> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
 
 if ! java -Djava.awt.headless=true -jar $jar -de $out/board.dsn -do $out/board.ses \
         --router.autorouter.max_passes=30 --router.layers.routable=$layers_with_tracks > $out/freerouting.log 2>&1; then
