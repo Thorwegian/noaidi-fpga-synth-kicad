@@ -43,6 +43,8 @@ is joined, and the rules for a pair in the project's .kicad_dru.
 
 Runs under the system's Python, which has KiCad's pcbnew module.
 """
+import cmath
+import math
 import os
 import sys
 import tomllib
@@ -189,25 +191,43 @@ def left_first(pads, end, heading):
 
 def worked_out(board, pair):
     """The path of a pair the file states none for: straight out of its
-    first pads towards its last. Where the two ends are not in line, the
-    pair takes a slanted step onto the line of its last pads before it
-    reaches them, or, where it is further to the side than ahead, a step
-    sideways halfway."""
+    first pads and straight into its last. Where the pads at the two ends
+    lie in rows the same way, the pair runs straight from the one to the
+    other; where the two ends are not in line, it takes a slanted step onto
+    the line of its last pads before it reaches them, or, where it is
+    further to the side than ahead, a step sideways halfway. Where the rows
+    are at a right angle, the pair turns one corner."""
     starts, ends = ([middle(pad) for pad in pads_of(board, pair[end])] for end in ("from", "to"))
     start, end = sum(starts) / 2, sum(ends) / 2
-    heading = left_of(unit(starts[1] - starts[0]))
+    heading, arriving = left_of(unit(starts[1] - starts[0])), left_of(unit(ends[1] - ends[0]))
     if along(end - start, heading) < 0:
         heading = -heading
-    if abs(along(unit(ends[1] - ends[0]), heading)) > 1e-6:
-        sys.exit(f"{pair['name']}: the pads at its two ends do not face each other, so its path has to be stated")
+    if along(end - start, arriving) < 0:
+        arriving = -arriving
     first = start + (abs(starts[1] - starts[0]) / 2 + LEAD_MM) * heading
-    last = end - (abs(ends[1] - ends[0]) / 2 + LEAD_MM) * heading
+    last = end - (abs(ends[1] - ends[0]) / 2 + LEAD_MM) * arriving
     ahead, sideways = along(last - first, heading), along(last - first, left_of(heading))
+    if abs(along(arriving, heading)) < 1e-6:
+        # The rows are at a right angle: out of the first pads, one corner, into the last.
+        if ahead < 2 * CORNER_CUT_MM or along(last - first, arriving) < 2 * CORNER_CUT_MM:
+            sys.exit(f"{pair['name']}: its two ends are too near each other for a path between them")
+        return with_corners_cut([first, first + ahead * heading, last])
+    if abs(along(arriving, heading)) < 1 - 1e-6:
+        sys.exit(f"{pair['name']}: the pads at its two ends lie neither in line nor at a right angle, so its path has to be stated")
     if ahead < 4 * CORNER_CUT_MM:
         sys.exit(f"{pair['name']}: its two ends are too near each other for a path between them")
     if ahead > abs(sideways) + STRAIGHT_ON_MM + CORNER_CUT_MM:
         return [first, first + (ahead - abs(sideways) - STRAIGHT_ON_MM) * heading]
     return with_corners_cut([first, first + ahead / 2 * heading, last - ahead / 2 * heading, last])
+
+
+def branch_points(board, branch):
+    """The points a branch goes through from its pad: the file's distances,
+    which are stated for the part as its footprint is drawn, turned with
+    the part."""
+    pad = pads_of(board, [branch["from"]])[0]
+    turn = cmath.exp(-1j * math.radians(pad.GetParentFootprint().GetOrientationDegrees()))
+    return [middle(pad) + offset * turn for offset in [0j] + points_of(branch["offsets_mm"])]
 
 
 def path_of(board, pair):
@@ -227,8 +247,7 @@ def lanes(board):
         ends = [sum(middle(pad) for pad in pads_of(board, pair[end])) / 2 for end in ("from", "to")]
         lines = [[ends[0]] + path_of(board, pair) + [ends[1]]]
         for branch in pair.get("branch", []):
-            start = middle(pads_of(board, [branch["from"]])[0])
-            lines.append([start + offset for offset in [0j] + points_of(branch["offsets_mm"])])
+            lines.append(branch_points(board, branch))
         net_class = board.GetDesignSettings().m_NetSettings.GetEffectiveNetClass(pads_of(board, pair["from"])[0].GetNetname())
         around = pcbnew.ToMM(net_class.GetDiffPairGap() / 2 + net_class.GetDiffPairWidth() + net_class.GetClearance())
         for points in lines:
@@ -266,7 +285,7 @@ def lay(board, pair):
         pads = pads_of(board, [branch[end] for end in ("from", "to") if end in branch])
         if {pad.GetNetname() for pad in pads} - set(nets) or len({pad.GetNetname() for pad in pads}) != 1:
             sys.exit(f"{name}: the branch from {branch['from']} is not on one of its nets, {nets[0]} and {nets[1]}")
-        points = [middle(pads[0]) + offset for offset in [0j] + points_of(branch["offsets_mm"])]
+        points = branch_points(board, branch)
         if len(pads) == 2:
             points.append(middle(pads[1]))
         else:

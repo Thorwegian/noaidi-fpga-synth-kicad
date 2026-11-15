@@ -154,9 +154,15 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   the small parts need no order of their own as long as they are packed
   well around the large ones.
 - **A part at the board's edge stays at its edge and may sit anywhere
-  along it,** where nothing below says otherwise. The order of the
-  parts along an edge is not specified while the board has no
-  enclosure.
+  along it,** where nothing below says otherwise. An order between two
+  parts is stated as a constraint in `circuit/fixed_positions.toml`
+  (one below, above, left of or right of the other); how far apart they
+  end up is not.
+- **The board has a section along each side.** The three sockets for
+  music are at the top edge. Below them the ESP32 module lies across
+  the board from the left edge; below it the two USB sockets are at the
+  left edge and, at the right edge, the Tang Nano with the DAC module
+  below it.
 - **Related connectors at an edge sit together, and a group reads in
   its order from that edge.** Connectors that form a group (port 1 and
   port 2, port A and port B, input L and input R) are next to each
@@ -184,10 +190,11 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   `scripts/board_from_circuit.py` puts no part of those nets nearer,
   and KiCad's DRC reports a pad, a track or a via of them that is
   (`noaidi-fpga-synth.kicad_dru`).
-- **The USB MIDI socket (J14) sits at the bottom edge, below the ESP32
-  module's USB pins,** which are at the far end of the module from its
-  antenna: the data pair is as short as it gets. The power socket (J9)
-  is at the same edge and carries no data.
+- **The two USB sockets sit at the left edge, below the ESP32 module,**
+  at the end of the module its own USB ports are at and the far end
+  from its antenna. The USB MIDI socket (J14) is the upper one, next to
+  the module's USB pins its data pair ends in; the power socket (J9) is
+  below it and carries no data.
 
 ## Not required of this board
 

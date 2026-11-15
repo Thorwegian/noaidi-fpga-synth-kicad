@@ -87,9 +87,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   writes the net classes into the KiCad project.
 - `circuit/net_classes.py`: the net classes, each with its track
   width, clearance and via.
-- `circuit/fixed_positions.toml`: where the parts a person interacts
-  with sit, for `scripts/board_from_circuit.py` and
-  `scripts/squeeze_board.py`.
+- `circuit/fixed_positions.toml`: the constraints on where the parts
+  sit (a part's edge, its side of another part, the part it moves as
+  one with, the pads it sits level with), for
+  `scripts/squeeze_board.py` and `scripts/board_from_circuit.py`.
 - `circuit/layers.toml`: the copper layers and the fill of each, for
   `scripts/board_from_circuit.py`.
 - `circuit/antennas.toml`: which nets stay away from the ESP32 module's

@@ -13,9 +13,10 @@ The parts at the edges are those circuit/fixed_positions.toml names: what a
 person plugs into. Each is at the edge the file gives it, at the distance
 to an edge that it has on the board, and is free to slide along it; one the
 board has at another edge is turned to face the file's. A part the file
-puts beside another moves with that one, and a part the file puts near pads
-of another sits level with them. Where the others sit along their edges on
-the board that is read plays no role.
+puts beside another moves with that one, a part the file puts below,
+above, left of or right of another lies wholly on that side of it, and a
+part the file puts near pads of another sits level with them. Where the
+others sit along their edges on the board that is read plays no role.
 
 No part with a pad of a net class that an antenna is kept clear of
 (circuit/antennas.toml) is put inside that antenna's clearance, which
@@ -45,9 +46,9 @@ the edges can be put down so: it finds the smallest height for the board's
 width, then makes the board narrower step by step, raising the height
 whenever the parts no longer fit; for a width and a height it tries the
 places along the edges one part after the other. The right and the bottom
-edge move; the fills follow the outline. Without a width the outline is no
-larger than the board is. With one it is no wider than that, and as tall
-as it takes: the smallest outline is not the narrowest.
+edge move; the fills follow the outline. The outline is no wider than the
+board is, or than the width given, and as tall as it takes: the smallest
+outline is not the narrowest.
 
 Of the ways the parts at the edges can be put down in that outline, the
 script takes the one in which their connections are shortest, taken
@@ -193,7 +194,7 @@ def distance_between(a, b):
     return max(0, a[LEFT] - b[RIGHT], b[LEFT] - a[RIGHT]) + max(0, a[TOP] - b[BOTTOM], b[TOP] - a[BOTTOM])
 
 
-def smallest_outline(blocks, margin, closed, links, least, extent, largest):
+def smallest_outline(blocks, margin, closed, order, links, least, extent, largest):
     """The smallest width and height, by area, in which the blocks can be
     put down along their edges, and how far each then slides: of the ways
     they can be put down in that outline, the one in which the links are
@@ -210,8 +211,10 @@ def smallest_outline(blocks, margin, closed, links, least, extent, largest):
 
     closed holds what a part keeps other parts out of, as {part: [(rectangle
     measured from the left and top of the part's own, the parts kept out)]}.
-    links is what links_between gives. least is what two parts at the same
-    edge keep between them.
+    order holds the side of another part a part has to be on, as {(part,
+    other part): below, above, left_of or right_of}. links is what
+    links_between gives. least is what two parts at the same edge keep
+    between them.
     """
     at = {name: edge for edge, members, _ in blocks for name, _ in members}
     links_of = collections.defaultdict(list)
@@ -236,10 +239,15 @@ def smallest_outline(blocks, margin, closed, links, least, extent, largest):
                                                                 box[LEFT] + area[RIGHT], box[TOP] + area[BOTTOM]), 0)
                        for area, kept_out in closed.get(owner, ()))
 
+    def in_order(name, a, other, b):
+        side = order.get((name, other))
+        return (side is None or (side == "below" and a[TOP] >= b[BOTTOM]) or (side == "above" and a[BOTTOM] <= b[TOP])
+                or (side == "left_of" and a[RIGHT] <= b[LEFT]) or (side == "right_of" and a[LEFT] >= b[RIGHT]))
+
     def apart(members, others):
         return all(max(a[LEFT] - b[RIGHT], b[LEFT] - a[RIGHT], a[TOP] - b[BOTTOM], b[TOP] - a[BOTTOM])
                    >= (least if at[name] == at[other] else margin[name] + margin[other])
-                   and let_in(name, a, other, b) and let_in(other, b, name, a)
+                   and in_order(name, a, other, b) and let_in(name, a, other, b) and let_in(other, b, name, a)
                    for name, a in members for other, b in others)
 
     def slides(block, width, height):
@@ -361,6 +369,15 @@ def main(netlist_path, board_path, room, widest=None):
     margin, belonging, owner = margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, room_for_a_via)
     links = links_between(owner, nets, fill_nets, footprints)
 
+    # The side of another part the file puts a part on, as the board is drawn.
+    order = {}
+    for name, rule in fixed.items():
+        for side, other_side in (("below", "above"), ("above", "below"), ("left_of", "right_of"), ("right_of", "left_of")):
+            if side in rule:
+                if rule[side] not in fixed:
+                    sys.exit(f"{name} is {side} {rule[side]}, which {os.path.basename(FIXED_POSITIONS)} does not name")
+                order[name, rule[side]], order[rule[side], name] = side, other_side
+
     # A part that sits near pads of another has one place along its edge: level with them.
     near = {}
     for name, rule in fixed.items():
@@ -386,13 +403,11 @@ def main(netlist_path, board_path, room, widest=None):
     blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members], near.get(first))
                      for first, members in members_of.items()),
                     key=lambda block: -sum((box[RIGHT] - box[LEFT]) * (box[BOTTOM] - box[TOP]) for _, box in block[1]))
-    # Without a width the outline is no larger than the board is; with one, no wider than it and as tall as it takes:
+    # The outline is no wider than the board is, or than the width given, and as tall as it takes:
     # the parts at the edges one below the other is the tallest it gets.
-    largest = extent
-    if widest is not None:
-        largest = (min(extent[0], pcbnew.FromMM(widest)),
-                   sum(box[BOTTOM] - box[TOP] + 2 * margin[name] for _, members, _ in blocks for name, box in members))
-    new_extent, slides = smallest_outline(blocks, margin, closed, links, room_for_a_via, extent, largest)
+    largest = (extent[0] if widest is None else min(extent[0], pcbnew.FromMM(widest)),
+               sum(box[BOTTOM] - box[TOP] + 2 * margin[name] for _, members, _ in blocks for name, box in members))
+    new_extent, slides = smallest_outline(blocks, margin, closed, order, links, room_for_a_via, extent, largest)
     for (edge, members, _), slide in zip(blocks, slides):
         dx = slide if edge in (TOP, BOTTOM) else (new_extent[0] - extent[0] if edge == RIGHT else 0)
         dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
