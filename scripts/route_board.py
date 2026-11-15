@@ -45,10 +45,11 @@ import sys
 import pcbnew
 
 # A wire of a Specctra design, on one line: up to its width, the coordinates
-# of its corners, and what follows them.
-WIRE = re.compile(r"^(\s*\(wire \(path \S+ \d+)((?:\s+-?\d+)+)(\).*)$")
+# of its corners, and what follows them. A coordinate that is not a whole
+# micrometre is written with decimals.
+WIRE = re.compile(r"^(\s*\(wire \(path \S+ \d+)((?:\s+-?\d+(?:\.\d+)?)+)(\).*)$")
 # A via that is on the board, on one line: its padstack, where it is, its net.
-VIA = re.compile(r"^\s*\(via \S+\s+-?\d+\s+-?\d+\s+\(net ")
+VIA = re.compile(r"^\s*\(via \S+\s+-?\d+(?:\.\d+)?\s+-?\d+(?:\.\d+)?\s+\(net ")
 
 
 def remove_tracks(board):
