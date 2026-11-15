@@ -87,19 +87,31 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   writes the net classes into the KiCad project.
 - `circuit/net_classes.py`: the net classes, each with its track
   width, clearance and via.
-- `circuit/fixed_positions.toml`: where the parts a person interacts
-  with sit, for `scripts/board_from_circuit.py`.
+- `circuit/fixed_positions.toml`: the constraints on where the parts
+  sit (a part's edge, its side of another part, the part it moves as
+  one with, the pads it sits level with), for
+  `scripts/squeeze_board.py` and `scripts/board_from_circuit.py`.
 - `circuit/layers.toml`: the copper layers and the fill of each, for
-  the same script.
+  `scripts/board_from_circuit.py`.
 - `circuit/antennas.toml`: which nets stay away from the ESP32 module's
-  antenna, and how far, for the same script and for the rule in
+  antenna, and how far, for `scripts/board_from_circuit.py`,
+  `scripts/squeeze_board.py` and the rule in
   `noaidi-fpga-synth.kicad_dru` that KiCad's DRC checks it by.
+- `scripts/squeeze_board.py`: places the parts and draws the outline,
+  from the constraints in `circuit/fixed_positions.toml`
+  (`scripts/squeeze_board.py build/check/skidl/board.net
+  noaidi-fpga-synth.kicad_pcb 2`, then `scripts/route.sh`). The parts at
+  the edges are packed along them into the smallest outline that leaves
+  each the room its own parts need, one number saying how much room
+  that is, and a second, if given, how wide the board may be; every
+  other part is placed anew beside what it connects to.
 - `scripts/route.sh`: lays the board's signals anew with Freerouting and
   prints what KiCad's DRC finds; `scripts/route_board.py` writes the
   board for the router and reads its result back.
-- `circuit/pair_paths.toml`: the path of each differential pair, and
+- `circuit/pair_paths.toml`: the pads and the layer of each differential
+  pair, and its path where it has to go around something, and
   `scripts/lay_pairs.py`, which lays the pair's two tracks side by side
-  along it for the router to work around.
+  for the router to work around.
 - `scripts/lay_fill_vias.py`: gives each surface-mount pad on the net
   of a fill on another layer its via and the track to it, before the
   router runs, for the router to work around.

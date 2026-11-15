@@ -73,6 +73,15 @@ LEFT, TOP, RIGHT, BOTTOM = range(4)
 EDGES = {"left": LEFT, "top": TOP, "right": RIGHT, "bottom": BOTTOM}
 
 
+class NoFreePlace(Exception):
+    """A part has no free place among the moves it was given. Its text is the part's designator."""
+
+
+# Every move within REACH on the GRID, the shortest first.
+NEARBY = sorted(((dx, dy) for dx in range(-REACH, REACH + 1, GRID) for dy in range(-REACH, REACH + 1, GRID)),
+                key=lambda move: math.hypot(*move))
+
+
 def read_circuit(path):
     """The netlist's parts, as {designator: {value, footprint, lcsc, block}},
     its nets, as {name: [(designator, pad number), ...]}, and the class of
@@ -160,20 +169,26 @@ def rectangle(box):
 
 def keep_out(footprint):
     """The rectangle (left, top, right, bottom) no other part may enter: the
-    courtyard's, or the whole drawing's for a footprint without a courtyard
-    (a module on headers)."""
+    one around the part's courtyard, its outline on the silkscreen and the
+    fabrication layer, and its rule areas. A part covers what is under it,
+    and a module's outline reaches past its courtyard where the module
+    overhangs its pins; in a rule area that keeps the fills out (the one
+    under a module's antenna) a pad has no fill to join. For a footprint
+    that has none of these, the whole drawing's."""
     footprint.BuildCourtyardCaches()
     courtyard = footprint.GetCourtyard(pcbnew.F_CrtYd)
-    return rectangle(courtyard.BBox() if courtyard.OutlineCount() else footprint.GetBoundingBox(False))
+    boxes = [courtyard.BBox()] if courtyard.OutlineCount() else []
+    boxes += [item.GetBoundingBox() for item in footprint.GraphicalItems()
+              if item.GetClass() == "PCB_SHAPE" and item.GetLayer() in (pcbnew.F_SilkS, pcbnew.F_Fab)]
+    boxes += [area.GetBoundingBox() for area in footprint.Zones() if area.GetIsRuleArea()]
+    boxes = boxes or [footprint.GetBoundingBox(False)]
+    return (min(box.GetLeft() for box in boxes), min(box.GetTop() for box in boxes),
+            max(box.GetRight() for box in boxes), max(box.GetBottom() for box in boxes))
 
 
 def nearer_than(a, b, gap):
     return (a[LEFT] < b[RIGHT] + gap and b[LEFT] < a[RIGHT] + gap
             and a[TOP] < b[BOTTOM] + gap and b[TOP] < a[BOTTOM] + gap)
-
-
-def too_close(a, b):
-    return nearer_than(a, b, COURTYARD_GAP)
 
 
 def antenna_clearances(board, antennas):
@@ -216,6 +231,14 @@ def draw_antenna_clearances(board, clearances):
         for x, y in ((left, top), (right, top), (right, bottom), (left, bottom)):
             area.Outline().Append(x, y)
         board.Add(area)
+
+
+def closed_to(footprint, clearances, class_of_net):
+    """The antenna clearances the footprint may not enter: those kept clear
+    of a net class one of its pads is in."""
+    classes = {class_of_net.get(pad.GetNetname(), "Default") for pad in footprint.Pads() if pad.GetNetname()}
+    return [box for part, box, kept_out in clearances
+            if part != footprint.GetReference() and kept_out & classes]
 
 
 def on_board(box, outline, open_edge):
@@ -277,12 +300,13 @@ def set_layers(board, layers):
     return True
 
 
-def settle(board, footprint, cost, moves, turns=None, open_edge=None, closed=()):
+def settle(board, footprint, cost, moves, turns=None, open_edge=None, gap=COURTYARD_GAP, closed=()):
     """Move the footprint to the free place of lowest cost. moves lists the
     candidates as (dx, dy) from where the footprint is; cost(dx, dy, pads)
     prices one, pads being the footprint's [(number, x, y)] there; turns
-    lists the orientations to try, the footprint's own when left out; closed
-    lists the rectangles the footprint may not enter."""
+    lists the orientations to try, the footprint's own when left out; gap
+    is what the footprint keeps to every other part; closed lists the
+    rectangles the footprint may not enter."""
     outline = board_outline(board)
     others = [keep_out(other) for other in board.GetFootprints()
               if other.GetReference() != footprint.GetReference()]
@@ -297,17 +321,44 @@ def settle(board, footprint, cost, moves, turns=None, open_edge=None, closed=())
             if best and price >= best[0]:
                 continue
             moved = (box[LEFT] + dx, box[TOP] + dy, box[RIGHT] + dx, box[BOTTOM] + dy)
-            if (on_board(moved, outline, open_edge) and not any(too_close(moved, other) for other in others)
+            if (on_board(moved, outline, open_edge) and not any(nearer_than(moved, other, gap) for other in others)
                     and not any(nearer_than(moved, area, 0) for area in closed)):
                 best = (price, turn, dx, dy)
     if not best:
-        sys.exit(f"no free place for {footprint.GetReference()}")
+        raise NoFreePlace(footprint.GetReference())
     footprint.SetOrientationDegrees(best[1])
     footprint.SetPosition(pcbnew.VECTOR2I(start.x + best[2], start.y + best[3]))
 
 
 def displacement(dx, dy, pads):
     return math.hypot(dx, dy)
+
+
+def beside_offset(rule, edge):
+    """From a part to the one a rule of circuit/fixed_positions.toml puts
+    beside it: the rule's pitch along the edge, to the side the rule names
+    as a person facing that edge from outside the board sees it."""
+    pitch = pcbnew.FromMM(rule["pitch_mm"])
+    step = -pitch if (rule["side"] == "left") == (edge in (BOTTOM, LEFT)) else pitch
+    return pcbnew.VECTOR2I(step, 0) if edge in (TOP, BOTTOM) else pcbnew.VECTOR2I(0, step)
+
+
+def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=NEARBY, closed=()):
+    """Move the footprint to the free place where its pads are nearest to the
+    pads they connect to, turned whichever way brings them nearest. reach
+    holds, for each of its pads by number, the places of those pads; gap is
+    what the footprint keeps to every other part; moves lists the places
+    tried, as (dx, dy) from the middle of the pads it connects to; closed
+    lists the rectangles the footprint may not enter."""
+    targets = [target for group in reach.values() for target in group]
+    footprint.SetPosition(pcbnew.VECTOR2I(sum(target.x for target in targets) // len(targets),
+                                          sum(target.y for target in targets) // len(targets)))
+
+    def distance_to_reach(dx, dy, pads):
+        return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
+                   for number, x, y in pads if number in reach)
+
+    settle(board, footprint, distance_to_reach, moves, turns=QUARTER_TURNS, gap=gap, closed=closed)
 
 
 def main(netlist_path, net_classes_path, board_path):
@@ -379,13 +430,6 @@ def main(netlist_path, net_classes_path, board_path):
     for track in stale_tracks:
         board.Delete(track)
 
-    def closed_to(footprint):
-        """The antenna clearances the footprint may not enter: those kept
-        clear of a net class one of its pads is in."""
-        classes = {class_of_net.get(pad.GetNetname(), "Default") for pad in footprint.Pads() if pad.GetNetname()}
-        return [box for part, box, kept_out in clearances
-                if part != footprint.GetReference() and kept_out & classes]
-
     def followers(designator):
         """The parts that connect to nothing but this part, the nets of the
         fills aside: a socket's pull-down resistors."""
@@ -398,42 +442,51 @@ def main(netlist_path, net_classes_path, board_path):
                 found.append(board.FindFootprintByReference(other))
         return found
 
-    square = sorted(((dx, dy) for dx in range(-REACH, REACH + 1, GRID) for dy in range(-REACH, REACH + 1, GRID)),
-                    key=lambda move: math.hypot(*move))
-
     # The parts whose place is stated. What connects to nothing but such a part moves with it.
     waiting = {footprint.GetReference() for footprint in new}
+    open_edge_of = {}
     for designator, rule in fixed.items():
         footprint = board.FindFootprintByReference(designator)
         start = footprint.GetPosition()
-        open_edge = EDGES[rule["edge"]]
-        along_x = open_edge in (TOP, BOTTOM)
-        inset = pcbnew.FromMM(rule["edge_line_mm"])
-        along = start
-        if "near" in rule:
-            along = start + middle([pad_named(board, name).GetPosition() for name in rule["near"]]) - pad_centre(footprint)
-        footprint.SetPosition({
-            LEFT: pcbnew.VECTOR2I(outline[LEFT] + inset, along.y),
-            TOP: pcbnew.VECTOR2I(along.x, outline[TOP] + inset),
-            RIGHT: pcbnew.VECTOR2I(outline[RIGHT] - inset, along.y),
-            BOTTOM: pcbnew.VECTOR2I(along.x, outline[BOTTOM] - inset),
-        }[open_edge])
         slides = range(-2 * REACH, 2 * REACH + 1, EDGE_STEP)
+        if "edge" in rule:
+            open_edge_of[designator] = EDGES[rule["edge"]]
+            if "edge_line_mm" not in rule:
+                continue    # placed by eye: it stays where it is drawn
+            inset = pcbnew.FromMM(rule["edge_line_mm"])
+            along = start
+            if "near" in rule:
+                along = start + middle([pad_named(board, name).GetPosition() for name in rule["near"]]) - pad_centre(footprint)
+            footprint.SetPosition({
+                LEFT: pcbnew.VECTOR2I(outline[LEFT] + inset, along.y),
+                TOP: pcbnew.VECTOR2I(along.x, outline[TOP] + inset),
+                RIGHT: pcbnew.VECTOR2I(outline[RIGHT] - inset, along.y),
+                BOTTOM: pcbnew.VECTOR2I(along.x, outline[BOTTOM] - inset),
+            }[open_edge_of[designator]])
+        else:
+            neighbour = board.FindFootprintByReference(rule["beside"])
+            open_edge_of[designator] = open_edge_of[rule["beside"]]
+            offset = beside_offset(rule, open_edge_of[designator])
+            footprint.SetOrientationDegrees(neighbour.GetOrientationDegrees())
+            footprint.SetPosition(neighbour.GetPosition() + offset)
+            # The pitch is the least: further from its neighbour, never nearer.
+            slides = range(0, 2 * REACH + 1, EDGE_STEP) if offset.x + offset.y > 0 else range(0, -2 * REACH - 1, -EDGE_STEP)
+        along_x = open_edge_of[designator] in (TOP, BOTTOM)
         settle(board, footprint, displacement, [(s, 0) if along_x else (0, s) for s in slides],
-               open_edge=open_edge, closed=closed_to(footprint))
+               open_edge=open_edge_of[designator], closed=closed_to(footprint, clearances, class_of_net))
         waiting.discard(designator)
         moved_by = footprint.GetPosition() - start
         if moved_by.x or moved_by.y:
             print("moved  ", describe(footprint))
             for follower in followers(designator):
                 follower.SetPosition(follower.GetPosition() + moved_by)
-                settle(board, follower, displacement, square, closed=closed_to(follower))
+                settle(board, follower, displacement, NEARBY, closed=closed_to(follower, clearances, class_of_net))
                 print("moved  ", describe(follower))
 
     # A swapped part that now enters a neighbour's courtyard moves the least it can.
     for footprint in swapped:
         if footprint.GetReference() not in fixed:
-            settle(board, footprint, displacement, square, closed=closed_to(footprint))
+            settle(board, footprint, displacement, NEARBY, closed=closed_to(footprint, clearances, class_of_net))
         print("swapped", describe(footprint))
 
     # A new part goes where its pads are nearest to the pads they connect to in its own block.
@@ -451,15 +504,7 @@ def main(netlist_path, net_classes_path, board_path):
             reach = {number: targets for number, targets in reach.items() if targets}
             if not reach:
                 sys.exit(f"{designator} connects to nothing on the board in its block {parts[designator]['block']}")
-            targets = [target for group in reach.values() for target in group]
-            footprint.SetPosition(pcbnew.VECTOR2I(sum(t.x for t in targets) // len(targets),
-                                                  sum(t.y for t in targets) // len(targets)))
-
-            def distance_to_reach(dx, dy, pads):
-                return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
-                           for number, x, y in pads if number in reach)
-
-            settle(board, footprint, distance_to_reach, square, turns=QUARTER_TURNS, closed=closed_to(footprint))
+            settle_at_its_connections(board, footprint, reach, closed=closed_to(footprint, clearances, class_of_net))
             waiting.discard(designator)
         print("added  ", describe(footprint))
 
@@ -474,4 +519,7 @@ def main(netlist_path, net_classes_path, board_path):
 if __name__ == "__main__":
     if len(sys.argv) != 4:
         sys.exit(__doc__)
-    main(*sys.argv[1:])
+    try:
+        main(*sys.argv[1:])
+    except NoFreePlace as part:
+        sys.exit(f"no free place for {part}")

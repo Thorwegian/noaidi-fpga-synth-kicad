@@ -1,31 +1,92 @@
 # Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 # License: CERN-OHL-S v2
 #
-# fixed_positions.toml -- where the parts a person interacts with sit
-# (docs/requirements.md, Where the parts sit). scripts/board_from_circuit.py
-# puts these parts where this file says; nothing else moves them.
+# fixed_positions.toml -- the constraints on where the parts sit
+# (docs/requirements.md, Where the parts sit), as a layout manager takes
+# them: a part has none of them, a few or many, of different kinds. A part
+# this file does not name has none, and is placed beside what it connects
+# to. scripts/squeeze_board.py places the parts to these constraints, and
+# scripts/board_from_circuit.py keeps the parts this file names where they
+# are when it brings the board up to the circuit.
 #
-#   edge          the board's edge the part's opening is at: left, top, right, bottom.
-#                 The part keeps the way it is turned.
+# At an edge:
+#   edge          the board's edge the part's opening is at: left, top, right,
+#                 bottom. squeeze_board.py turns a part the board has at
+#                 another edge to face this one, and slides the part along
+#                 the edge to where it fits.
 #   edge_line_mm  from the footprint's origin to the maker's board-edge line.
-#   near          the pads the part sits as near to as it gets along its edge,
-#                 as designator.pad: the middle of its own pads level with the
-#                 middle of these. Without it the part keeps its place along
-#                 the edge.
+#                 A part without it is placed by eye, so that its plug can
+#                 be inserted, and keeps the distance to the edge it is drawn at.
+#
+# Against another part this file names, as the board is drawn, seen from
+# its front:
+#   below, above, left_of, right_of
+#                 the part lies wholly on that side of the other. How far
+#                 apart the two end up is for the script to work out.
+#
+# As one with another part:
+#   beside        the part it sits next to, at the same edge and turned the
+#                 same way: the two move as one.
+#   pitch_mm      centre to centre from that part, at least.
+#   side          which side of that part it is on, left or right, as a
+#                 person facing that edge from outside the board sees the two.
+#
+# Drawn to pads of another part:
+#   near          the pads the part sits level with along its edge, as
+#                 designator.pad: the middle of its own pads level with the
+#                 middle of these. For a part at an edge that meets the
+#                 other part's edge at a corner.
+#
+# The board this file describes: the three sockets for music along the top;
+# below them the ESP32 module across the board from the left edge; below
+# that the two USB sockets at the left edge and, at the right edge, the Tang
+# Nano with the DAC module below it.
 
-# The power socket. Hroparts' drawing of the TYPE-C-31-M-12
+# The ESP32 module: its USB sockets and buttons.
+[U1]
+edge = "left"
+
+# The USB MIDI socket. Hroparts' drawing of the TYPE-C-31-M-12
 # (docs/thirdparty/Hroparts_TYPE-C-31-M-12_drawing.pdf, recommended PCB
 # layout) puts the PCB edge 5.79 mm in front of the centres of the rear shell
 # slots; the footprint has those at y = -3.13 mm: 5.79 - 3.13 = 2.66 mm.
-[J9]
-edge = "bottom"
-edge_line_mm = 2.66
-
-# The USB MIDI socket, the same part on the same board-edge line. It sits
-# below the ESP32 module's two USB pins, where its data pair ends: the pair
-# is then as short as it gets, and the socket is at the far end of the
-# module from its antenna (circuit/antennas.toml).
+# It is the first socket below the ESP32 module, whose two USB pins its
+# data pair ends in, at the far end of the module from its antenna
+# (circuit/antennas.toml).
 [J14]
-edge = "bottom"
+edge = "left"
 edge_line_mm = 2.66
-near = ["U1.25", "U1.26"]
+below = "U1"
+
+# The power socket, the same part on the same board-edge line.
+[J9]
+edge = "left"
+edge_line_mm = 2.66
+below = "J14"
+
+# The Tang Nano 20K: its USB socket and buttons.
+[U2]
+edge = "right"
+below = "U1"
+
+# The DAC module: its audio output socket.
+[U5]
+edge = "right"
+below = "U2"
+
+# The MIDI sockets: MIDI 1 on the left and MIDI 2 on its right, as a
+# person facing the top edge sees them. The socket's outline is 23.0 mm wide
+# (the footprint's silkscreen); 24 mm leaves 1 mm between two of them, the
+# room of a via.
+[J1]
+edge = "top"
+
+[J2]
+beside = "J1"
+pitch_mm = 24.0
+side = "right"
+
+# The S/PDIF socket.
+[J3]
+edge = "top"
+right_of = "J1"

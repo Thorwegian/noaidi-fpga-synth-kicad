@@ -128,7 +128,7 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   nearest layer 1.5 mm below, the same pair comes to about 143 Ω.
 - **The USB data pair is laid as a pair:** its two tracks side by side
   on the front from the socket to the module, equally long, without a
-  via, along the path `circuit/pair_paths.toml` states. Espressif's
+  via, straight from the one to the other (`circuit/pair_paths.toml`). Espressif's
   guidelines ask for the pair in parallel at equal lengths, with as few
   vias as possible
   (https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32s3/pcb-layout-design.html,
@@ -148,6 +148,27 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   figure. The DIN and RCA sockets and the modules are placed by eye to
   that end, and their positions carry no precision; a USB-C socket
   sits on its maker's board-edge line (`circuit/fixed_positions.toml`).
+- **Related parts sit together.** Two large parts with many connections
+  between them are neighbours. A part that is not at the board's edge
+  sits beside what it connects to; where it sits otherwise is free, and
+  the small parts need no order of their own as long as they are packed
+  well around the large ones.
+- **A part at the board's edge stays at its edge and may sit anywhere
+  along it,** where nothing below says otherwise. An order between two
+  parts is stated as a constraint in `circuit/fixed_positions.toml`
+  (one below, above, left of or right of the other); how far apart they
+  end up is not.
+- **The board has a section along each side.** The three sockets for
+  music are at the top edge. Below them the ESP32 module lies across
+  the board from the left edge; below it the two USB sockets are at the
+  left edge and, at the right edge, the Tang Nano with the DAC module
+  below it.
+- **Related connectors at an edge sit together, and a group reads in
+  its order from that edge.** Connectors that form a group (port 1 and
+  port 2, port A and port B, input L and input R) are next to each
+  other, in that order from left to right for a person facing the edge
+  from outside the board: MIDI 1 (J1) is left of MIDI 2 (J2) seen from
+  the top edge.
 - **The ESP32 module's USB ports face the board's edge, so its antenna
   lies over the board.** The module has its ports at one end and its
   antenna at the other, and a plug has to reach the ports. Espressif's
@@ -169,10 +190,11 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   `scripts/board_from_circuit.py` puts no part of those nets nearer,
   and KiCad's DRC reports a pad, a track or a via of them that is
   (`noaidi-fpga-synth.kicad_dru`).
-- **The USB MIDI socket (J14) sits at the bottom edge, below the ESP32
-  module's USB pins,** which are at the far end of the module from its
-  antenna: the data pair is as short as it gets. The power socket (J9)
-  is at the same edge and carries no data.
+- **The two USB sockets sit at the left edge, below the ESP32 module,**
+  at the end of the module its own USB ports are at and the far end
+  from its antenna. The USB MIDI socket (J14) is the upper one, next to
+  the module's USB pins its data pair ends in; the power socket (J9) is
+  below it and carries no data.
 
 ## Not required of this board
 
