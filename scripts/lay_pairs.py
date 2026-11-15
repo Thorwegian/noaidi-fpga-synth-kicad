@@ -8,10 +8,17 @@
     scripts/lay_pairs.py <board>
 
 For each pair in circuit/pair_paths.toml, removes the tracks and vias of the
-pair's two nets and lays two tracks side by side along the path the file
-states, on the layer it states: at the width and the gap the nets' class
-gives a pair, the path midway between them. The path's corners are cut, so
-that a turn is two bends.
+pair's two nets and lays two tracks side by side along the pair's path, on
+the layer the file states: at the width and the gap the nets' class gives a
+pair, the path midway between them. The path's corners are cut, so that a
+turn is two bends.
+
+The path is the one the file states. For a pair it states none for, the
+script works it out from the pads the circuit joins: straight out of the
+first two towards the last two, with a step sideways where the two ends
+are not in line. Such a pair goes around nothing; KiCad's DRC says whether
+that was right, the rule that keeps a net class away from an antenna among
+its rules.
 
 At each end the pair as a whole takes a slanted step onto the line midway
 between its two pads, where the path ends beside that line: a socket that
@@ -48,6 +55,8 @@ PAIR_PATHS = os.path.join(PROJECT_DIR, "circuit", "pair_paths.toml")
 CORNER_CUT_MM = 0.5         # taken off each leg of a corner
 SHARP = 0.7                 # a corner is cut when the cosine of its turn is below this: beyond 45 degrees
 STRAIGHT_ON_MM = 0.25       # the pair runs straight for this long after its step onto the pads' line
+LEAD_MM = 1.25              # a path the script works out ends this far, and half its pads' spacing, before its pads:
+                            # each track's slanted step to its pad needs as far ahead as it goes sideways
 
 
 # A point, and a direction, is a complex number of millimetres: x + y·j.
@@ -178,11 +187,61 @@ def left_first(pads, end, heading):
     return sorted(pads, key=lambda pad: along(middle(pad) - end, left_of(heading)), reverse=True)
 
 
+def worked_out(board, pair):
+    """The path of a pair the file states none for: straight out of its
+    first pads towards its last. Where the two ends are not in line, the
+    pair takes a slanted step onto the line of its last pads before it
+    reaches them, or, where it is further to the side than ahead, a step
+    sideways halfway."""
+    starts, ends = ([middle(pad) for pad in pads_of(board, pair[end])] for end in ("from", "to"))
+    start, end = sum(starts) / 2, sum(ends) / 2
+    heading = left_of(unit(starts[1] - starts[0]))
+    if along(end - start, heading) < 0:
+        heading = -heading
+    if abs(along(unit(ends[1] - ends[0]), heading)) > 1e-6:
+        sys.exit(f"{pair['name']}: the pads at its two ends do not face each other, so its path has to be stated")
+    first = start + (abs(starts[1] - starts[0]) / 2 + LEAD_MM) * heading
+    last = end - (abs(ends[1] - ends[0]) / 2 + LEAD_MM) * heading
+    ahead, sideways = along(last - first, heading), along(last - first, left_of(heading))
+    if ahead < 4 * CORNER_CUT_MM:
+        sys.exit(f"{pair['name']}: its two ends are too near each other for a path between them")
+    if ahead > abs(sideways) + STRAIGHT_ON_MM + CORNER_CUT_MM:
+        return [first, first + (ahead - abs(sideways) - STRAIGHT_ON_MM) * heading]
+    return with_corners_cut([first, first + ahead / 2 * heading, last - ahead / 2 * heading, last])
+
+
+def path_of(board, pair):
+    """The line midway between the pair's two tracks, from short of its
+    first pads to short of its last."""
+    path = with_corners_cut(points_of(pair["path_mm"])) if "path_mm" in pair else worked_out(board, pair)
+    path = onto_the_pads_line(path[::-1], pads_of(board, pair["from"]), pair["name"])[::-1]
+    return onto_the_pads_line(path, pads_of(board, pair["to"]), pair["name"])
+
+
+def lanes(board):
+    """The rectangles (left, top, right, bottom) the pairs' tracks will lie
+    in, with their class's clearance around them, in the board's units: what
+    a script that places parts ahead of the pairs keeps free."""
+    found = []
+    for pair in tomllib.load(open(PAIR_PATHS, "rb"))["pair"]:
+        ends = [sum(middle(pad) for pad in pads_of(board, pair[end])) / 2 for end in ("from", "to")]
+        lines = [[ends[0]] + path_of(board, pair) + [ends[1]]]
+        for branch in pair.get("branch", []):
+            start = middle(pads_of(board, [branch["from"]])[0])
+            lines.append([start + offset for offset in [0j] + points_of(branch["offsets_mm"])])
+        net_class = board.GetDesignSettings().m_NetSettings.GetEffectiveNetClass(pads_of(board, pair["from"])[0].GetNetname())
+        around = pcbnew.ToMM(net_class.GetDiffPairGap() / 2 + net_class.GetDiffPairWidth() + net_class.GetClearance())
+        for points in lines:
+            for start, end in zip(points, points[1:]):
+                found.append(tuple(pcbnew.FromMM(value) for value in (
+                    min(start.real, end.real) - around, min(start.imag, end.imag) - around,
+                    max(start.real, end.real) + around, max(start.imag, end.imag) + around)))
+    return found
+
+
 def lay(board, pair):
     name = pair["name"]
-    path = with_corners_cut(points_of(pair["path_mm"]))
-    path = onto_the_pads_line(path[::-1], pads_of(board, pair["from"]), name)[::-1]
-    path = onto_the_pads_line(path, pads_of(board, pair["to"]), name)
+    path = path_of(board, pair)
     out_of_start, out_of_end = unit(path[0] - path[1]), unit(path[-1] - path[-2])
     # The pad of the track on the path's left first. Looking out of the
     # path's start, the path's left is on the right.

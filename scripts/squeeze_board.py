@@ -5,16 +5,17 @@
 #
 """squeeze_board.py -- make the board smaller: the parts at its edges packed along them, the others beside what they connect to.
 
-    scripts/squeeze_board.py <netlist> <board> <room>
+    scripts/squeeze_board.py <netlist> <board> <room> [<widest mm>]
 
 The netlist is the one circuit/board.py writes (board.net).
 
 The parts at the edges are those circuit/fixed_positions.toml names: what a
-person plugs into. Each stays at its edge, at the distance to it that it
-has, and is free to slide along it; a part the file puts beside another
-moves with that one, and a part the file puts near pads of another sits
-level with them. Where the others sit along their edges on the board that
-is read plays no role.
+person plugs into. Each is at the edge the file gives it, at the distance
+to an edge that it has on the board, and is free to slide along it; one the
+board has at another edge is turned to face the file's. A part the file
+puts beside another moves with that one, and a part the file puts near pads
+of another sits level with them. Where the others sit along their edges on
+the board that is read plays no role.
 
 No part with a pad of a net class that an antenna is kept clear of
 (circuit/antennas.toml) is put inside that antenna's clearance, which
@@ -30,10 +31,12 @@ band around those three sides, with its two corners, to hold
     room * (the area of the parts that belong to it)
 
 so room is how many times the area those parts cover is kept free, and
-the one number that says how tight the board is. Two parts at edges are at
-least the sum of their margins apart, and each is its margin from the
-edges that are not its own. A part's area is that of its rectangle (the one
-around its courtyard, drawn outline and rule areas,
+the one number that says how tight the board is. Two parts at different
+edges are at least the sum of their margins apart, and each is its margin
+from the edges that are not its own. Two parts at the same edge may stand
+side by side, with room for a via between them: their own parts then sit
+on the side that faces the board. A part's area is that of its rectangle
+(the one around its courtyard, drawn outline and rule areas,
 scripts/board_from_circuit.py's keep_out), with room for a via added to
 its width and its height.
 
@@ -42,7 +45,9 @@ the edges can be put down so: it finds the smallest height for the board's
 width, then makes the board narrower step by step, raising the height
 whenever the parts no longer fit; for a width and a height it tries the
 places along the edges one part after the other. The right and the bottom
-edge move; the fills follow the outline.
+edge move; the fills follow the outline. Without a width the outline is no
+larger than the board is. With one it is no wider than that, and as tall
+as it takes: the smallest outline is not the narrowest.
 
 Every other part is then placed anew, the ones with the most pads first:
 at the free place where its pads are nearest to the pads they connect to,
@@ -51,7 +56,8 @@ for in the part's own block of the circuit (its SubCircuit), and on the
 whole board when the block has none on that net. A pad on the net of a fill
 counts only for a part that has no other pad to go by, since a fill is
 everywhere. A part that finds no place near its connections is looked for
-one further away, on a coarser grid.
+one further away, on a coarser grid. No part is placed where a
+differential pair will run (scripts/lay_pairs.py's lanes).
 
 A part placed so keeps room for a via to every other part: the via of the
 default net class and that class's clearance on both sides of it. A
@@ -78,6 +84,7 @@ from board_from_circuit import (ANTENNAS, BOTTOM, EDGES, FIXED_POSITIONS, LEFT, 
                                 antenna_clearances, beside_offset, board_outline, closed_to, draw_antenna_clearances,
                                 keep_out, middle, nearer_than, pad_centre, pad_named, read_circuit,
                                 settle_at_its_connections)
+from lay_pairs import lanes  # noqa: E402
 
 STEP = pcbnew.FromMM(2.0)       # of the search for the outline and for the places along the edges
 FURTHER = pcbnew.FromMM(60.0)   # how far from its connections a part is looked for a place when there is none near them
@@ -146,9 +153,10 @@ def margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, lea
     return margin, count
 
 
-def smallest_outline(blocks, margin, closed, extent):
+def smallest_outline(blocks, margin, closed, least, extent, largest):
     """The smallest width and height, by area, in which the blocks can be
-    put down along their edges, and how far each then slides.
+    put down along their edges, and how far each then slides. extent is the
+    width and height the board has, largest the ones the search starts from.
 
     A block is (edge, [(part, rectangle)], near): parts that move as one,
     each with its rectangle (left, top, right, bottom) measured from the
@@ -160,7 +168,10 @@ def smallest_outline(blocks, margin, closed, extent):
 
     closed holds what a part keeps other parts out of, as {part: [(rectangle
     measured from the left and top of the part's own, the parts kept out)]}.
+    least is what two parts at the same edge keep between them.
     """
+    at = {name: edge for edge, members, _ in blocks for name, _ in members}
+
     def moved(block, slide, width, height):
         edge, members, _ = block
         dx = slide if edge in (TOP, BOTTOM) else (width - extent[0] if edge == RIGHT else 0)
@@ -180,7 +191,8 @@ def smallest_outline(blocks, margin, closed, extent):
 
     def apart(members, others):
         return all(max(a[LEFT] - b[RIGHT], b[LEFT] - a[RIGHT], a[TOP] - b[BOTTOM], b[TOP] - a[BOTTOM])
-                   >= margin[name] + margin[other] and let_in(name, a, other, b) and let_in(other, b, name, a)
+                   >= (least if at[name] == at[other] else margin[name] + margin[other])
+                   and let_in(name, a, other, b) and let_in(other, b, name, a)
                    for name, a in members for other, b in others)
 
     def slides(block, width, height):
@@ -216,15 +228,15 @@ def smallest_outline(blocks, margin, closed, extent):
     def fits(width, height):
         return put_down([slides(block, width, height) for block in blocks])
 
-    if fits(*extent) is None:
-        sys.exit("the parts at the edges do not fit in the outline the board has with this much room")
-    low, height = 0, extent[1]              # no room at low, room at height
+    if fits(*largest) is None:
+        sys.exit("the parts at the edges do not fit in an outline that size with this much room")
+    low, height = 0, largest[1]             # no room at low, room at height
     while height - low > STEP:
         middle = (low + height) // 2
-        low, height = (low, middle) if fits(extent[0], middle) is not None else (middle, height)
+        low, height = (low, middle) if fits(largest[0], middle) is not None else (middle, height)
     # A narrower board is never lower: the height only grows as the width shrinks.
-    best, width = (extent[0], height), extent[0] - STEP
-    while width > 0 and height <= extent[1]:
+    best, width = (largest[0], height), largest[0] - STEP
+    while width > 0 and height <= largest[1]:
         if fits(width, height) is None:
             height += STEP
             continue
@@ -234,7 +246,7 @@ def smallest_outline(blocks, margin, closed, extent):
     return best, fits(*best)
 
 
-def main(netlist_path, board_path, room):
+def main(netlist_path, board_path, room, widest=None):
     parts, nets, class_of_net = read_circuit(netlist_path)
     board = pcbnew.LoadBoard(board_path)
     outline_drawings = [drawing for drawing in board.GetDrawings() if drawing.GetLayer() == pcbnew.Edge_Cuts]
@@ -253,6 +265,19 @@ def main(netlist_path, board_path, room):
 
     # The parts that move as one: a part with an edge, and those the file puts beside it.
     edge_of = {name: EDGES[rule["edge"]] for name, rule in fixed.items() if "edge" in rule}
+    # A part the board has at another edge than the file is turned to face the file's, at the distance to the edge it has.
+    for name, edge in edge_of.items():
+        box = keep_out(footprints[name])
+        to_edge = {LEFT: box[LEFT] - outline[LEFT], TOP: box[TOP] - outline[TOP],
+                   RIGHT: outline[RIGHT] - box[RIGHT], BOTTOM: outline[BOTTOM] - box[BOTTOM]}
+        drawn_at = min(to_edge, key=to_edge.get)
+        if drawn_at != edge:
+            footprints[name].SetOrientationDegrees(footprints[name].GetOrientationDegrees() + 90 * ((drawn_at - edge) % 4))
+            box = keep_out(footprints[name])
+            footprints[name].Move(pcbnew.VECTOR2I(*{
+                LEFT: (outline[LEFT] + to_edge[drawn_at] - box[LEFT], 0), TOP: (0, outline[TOP] + to_edge[drawn_at] - box[TOP]),
+                RIGHT: (outline[RIGHT] - to_edge[drawn_at] - box[RIGHT], 0),
+                BOTTOM: (0, outline[BOTTOM] - to_edge[drawn_at] - box[BOTTOM])}[edge]))
     members_of = {name: [name] for name in edge_of}
     for name, rule in fixed.items():
         if "beside" in rule:
@@ -288,7 +313,13 @@ def main(netlist_path, board_path, room):
     blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members], near.get(first))
                      for first, members in members_of.items()),
                     key=lambda block: -sum((box[RIGHT] - box[LEFT]) * (box[BOTTOM] - box[TOP]) for _, box in block[1]))
-    new_extent, slides = smallest_outline(blocks, margin, closed, extent)
+    # Without a width the outline is no larger than the board is; with one, no wider than it and as tall as it takes:
+    # the parts at the edges one below the other is the tallest it gets.
+    largest = extent
+    if widest is not None:
+        largest = (min(extent[0], pcbnew.FromMM(widest)),
+                   sum(box[BOTTOM] - box[TOP] + 2 * margin[name] for _, members, _ in blocks for name, box in members))
+    new_extent, slides = smallest_outline(blocks, margin, closed, room_for_a_via, extent, largest)
     for (edge, members, _), slide in zip(blocks, slides):
         dx = slide if edge in (TOP, BOTTOM) else (new_extent[0] - extent[0] if edge == RIGHT else 0)
         dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
@@ -309,6 +340,7 @@ def main(netlist_path, board_path, room):
     draw_antenna_clearances(board, clearances)
     for track in list(board.GetTracks()):
         board.Delete(track)
+    pair_lanes = lanes(board)
 
     # The other parts leave the board and come back one at a time, each beside what it connects to.
     off_the_board = pcbnew.VECTOR2I(outline[LEFT] - 10 * extent[0], outline[TOP])
@@ -319,7 +351,7 @@ def main(netlist_path, board_path, room):
                       for dy in range(-FURTHER, FURTHER + 1, FURTHER_GRID)), key=lambda move: math.hypot(*move))
     for name, reach in in_order(inner, footprints, parts, nets, fixed, fill_nets):
         places = {number: [place for _, place in targets] for number, targets in reach.items()}
-        kept_clear = closed_to(footprints[name], clearances, class_of_net)
+        kept_clear = closed_to(footprints[name], clearances, class_of_net) + pair_lanes
         try:
             settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via, closed=kept_clear)
         except NoFreePlace:
@@ -350,6 +382,6 @@ def main(netlist_path, board_path, room):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) not in (4, 5):
         sys.exit(__doc__)
-    main(sys.argv[1], sys.argv[2], float(sys.argv[3]))
+    main(sys.argv[1], sys.argv[2], *(float(number) for number in sys.argv[3:]))

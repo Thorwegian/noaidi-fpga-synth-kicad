@@ -19,9 +19,10 @@
 #   side          which side of that part it is on, left or right, as a
 #                 person facing that edge from outside the board sees the two.
 #
-# scripts/squeeze_board.py slides a part with an edge along that edge, moves
-# a part and the one it sits beside as one, and puts a part with near as
-# near to those pads as it gets.
+# scripts/squeeze_board.py turns a part the board has at another edge to
+# face the one this file gives it, slides a part with an edge along that
+# edge, moves a part and the one it sits beside as one, and puts a part with
+# near level with those pads.
 
 # The ESP32 module: its USB sockets and buttons.
 [U1]
@@ -29,7 +30,7 @@ edge = "left"
 
 # The Tang Nano 20K: its USB socket and buttons.
 [U2]
-edge = "right"
+edge = "top"
 
 # The DAC module: its audio output socket.
 [U5]

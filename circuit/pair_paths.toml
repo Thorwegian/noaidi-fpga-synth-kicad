@@ -12,7 +12,11 @@
 #               through, from the one end to the other, each end short of
 #               its pads. The script cuts the corners that turn by more
 #               than 45 degrees, steps the pair onto the line midway
-#               between the pads, and takes each track to its pad.
+#               between the pads, and takes each track to its pad. A pair
+#               without it runs straight from its first pads to its last,
+#               where the two face each other: the script works the path
+#               out, and it holds wherever the parts are placed. A path is
+#               stated for a pair that has to go around something.
 #   branch      a further pad of one of the pair's nets (a socket has each
 #               line on two pads): the pad its track starts from (from),
 #               the points it goes through as distances from that pad's
@@ -27,14 +31,13 @@
 # The socket's data pads lie in the order D-, D+, D-, D+ (B7, A6, A7, B6),
 # and the pair leaves it from A7 and B6: with D- on the left going up from
 # the socket, D- is on the left under the ESP32 module's pins 25 and 26 too.
-# The path goes up midway between the two CC resistors (R17, R18), then
-# left to below the module's two pins, and up between them.
+# The socket sits below those two pins (circuit/fixed_positions.toml), so
+# the pair runs straight up to them and needs no path.
 [[pair]]
 name = "USB_D"
 layer = "F.Cu"
 from = ["J14.A7", "J14.B6"]
 to = ["U1.25", "U1.26"]
-path_mm = [[132.83, 163.8], [132.83, 161.3], [127.78, 161.3], [127.78, 160.2]]
 
 # D-'s second pad is on D-'s side of the pair: its track goes up beside the
 # pads and slants over to D-.

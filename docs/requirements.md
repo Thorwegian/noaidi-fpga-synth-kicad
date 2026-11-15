@@ -128,7 +128,7 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   nearest layer 1.5 mm below, the same pair comes to about 143 Ω.
 - **The USB data pair is laid as a pair:** its two tracks side by side
   on the front from the socket to the module, equally long, without a
-  via, along the path `circuit/pair_paths.toml` states. Espressif's
+  via, straight from the one to the other (`circuit/pair_paths.toml`). Espressif's
   guidelines ask for the pair in parallel at equal lengths, with as few
   vias as possible
   (https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32s3/pcb-layout-design.html,
