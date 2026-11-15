@@ -4,7 +4,7 @@ Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: CERN-OHL-S v2
 
 What the board in this repository has to do, as agreed with Thor in
-November 2026. The schematic and the layout are checked against this
+November 2026. The circuit and the layout are checked against this
 file; a requirement that changes, changes here first.
 
 ## The instrument it belongs to
@@ -61,7 +61,7 @@ They will not necessarily be kept in a final design.
 ## Power
 
 - **The main power connector is a USB-C socket of its own**, at 5 V,
-  without Power Delivery: the path the schematic already has, with a
+  without Power Delivery: the path the circuit already has, with a
   5.1 kΩ resistor on each CC pin, from the socket's supply to each
   module's 5 V rail through an ideal diode of its own. A USB-C source
   can offer up to 3 A this way, 15 W.
