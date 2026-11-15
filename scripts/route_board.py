@@ -13,8 +13,9 @@ is not changed; what the router is given differs from it in four ways:
 
   - no tracks and vias but the locked ones, which the router is told to
     leave where they are (scripts/lay_pairs.py lays the differential pairs
-    and locks them), each straight stretch a wire of its own: the router
-    lays all of the other tracks;
+    and scripts/lay_fill_vias.py the vias of the surface-mount pads on the
+    fills' nets, and both lock what they lay), each straight stretch a wire
+    of its own: the router lays all of the other tracks;
   - no fills, and the pads of the fills' nets without a net: the router
     lays the signals only and keeps its distance from those pads. Given a
     fill as a plane it leaves connections open, signals among them, and
