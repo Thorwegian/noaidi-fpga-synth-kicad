@@ -11,21 +11,25 @@ For each pair in circuit/pair_paths.toml, removes the tracks and vias of the
 pair's two nets and lays two tracks side by side along the path the file
 states, on the layer it states: at the width and the gap the nets' class
 gives a pair, the path midway between them. The path's corners are cut, so
-that a turn is two bends. From each end of the path a track goes to its pad
-in one slanted step and then straight on.
+that a turn is two bends.
+
+At each end the pair as a whole takes a slanted step onto the line midway
+between its two pads, where the path ends beside that line: a socket that
+has been moved a little along its edge is still met. From there each track
+goes to its pad, in a slanted step of its own where the pads lie further
+apart than the tracks.
 
 A socket has each line of a pair on two pads. The further pad of a net gets
-a branch: a track from its middle through the points the file states, to
-the net's track or to the net's first pad.
+a branch: a track from its middle through the points the file states, as
+distances from that pad, to the net's first pad, or else on in the
+direction of its last stretch until it meets the net's track.
 
 The tracks are locked: scripts/route_board.py leaves a locked track where
 it is and gives it to the router as one that stays.
 
 Two tracks on one layer cannot change sides, so the net on the left of the
 path has to be the same at both ends. A path that would need a crossing is
-refused. So is one whose two tracks would both step the same way to their
-pads at an end: side by side they would close in on each other, and the
-step belongs in the path.
+refused.
 
 KiCad's DRC is the judge of what is laid: the clearances, that every pad
 is joined, and the rules for a pair in the project's .kicad_dru.
@@ -43,6 +47,7 @@ PAIR_PATHS = os.path.join(PROJECT_DIR, "circuit", "pair_paths.toml")
 
 CORNER_CUT_MM = 0.5         # taken off each leg of a corner
 SHARP = 0.7                 # a corner is cut when the cosine of its turn is below this: beyond 45 degrees
+STRAIGHT_ON_MM = 0.25       # the pair runs straight for this long after its step onto the pads' line
 
 
 # A point, and a direction, is a complex number of millimetres: x + y·j.
@@ -64,6 +69,10 @@ def left_of(direction):
 
 def points_of(coordinates):
     return [complex(x, y) for x, y in coordinates]
+
+
+def length_of(points):
+    return sum(abs(end - start) for start, end in zip(points, points[1:]))
 
 
 def with_corners_cut(points):
@@ -92,16 +101,59 @@ def beside(points, distance):
     return [points[0] + distance * to_left[0]] + corners + [points[-1] + distance * to_left[-1]]
 
 
-def to_pad(end, heading, pad, name):
-    """The points from a track's end at the end of the path to the middle
-    of its pad: one slanted step sideways, then straight on."""
-    reach = pad - end
+def sideways_step(end, heading, target, name):
+    """The point a slanted step from the end, which heads the given way,
+    reaches on the line through the target; None when the end is on it."""
+    reach = target - end
     sideways, ahead = along(reach, left_of(heading)), along(reach, heading)
     if ahead < abs(sideways):
         sys.exit(f"{name}: the path ends too near its pads for a slanted step to reach them")
     if abs(sideways) < 1e-6:
-        return [pad]
-    return [end + abs(sideways) * heading + sideways * left_of(heading), pad]
+        return None
+    return end + abs(sideways) * heading + sideways * left_of(heading)
+
+
+def onto_the_pads_line(path, pads, name):
+    """The path, with a slanted step at its end onto the line midway
+    between the two pads and a short straight stretch after it, when it
+    ends beside that line."""
+    heading = unit(path[-1] - path[-2])
+    stepped = sideways_step(path[-1], heading, (middle(pads[0]) + middle(pads[1])) / 2, name)
+    return path if stepped is None else path + [stepped, stepped + STRAIGHT_ON_MM * heading]
+
+
+def to_pad(end, heading, pad, name):
+    """The points from a track's end at the end of the path to the middle
+    of its pad: a slanted step sideways where the pad is not straight
+    ahead, then straight on."""
+    stepped = sideways_step(end, heading, pad, name)
+    return [pad] if stepped is None else [stepped, pad]
+
+
+def where_met(start, direction, points):
+    """Where going from the start in the direction first meets the line
+    through the points; None when it does not."""
+    def turn(a, b):
+        return (a.conjugate() * b).imag
+
+    met = []
+    for first, second in zip(points, points[1:]):
+        stretch = second - first
+        if abs(turn(direction, stretch)) > 1e-9:
+            distance = turn(first - start, stretch) / turn(direction, stretch)
+            share = turn(first - start, direction) / turn(direction, stretch)
+            if distance > 1e-6 and -1e-9 <= share <= 1 + 1e-9:
+                met.append(distance)
+    return start + min(met) * direction if met else None
+
+
+def with_point(points, point):
+    """The line through the points with the point, which lies on it, as one
+    of them."""
+    for index, (start, end) in enumerate(zip(points, points[1:]), 1):
+        if abs(abs(point - start) + abs(end - point) - abs(end - start)) < 1e-6:
+            return points[:index] + [point] + points[index:]
+    return points
 
 
 def pads_of(board, names):
@@ -126,22 +178,11 @@ def left_first(pads, end, heading):
     return sorted(pads, key=lambda pad: along(middle(pad) - end, left_of(heading)), reverse=True)
 
 
-def length_of(points):
-    return sum(abs(end - start) for start, end in zip(points, points[1:]))
-
-
-def with_point(points, point):
-    """The line through the points with the point, which lies on it, as one
-    of them; None when the point does not lie on the line."""
-    for index, (start, end) in enumerate(zip(points, points[1:]), 1):
-        if abs(abs(point - start) + abs(end - point) - abs(end - start)) < 1e-6:
-            return points[:index] + [point] + points[index:]
-    return None
-
-
 def lay(board, pair):
     name = pair["name"]
     path = with_corners_cut(points_of(pair["path_mm"]))
+    path = onto_the_pads_line(path[::-1], pads_of(board, pair["from"]), name)[::-1]
+    path = onto_the_pads_line(path, pads_of(board, pair["to"]), name)
     out_of_start, out_of_end = unit(path[0] - path[1]), unit(path[-1] - path[-2])
     # The pad of the track on the path's left first. Looking out of the
     # path's start, the path's left is on the right.
@@ -156,39 +197,29 @@ def lay(board, pair):
     net_class = board.GetDesignSettings().m_NetSettings.GetEffectiveNetClass(nets[0])
     width, gap = net_class.GetDiffPairWidth(), net_class.GetDiffPairGap()
     from_path = pcbnew.ToMM(width + gap) / 2
-    lines = [beside(path, from_path), beside(path, -from_path)]
-    for heading, ends, pads in ((out_of_start, [line[0] for line in lines], start_pads),
-                                (out_of_end, [line[-1] for line in lines], end_pads)):
-        to_left, to_right = (along(middle(pad) - end, left_of(heading)) for end, pad in zip(ends, pads))
-        if to_left * to_right > 1e-9:
-            sys.exit(f"{name}: both tracks step the same way from the path's end to "
-                     f"{' and '.join(pad.GetParentFootprint().GetReference() + '.' + pad.GetNumber() for pad in pads)}; "
-                     f"the path is to end midway between where the two tracks go on")
-
-    def of_the_pair(pad):
-        if pad.GetNetname() not in nets:
-            sys.exit(f"{name}: a pad on {pad.GetNetname()} is not on one of its nets, {nets[0]} and {nets[1]}")
-        return pad
-
     runs = [(start_pad, to_pad(line[0], out_of_start, middle(start_pad), name)[::-1] + line
              + to_pad(line[-1], out_of_end, middle(end_pad), name))
-            for line, start_pad, end_pad in zip(lines, start_pads, end_pads)]
+            for line, start_pad, end_pad in zip((beside(path, from_path), beside(path, -from_path)),
+                                                start_pads, end_pads)]
     lengths = [length_of(points) for _, points in runs]
+
     for branch in pair.get("branch", []):
-        pads = [of_the_pair(pad) for pad in pads_of(board, [branch[end] for end in ("from", "to") if end in branch])]
-        if len({pad.GetNetname() for pad in pads}) != 1:
-            sys.exit(f"{name}: the branch from {branch['from']} to {branch['to']} joins two nets")
-        points = with_corners_cut([middle(pads[0])] + points_of(branch["path_mm"])
-                                  + [middle(pad) for pad in pads[1:]])
-        if len(pads) == 1:
+        pads = pads_of(board, [branch[end] for end in ("from", "to") if end in branch])
+        if {pad.GetNetname() for pad in pads} - set(nets) or len({pad.GetNetname() for pad in pads}) != 1:
+            sys.exit(f"{name}: the branch from {branch['from']} is not on one of its nets, {nets[0]} and {nets[1]}")
+        points = [middle(pads[0]) + offset for offset in [0j] + points_of(branch["offsets_mm"])]
+        if len(pads) == 2:
+            points.append(middle(pads[1]))
+        else:
             # The track the branch ends on gets a corner there: the router
             # takes two tracks for joined where their ends meet.
             run = nets.index(pads[0].GetNetname())
-            joined = with_point(runs[run][1], points[-1])
-            if joined is None:
-                sys.exit(f"{name}: the branch from {branch['from']} ends beside the track of {nets[run]}, not on it")
-            runs[run] = (runs[run][0], joined)
-        runs.append((pads[0], points))
+            met = where_met(points[-2], unit(points[-1] - points[-2]), runs[run][1])
+            if met is None:
+                sys.exit(f"{name}: the branch from {branch['from']} does not meet the track of {nets[run]}")
+            points[-1] = met
+            runs[run] = (runs[run][0], with_point(runs[run][1], met))
+        runs.append((pads[0], with_corners_cut(points)))
 
     for track in list(board.GetTracks()):
         if track.GetNetname() in nets:
