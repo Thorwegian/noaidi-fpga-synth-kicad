@@ -516,4 +516,37 @@
 		(uuid "0fe8fedb-6359-4baf-a4bc-775b644b3d8d")
 	)
 	(embedded_fonts no)
+	(model "${KIPRJMOD}/docs/thirdparty/Tang_Nano_20K_3921.step"
+		(offset
+			(xyz -26.737 -11.3 11.04)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+	(model "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x20_P2.54mm_Vertical.step"
+		(offset
+			(xyz -24.13 -10.16 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 -90)
+		)
+	)
+	(model "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x20_P2.54mm_Vertical.step"
+		(offset
+			(xyz -24.13 10.16 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 -90)
+		)
+	)
 )

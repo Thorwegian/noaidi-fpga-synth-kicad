@@ -48,8 +48,13 @@ Back copper, mirrored:
 
 ![Back copper, mirrored](https://thj.no/synth/images/pcb-back.svg)
 
-The connector and module bodies render as footprints only: their 3D
-models are not part of the project.
+The Tang Nano 20K is rendered from Sipeed's 3D model of the module with
+its pin headers (`docs/thirdparty/Tang_Nano_20K_3921.step`), standing in
+a socket of two rows of female pin headers. Its board's underside is
+11.04 mm above the base board: the 8.5 mm of the socket and the 2.54 mm
+body of the module's pin headers, both from KiCad's models of those
+parts. The ESP32 and DAC modules and the DIN and RCA sockets render as
+footprints only: the project has no 3D models of them.
 
 ## Files
 
