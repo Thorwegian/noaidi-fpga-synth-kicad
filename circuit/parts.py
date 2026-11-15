@@ -25,6 +25,13 @@ capacitor_template = Part("Device", "C", dest=TEMPLATE,
                           footprint="Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
 ideal_diode = Part("Power_Management", "LM66100DCK", dest=TEMPLATE,
                    footprint="Package_TO_SOT_SMD:SOT-363_SC-70-6")
+test_point_template = Part("Connector", "TestPoint", dest=TEMPLATE,
+                           footprint="TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm")
+
+
+def test_point(net, ref):
+    """A test point on the net, in the block of the circuit it is called in."""
+    net += test_point_template(ref=ref, tag=ref.lower())[1]
 
 
 def jlcpcb_part(part, lcsc_number):
@@ -48,7 +55,7 @@ def pin_header(pins, **attributes):
 
 
 @subcircuit
-def ideal_diode_supply(source, rail, gnd, diode_ref, capacitor_ref):
+def ideal_diode_supply(source, rail, gnd, diode_ref, capacitor_ref, gnd_test_point_ref=None):
     """A supply onto a module's own rail through an LM66100 ideal diode.
 
     CE is tied to VOUT, the data sheet's always-on reverse current blocking:
@@ -62,3 +69,5 @@ def ideal_diode_supply(source, rail, gnd, diode_ref, capacitor_ref):
     rail += diode["VOUT"], diode["~{CE}"]
     gnd += diode["GND"], diode["ST"], input_capacitor[2]
     diode["NC"] += NC
+    if gnd_test_point_ref:
+        test_point(gnd, gnd_test_point_ref)

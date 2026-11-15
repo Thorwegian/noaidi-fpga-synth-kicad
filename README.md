@@ -100,11 +100,12 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/squeeze_board.py`: places the parts and draws the outline,
   from the constraints in `circuit/fixed_positions.toml`
   (`scripts/squeeze_board.py build/check/skidl/board.net
-  noaidi-fpga-synth.kicad_pcb 2`, then `scripts/route.sh`). The parts at
-  the edges are packed along them into the smallest outline that leaves
-  each the room its own parts need, one number saying how much room
-  that is, and a second, if given, how wide the board may be; every
-  other part is placed anew beside what it connects to.
+  noaidi-fpga-synth.kicad_pcb 3`, then `scripts/route.sh`). Each part at
+  an edge gets its cluster, the parts of its block of the circuit laid
+  out around it, and the clusters are packed along the edges into the
+  smallest outline: one number says how many millimetres are kept
+  between two clusters, and a second, if given, how wide the board may
+  be.
 - `scripts/route.sh`: lays the board's signals anew with Freerouting and
   prints what KiCad's DRC finds; `scripts/route_board.py` writes the
   board for the router and reads its result back.

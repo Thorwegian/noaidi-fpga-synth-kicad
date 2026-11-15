@@ -13,11 +13,11 @@ from skidl import *
 
 from global_nets import (EXT_5V, GND, I2S_BCK, I2S_DATA, I2S_WS, NANO_3V3, NANO_5V, PCM_3V3,
                          SPDIF0, SPDIF1, SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK)
-from parts import PROJECT, ideal_diode_supply, pin_header, resistor
+from parts import PROJECT, ideal_diode_supply, pin_header, resistor, test_point
 
 
 @subcircuit
-def spdif_output(stream, gnd, series_ref, shunt_ref, socket_ref, tap_ref):
+def spdif_output(stream, gnd, series_ref, shunt_ref, socket_ref, tap_ref, test_point_ref):
     """One S/PDIF stream to an RCA socket through a 220/120 divider, with the
     undivided signal on a header ahead of it."""
     series = resistor(ref=series_ref, value="220", tag="series")
@@ -30,6 +30,7 @@ def spdif_output(stream, gnd, series_ref, shunt_ref, socket_ref, tap_ref):
     stream += series[1], tap[2]
     coax += series[2], shunt[1], socket["In"]
     gnd += shunt[2], socket["Ext"], tap[1]
+    test_point(stream, test_point_ref)
 
 
 with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
@@ -41,10 +42,13 @@ with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
     dac["DE", "MCK", "MU"] += NC
 
     ideal_diode_supply(EXT_5V, NANO_5V, GND, diode_ref="U7", capacitor_ref="C2",
-                       tag="nano_5v_supply")
+                       gnd_test_point_ref="TP18", tag="nano_5v_supply")
     NANO_5V += fpga["5V"], dac["VIN"]
     NANO_3V3 += fpga[25]
     PCM_3V3 += dac["3V"]
+    test_point(NANO_5V, "TP11")
+    test_point(NANO_3V3, "TP12")
+    test_point(PCM_3V3, "TP13")
     GND += fpga["GND"], dac["GND"]
 
     SPI2_CS_N += fpga["28_IOB8B"]
@@ -57,16 +61,20 @@ with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
     I2S_WS += fpga["55_IOR36B"], dac["WSEL"], i2s_tap[2]
     I2S_BCK += fpga["56_IOR36A"], dac["BCK"], i2s_tap[3]
     I2S_DATA += fpga["54_IOR38A"], dac["DIN"], i2s_tap[4]
+    test_point(I2S_BCK, "TP5")
+    test_point(I2S_DATA, "TP6")
+    test_point(I2S_WS, "TP7")
 
     SPDIF0 += fpga["27_IOB8A"]
     SPDIF1 += fpga["86_IOT4A"]
     spdif_output(SPDIF0, GND, series_ref="R7", shunt_ref="R8", socket_ref="J3", tap_ref="J5",
-                 tag="spdif0_output")
+                 test_point_ref="TP14", tag="spdif0_output")
     # The 48 kHz stream has no coaxial output: its pin drives the lab's LED
     # from this header, and cannot drive a divider as well.
     lab_capture_tap = pin_header(2, ref="J6", tag="lab_capture_tap")
     GND += lab_capture_tap[1]
     SPDIF1 += lab_capture_tap[2]
+    test_point(SPDIF1, "TP15")
 
     analog_out = pin_header(3, ref="J13", tag="analog_out")
     dac_out_g, dac_out_l, dac_out_r = Net("DAC_OUT_G"), Net("DAC_OUT_L"), Net("DAC_OUT_R")
