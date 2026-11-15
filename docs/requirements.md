@@ -143,6 +143,18 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   sits on its maker's board-edge line (`circuit/fixed_positions.toml`).
 - **The USB MIDI socket (J14) sits next to the power socket (J9), at
   the same edge.**
+- **Related parts sit together.** A part that is not at the board's
+  edge sits beside what it connects to; where it sits otherwise is
+  free.
+- **A part at the board's edge stays at its edge and may sit anywhere
+  along it.** The order of the parts along an edge is not specified
+  while the board has no enclosure.
+- **Related connectors at an edge sit together, and a group reads in
+  its order from that edge.** Connectors that form a group (port 1 and
+  port 2, port A and port B, input L and input R) are next to each
+  other, in that order from left to right for a person facing the edge
+  from outside the board: MIDI 1 (J1) is left of MIDI 2 (J2) seen from
+  the top edge.
 
 ## Not required of this board
 

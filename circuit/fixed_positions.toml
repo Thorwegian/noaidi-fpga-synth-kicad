@@ -12,6 +12,8 @@
 #                 be inserted, and keeps the distance to the edge it is drawn at.
 #   beside        the part it sits next to, at the same edge and turned the same way.
 #   pitch_mm      centre to centre from that part, at least.
+#   side          which side of that part it is on, left or right, as a
+#                 person facing that edge from outside the board sees the two.
 #
 # scripts/squeeze_board.py slides a part with an edge along that edge, and
 # moves a part and the one it sits beside as one.
@@ -28,12 +30,17 @@ edge = "right"
 [U5]
 edge = "bottom"
 
-# The MIDI sockets.
+# The MIDI sockets: MIDI 1 on the left and MIDI 2 on its right, as a
+# person facing the top edge sees them. The socket's outline is 23.0 mm wide
+# (the footprint's silkscreen); 24 mm leaves 1 mm between two of them, the
+# room of a via.
 [J1]
 edge = "top"
 
 [J2]
-edge = "top"
+beside = "J1"
+pitch_mm = 24.0
+side = "right"
 
 # The S/PDIF socket.
 [J3]
@@ -53,3 +60,4 @@ edge_line_mm = 2.66
 [J14]
 beside = "J9"
 pitch_mm = 15.0
+side = "left"

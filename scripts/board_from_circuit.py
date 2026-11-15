@@ -60,6 +60,12 @@ EDGE_STEP = pcbnew.FromMM(0.05)         # the step of a slide along the board's 
 QUARTER_TURNS = (0.0, 90.0, 180.0, 270.0)
 LEFT, TOP, RIGHT, BOTTOM = range(4)
 EDGES = {"left": LEFT, "top": TOP, "right": RIGHT, "bottom": BOTTOM}
+
+
+class NoFreePlace(Exception):
+    """A part has no free place among the moves it was given. Its text is the part's designator."""
+
+
 # Every move within REACH on the GRID, the shortest first.
 NEARBY = sorted(((dx, dy) for dx in range(-REACH, REACH + 1, GRID) for dy in range(-REACH, REACH + 1, GRID)),
                 key=lambda move: math.hypot(*move))
@@ -239,7 +245,7 @@ def settle(board, footprint, cost, moves, turns=None, open_edge=None, gap=COURTY
             if on_board(moved, outline, open_edge) and not any(too_close(moved, other, gap) for other in others):
                 best = (price, turn, dx, dy)
     if not best:
-        sys.exit(f"no free place for {footprint.GetReference()}")
+        raise NoFreePlace(footprint.GetReference())
     footprint.SetOrientationDegrees(best[1])
     footprint.SetPosition(pcbnew.VECTOR2I(start.x + best[2], start.y + best[3]))
 
@@ -248,11 +254,21 @@ def displacement(dx, dy, pads):
     return math.hypot(dx, dy)
 
 
-def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP):
+def beside_offset(rule, edge):
+    """From a part to the one a rule of circuit/fixed_positions.toml puts
+    beside it: the rule's pitch along the edge, to the side the rule names
+    as a person facing that edge from outside the board sees it."""
+    pitch = pcbnew.FromMM(rule["pitch_mm"])
+    step = -pitch if (rule["side"] == "left") == (edge in (BOTTOM, LEFT)) else pitch
+    return pcbnew.VECTOR2I(step, 0) if edge in (TOP, BOTTOM) else pcbnew.VECTOR2I(0, step)
+
+
+def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=NEARBY):
     """Move the footprint to the free place where its pads are nearest to the
     pads they connect to, turned whichever way brings them nearest. reach
     holds, for each of its pads by number, the places of those pads; gap is
-    what the footprint keeps to every other part."""
+    what the footprint keeps to every other part; moves lists the places
+    tried, as (dx, dy) from the middle of the pads it connects to."""
     targets = [target for group in reach.values() for target in group]
     footprint.SetPosition(pcbnew.VECTOR2I(sum(target.x for target in targets) // len(targets),
                                           sum(target.y for target in targets) // len(targets)))
@@ -261,7 +277,7 @@ def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP):
         return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
                    for number, x, y in pads if number in reach)
 
-    settle(board, footprint, distance_to_reach, NEARBY, turns=QUARTER_TURNS, gap=gap)
+    settle(board, footprint, distance_to_reach, moves, turns=QUARTER_TURNS, gap=gap)
 
 
 def main(netlist_path, net_classes_path, board_path):
@@ -335,7 +351,7 @@ def main(netlist_path, net_classes_path, board_path):
     open_edge_of = {}
     for designator, rule in fixed.items():
         footprint = board.FindFootprintByReference(designator)
-        pitch = 0
+        slides = range(-2 * REACH, 2 * REACH + 1, EDGE_STEP)
         if "edge" in rule:
             open_edge_of[designator] = EDGES[rule["edge"]]
             if "edge_line_mm" not in rule:
@@ -351,10 +367,11 @@ def main(netlist_path, net_classes_path, board_path):
         else:
             neighbour = board.FindFootprintByReference(rule["beside"])
             open_edge_of[designator] = open_edge_of[rule["beside"]]
+            offset = beside_offset(rule, open_edge_of[designator])
             footprint.SetOrientationDegrees(neighbour.GetOrientationDegrees())
-            footprint.SetPosition(neighbour.GetPosition())
-            pitch = pcbnew.FromMM(rule["pitch_mm"])
-        slides = [step for step in range(-2 * REACH, 2 * REACH + 1, EDGE_STEP) if abs(step) >= pitch]
+            footprint.SetPosition(neighbour.GetPosition() + offset)
+            # The pitch is the least: further from its neighbour, never nearer.
+            slides = range(0, 2 * REACH + 1, EDGE_STEP) if offset.x + offset.y > 0 else range(0, -2 * REACH - 1, -EDGE_STEP)
         along_x = open_edge_of[designator] in (TOP, BOTTOM)
         settle(board, footprint, displacement, [(s, 0) if along_x else (0, s) for s in slides],
                open_edge=open_edge_of[designator])
@@ -396,4 +413,7 @@ def main(netlist_path, net_classes_path, board_path):
 if __name__ == "__main__":
     if len(sys.argv) != 4:
         sys.exit(__doc__)
-    main(*sys.argv[1:])
+    try:
+        main(*sys.argv[1:])
+    except NoFreePlace as part:
+        sys.exit(f"no free place for {part}")

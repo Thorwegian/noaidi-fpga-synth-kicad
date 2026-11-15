@@ -3,40 +3,40 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-"""squeeze_board.py -- make the board smaller: the parts at its edges closer together, the others beside what they connect to.
+"""squeeze_board.py -- make the board smaller: the parts at its edges packed along them, the others beside what they connect to.
 
-    scripts/squeeze_board.py <netlist> <board> <squeeze>
+    scripts/squeeze_board.py <netlist> <board> <room>
 
-The netlist is the one circuit/board.py writes (board.net). squeeze is the
-share that is kept of the room between the parts at the board's edges: 1
-leaves them as they are, 0 brings each to its neighbour's courtyard.
+The netlist is the one circuit/board.py writes (board.net).
 
 The parts at the edges are those circuit/fixed_positions.toml names: what a
-person plugs into. Their arrangement stays. It is read off the board, a
-relation for every two of them whose rectangles (the one around a part's
-courtyard, drawn outline and rule areas, scripts/board_from_circuit.py's
-keep_out) face each other:
+person plugs into. Each stays at its edge, at the distance to it that it
+has, and is free to slide along it; a part the file puts beside another
+moves with that one. Where they sit along their edges on the board that is
+read plays no role.
 
-  - beside each other (their heights overlap): the left one stays left;
-  - above each other (their widths overlap): the upper one stays above;
-  - a part that the file puts beside another: the two move as one.
+Every other part belongs to one of them: the one it has the most
+connections to, directly or through a part that belongs to it. A part at
+an edge keeps a margin free on the sides that do not face its edge, for
+the parts that belong to it and their tracks: as wide as it takes for the
+band around those three sides, with its two corners, to hold
 
-The distance between two related parts, and from a part to each edge of the
-board, becomes
+    room * (the area of the parts that belong to it)
 
-    floor + squeeze * (distance - floor)
+so room is how many times the area those parts cover is kept free, and
+the one number that says how tight the board is. Two parts at edges are at
+least the sum of their margins apart, and each is its margin from the
+edges that are not its own. A part's area is that of its rectangle (the one
+around its courtyard, drawn outline and rule areas,
+scripts/board_from_circuit.py's keep_out), with room for a via added to
+its width and its height.
 
-where floor is the gap board_from_circuit.py keeps between courtyards and,
-at an edge, the board's copper-to-edge clearance. A distance that is at or
-under its floor stays as it is. A part keeps its distance to its own edge
-and slides along it.
-
-These parts are packed from the left edge and then from the top edge: each
-goes as far left, then as far up, as its relations allow (the longest path
-through the relations, as in the compaction of an integrated circuit's
-layout). The right and the bottom edge follow them, and the fills follow
-the outline. The script prints the chain of parts that sets the width and
-the one that sets the height.
+The script looks for the smallest outline, by area, in which the parts at
+the edges can be put down so: it finds the smallest height for the board's
+width, then makes the board narrower step by step, raising the height
+whenever the parts no longer fit; for a width and a height it tries the
+places along the edges one part after the other. The right and the bottom
+edge move; the fills follow the outline.
 
 Every other part is then placed anew, the ones with the most pads first:
 at the free place where its pads are nearest to the pads they connect to,
@@ -44,7 +44,8 @@ turned whichever way brings them nearest. A pad's connections are looked
 for in the part's own block of the circuit (its SubCircuit), and on the
 whole board when the block has none on that net. A pad on the net of a fill
 counts only for a part that has no other pad to go by, since a fill is
-everywhere. Where such a part sits on the board that is read plays no role.
+everywhere. A part that finds no place near its connections is looked for
+one further away, on a coarser grid.
 
 A part placed so keeps room for a via to every other part: the via of the
 default net class and that class's clearance on both sides of it. A
@@ -53,11 +54,12 @@ beside the part (scripts/join_fills.py), and a pad between two parts that
 stand courtyard to courtyard has no place for one.
 
 The tracks and vias are removed: they no longer meet the pads, and
-scripts/route.sh lays them anew. Whether the squeezed board can be routed
-is for route.sh and KiCad's DRC to say.
+scripts/route.sh lays them anew. Whether the board can be routed is for
+route.sh and KiCad's DRC to say.
 
 Runs under the system's Python, which has KiCad's pcbnew module.
 """
+import collections
 import math
 import os
 import sys
@@ -66,135 +68,148 @@ import tomllib
 import pcbnew
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from board_from_circuit import (BOTTOM, COURTYARD_GAP, EDGES, FIXED_POSITIONS, LEFT, RIGHT, TOP,  # noqa: E402
-                                board_outline, keep_out, read_circuit, settle_at_its_connections)
+from board_from_circuit import (BOTTOM, EDGES, FIXED_POSITIONS, LEFT, RIGHT, TOP, NoFreePlace,  # noqa: E402
+                                beside_offset, board_outline, keep_out, read_circuit, settle_at_its_connections)
 
-STEP = pcbnew.FromMM(0.01)      # distances are rounded up to this
-X, Y = 0, 1
-LOW_EDGE, HIGH_EDGE = (LEFT, TOP), (RIGHT, BOTTOM)
-EDGE_NAME = {LEFT: "the left edge", TOP: "the top edge", RIGHT: "the right edge", BOTTOM: "the bottom edge"}
-
-
-def squeezed(distance, floor, squeeze):
-    if distance <= floor:
-        return distance
-    return min(distance, floor + math.ceil(squeeze * (distance - floor) / STEP) * STEP)
-
-
-def gap(a, b, axis):
-    """The distance between two rectangles along an axis; negative where they overlap."""
-    return max(a[axis] - b[axis + 2], b[axis] - a[axis + 2])
-
-
-def pack(axis, names, start, size, relations, moving_as_one, low_gap, high_gap, at_low_edge, at_high_edge):
-    """Each part as near the low edge as its relations allow.
-
-    relations holds (first, second, distance): second starts at least
-    distance after first ends. moving_as_one holds (a, b, offset): b starts
-    offset after a starts. Returns each part's start, the extent of the
-    board along the axis, and the chain of parts that sets the extent.
-    """
-    at_least = [(a, b, size[a] + distance) for a, b, distance in relations]
-    at_least += [(a, b, offset) for a, b, offset in moving_as_one] + [(b, a, -offset) for a, b, offset in moving_as_one]
-    lowest = {name: start[name] if name in at_low_edge else low_gap[name] for name in names}
-    extent, chain = 0, []
-    while True:
-        position, pushed_by = dict(lowest), {}
-        for _ in range(len(names) + 1):
-            moved = False
-            for a, b, distance in at_least:
-                if position[b] < position[a] + distance:
-                    position[b], pushed_by[b], moved = position[a] + distance, a, True
-            if not moved:
-                break
-        else:
-            sys.exit("the relations between the parts contradict each other")
-        reach, last = max((position[name] + size[name] + high_gap[name], name) for name in names)
-        if reach > extent:
-            extent, chain = reach, [last]
-            while chain[-1] in pushed_by and len(chain) <= len(names):
-                chain.append(pushed_by[chain[-1]])
-        behind = [name for name in at_high_edge if position[name] < extent - size[name] - high_gap[name]]
-        if not behind:
-            break
-        for name in behind:
-            lowest[name] = extent - size[name] - high_gap[name]
-    return position, extent, [EDGE_NAME[LOW_EDGE[axis]]] + chain[::-1] + [EDGE_NAME[HIGH_EDGE[axis]]]
-
-
-def squeeze_edge_parts(footprints, fixed, outline, edge_floor, squeeze):
-    """Move the parts at the board's edges closer together. Returns the
-    board's width and height around them and the chains of parts that set
-    the two."""
-    names = sorted(fixed)
-    extent = (outline[RIGHT] - outline[LEFT], outline[BOTTOM] - outline[TOP])
-    own_edge = {name: EDGES.get(fixed[name].get("edge")) for name in names}
-    # Each part's rectangle, measured from the board's left and top edge.
-    box = {name: [side - outline[index % 2] for index, side in enumerate(keep_out(footprints[name]))] for name in names}
-
-    as_one = {tuple(sorted((name, rule["beside"]))) for name, rule in fixed.items() if "beside" in rule}
-    beside, above, undecided = [], [], []
-    for index, a in enumerate(names):
-        for b in names[index + 1:]:
-            apart = (gap(box[a], box[b], X), gap(box[a], box[b], Y))
-            if (a, b) in as_one:
-                continue
-            if apart[Y] < 0 or (apart[X] >= 0 and apart[Y] < COURTYARD_GAP):
-                beside.append((a, b) if box[a][X] < box[b][X] else (b, a))
-            elif apart[X] < COURTYARD_GAP:
-                above.append((a, b) if box[a][Y] < box[b][Y] else (b, a))
-            else:
-                undecided.append((a, b) if box[a][Y] < box[b][Y] else (b, a))
-
-    new_start, new_extent, chains = {}, [0, 0], [[], []]
-    for axis, pairs in ((X, beside), (Y, above)):
-        if axis == Y:
-            # Two parts that were apart both ways and now share a width are kept above each other.
-            for a, b in undecided:
-                a_start, b_start = new_start[X][a], new_start[X][b]
-                if max(a_start - b_start - (box[b][X + 2] - box[b][X]),
-                       b_start - a_start - (box[a][X + 2] - box[a][X])) < COURTYARD_GAP:
-                    pairs = pairs + [(a, b)]
-        start = {name: box[name][axis] for name in names}
-        size = {name: box[name][axis + 2] - box[name][axis] for name in names}
-        new_start[axis], new_extent[axis], chains[axis] = pack(
-            axis, names, start, size,
-            relations=[(a, b, squeezed(gap(box[a], box[b], axis), COURTYARD_GAP, squeeze)) for a, b in pairs],
-            moving_as_one=[(a, b, start[b] - start[a]) for a, b in sorted(as_one)],
-            low_gap={name: squeezed(start[name], edge_floor, squeeze) for name in names},
-            high_gap={name: (extent[axis] - box[name][axis + 2] if own_edge[name] == HIGH_EDGE[axis]
-                             else squeezed(extent[axis] - box[name][axis + 2], edge_floor, squeeze)) for name in names},
-            at_low_edge={name for name in names if own_edge[name] == LOW_EDGE[axis]},
-            at_high_edge={name for name in names if own_edge[name] == HIGH_EDGE[axis]})
-
-    for name in names:
-        footprints[name].Move(pcbnew.VECTOR2I(new_start[X][name] - box[name][X], new_start[Y][name] - box[name][Y]))
-    return new_extent, chains
+STEP = pcbnew.FromMM(2.0)       # of the search for the outline and for the places along the edges
+FURTHER = pcbnew.FromMM(60.0)   # how far from its connections a part is looked for a place when there is none near them
+FURTHER_GRID = pcbnew.FromMM(1.0)
+EDGE_NAME = {LEFT: "left", TOP: "top", RIGHT: "right", BOTTOM: "bottom"}
 
 
 def connections(designator, footprints, parts, nets, placed, fill_nets):
-    """For each of the part's pads, by number, the places of the pads it
-    connects to on the parts that are placed."""
+    """For each of the part's pads, by number, the pads it connects to on
+    the parts that are placed, as [(part, place)]."""
     on_signals, on_fills = {}, {}
     for net, pads in nets.items():
         for number in {number for part, number in pads if part == designator}:
             others = [(part, other) for part, other in pads if part in placed]
             in_block = [(part, other) for part, other in others if parts[part]["block"] == parts[designator]["block"]]
-            targets = [pad.GetPosition() for part, other in in_block or others
+            targets = [(part, pad.GetPosition()) for part, other in in_block or others
                        for pad in footprints[part].Pads() if pad.GetNumber() == other]
             if targets:
                 (on_fills if net in fill_nets else on_signals)[number] = targets
     return on_signals or on_fills
 
 
+def in_order(waiting, footprints, parts, nets, fixed, fill_nets):
+    """The parts that are not at an edge, one at a time, each with its
+    connections to the parts before it: the first in the list that connects
+    to a part already dealt with."""
+    waiting, placed = list(waiting), set(fixed)
+    while waiting:
+        for name in waiting:
+            reach = connections(name, footprints, parts, nets, placed, fill_nets)
+            if reach:
+                break
+        else:
+            sys.exit(f"these connect to nothing that is placed: {' '.join(waiting)}")
+        yield name, reach
+        placed.add(name)
+        waiting.remove(name)
+
+
 def furthest_connection(footprint, reach):
     """The longest of the distances from the part's pads to the nearest pad each connects to."""
     return max(min(math.hypot(pad.GetPosition().x - target.x, pad.GetPosition().y - target.y)
-                   for target in reach[pad.GetNumber()])
+                   for _, target in reach[pad.GetNumber()])
                for pad in footprint.Pads() if pad.GetNumber() in reach)
 
 
-def main(netlist_path, board_path, squeeze):
+def margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, least):
+    """What each part at an edge keeps free around it, and how many parts
+    belong to it."""
+    owner = {name: name for name in fixed}
+    for name, reach in in_order(inner, footprints, parts, nets, fixed, fill_nets):
+        votes = collections.Counter(owner[part] for targets in reach.values() for part, _ in targets)
+        owner[name] = max(sorted(votes), key=votes.get)
+    area, count = collections.Counter(), collections.Counter()
+    for name in inner:
+        box = keep_out(footprints[name])
+        area[owner[name]] += (box[RIGHT] - box[LEFT] + least) * (box[BOTTOM] - box[TOP] + least)
+        count[owner[name]] += 1
+    margin = {}
+    for name in fixed:
+        box = keep_out(footprints[name])
+        width, height = box[RIGHT] - box[LEFT], box[BOTTOM] - box[TOP]
+        free_sides = 2 * (width + height) - (height if edge_of[name] in (LEFT, RIGHT) else width)
+        # margin * free_sides + 2 * margin ** 2 = room * area: the band and its two corners.
+        margin[name] = max(least, int((math.sqrt(free_sides ** 2 + 8 * room * area[name]) - free_sides) / 4))
+    return margin, count
+
+
+def smallest_outline(blocks, margin, extent):
+    """The smallest width and height, by area, in which the blocks can be
+    put down along their edges, and how far each then slides.
+
+    A block is (edge, [(part, rectangle)]): parts that move as one, each
+    with its rectangle (left, top, right, bottom) measured from the board's
+    left and top edge as the board is. A block at the right or the bottom
+    edge moves with that edge.
+    """
+    def moved(block, slide, width, height):
+        edge, members = block
+        dx = slide if edge in (TOP, BOTTOM) else (width - extent[0] if edge == RIGHT else 0)
+        dy = slide if edge in (LEFT, RIGHT) else (height - extent[1] if edge == BOTTOM else 0)
+        return [(name, (box[LEFT] + dx, box[TOP] + dy, box[RIGHT] + dx, box[BOTTOM] + dy)) for name, box in members]
+
+    def inside(block, members, width, height):
+        return all(block[0] == edge or distance >= margin[name]
+                   for name, box in members
+                   for edge, distance in ((LEFT, box[LEFT]), (TOP, box[TOP]),
+                                          (RIGHT, width - box[RIGHT]), (BOTTOM, height - box[BOTTOM])))
+
+    def apart(members, others):
+        return all(max(a[LEFT] - b[RIGHT], b[LEFT] - a[RIGHT], a[TOP] - b[BOTTOM], b[TOP] - a[BOTTOM])
+                   >= margin[name] + margin[other]
+                   for name, a in members for other, b in others)
+
+    def slides(block, width, height):
+        edge, members = block
+        low, high = (LEFT, RIGHT) if edge in (TOP, BOTTOM) else (TOP, BOTTOM)
+        length = width if edge in (TOP, BOTTOM) else height
+        first = max(margin[name] - box[low] for name, box in members)
+        last = min(length - margin[name] - box[high] for name, box in members)
+        return [(slide, members_there) for slide in range(-(-first // STEP) * STEP, last + 1, STEP)
+                for members_there in [moved(block, slide, width, height)] if inside(block, members_there, width, height)]
+
+    def put_down(places):
+        """places holds, for each block still to be put down, the places
+        along its edge that clear the blocks that are down. Returns how far
+        each of those blocks slides, or None when they cannot all be put down."""
+        if not places:
+            return []
+        for slide, members in places[0]:
+            left = [[(other_slide, others) for other_slide, others in candidates if apart(members, others)]
+                    for candidates in places[1:]]
+            if all(left):
+                rest = put_down(left)
+                if rest is not None:
+                    return [slide] + rest
+        return None
+
+    def fits(width, height):
+        return put_down([slides(block, width, height) for block in blocks])
+
+    if fits(*extent) is None:
+        sys.exit("the parts at the edges do not fit in the outline the board has with this much room")
+    low, height = 0, extent[1]              # no room at low, room at height
+    while height - low > STEP:
+        middle = (low + height) // 2
+        low, height = (low, middle) if fits(extent[0], middle) is not None else (middle, height)
+    # A narrower board is never lower: the height only grows as the width shrinks.
+    best, width = (extent[0], height), extent[0] - STEP
+    while width > 0 and height <= extent[1]:
+        if fits(width, height) is None:
+            height += STEP
+            continue
+        if width * height < best[0] * best[1]:
+            best = (width, height)
+        width -= STEP
+    return best, fits(*best)
+
+
+def main(netlist_path, board_path, room):
     parts, nets, _ = read_circuit(netlist_path)
     board = pcbnew.LoadBoard(board_path)
     outline_drawings = [drawing for drawing in board.GetDrawings() if drawing.GetLayer() == pcbnew.Edge_Cuts]
@@ -204,14 +219,41 @@ def main(netlist_path, board_path, squeeze):
     extent = (outline[RIGHT] - outline[LEFT], outline[BOTTOM] - outline[TOP])
     fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
     footprints = {footprint.GetReference(): footprint for footprint in board.GetFootprints()}
+    fill_nets = {fill.GetNetname() for fill in board.Zones()}
+    default_class = board.GetDesignSettings().m_NetSettings.GetDefaultNetclass()
+    room_for_a_via = default_class.GetViaDiameter() + 2 * default_class.GetClearance()
+    inner = sorted(set(footprints) - set(fixed), key=lambda name: (-footprints[name].GetPadCount(), name))
 
-    new_extent, chains = squeeze_edge_parts(footprints, fixed, outline,
-                                            board.GetDesignSettings().m_CopperEdgeClearance, squeeze)
-    corners = [(outline[LEFT], outline[TOP]), (outline[LEFT] + new_extent[X], outline[TOP]),
-               (outline[LEFT] + new_extent[X], outline[TOP] + new_extent[Y]), (outline[LEFT], outline[TOP] + new_extent[Y])]
+    # The parts that move as one: a part with an edge, and those the file puts beside it.
+    edge_of = {name: EDGES[rule["edge"]] for name, rule in fixed.items() if "edge" in rule}
+    members_of = {name: [name] for name in edge_of}
+    for name, rule in fixed.items():
+        if "beside" in rule:
+            neighbour = footprints[rule["beside"]]
+            edge_of[name] = edge_of[rule["beside"]]
+            footprints[name].SetOrientationDegrees(neighbour.GetOrientationDegrees())
+            footprints[name].SetPosition(neighbour.GetPosition() + beside_offset(rule, edge_of[name]))
+            members_of[rule["beside"]].append(name)
+    margin, belonging = margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, room_for_a_via)
+
+    def from_corner(box):
+        return (box[LEFT] - outline[LEFT], box[TOP] - outline[TOP], box[RIGHT] - outline[LEFT], box[BOTTOM] - outline[TOP])
+
+    # The largest first: it has the fewest places.
+    blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members])
+                     for first, members in members_of.items()),
+                    key=lambda block: -sum((box[RIGHT] - box[LEFT]) * (box[BOTTOM] - box[TOP]) for _, box in block[1]))
+    new_extent, slides = smallest_outline(blocks, margin, extent)
+    for (edge, members), slide in zip(blocks, slides):
+        dx = slide if edge in (TOP, BOTTOM) else (new_extent[0] - extent[0] if edge == RIGHT else 0)
+        dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
+        for name, _ in members:
+            footprints[name].Move(pcbnew.VECTOR2I(dx, dy))
+
+    corners = [(outline[LEFT], outline[TOP]), (outline[LEFT] + new_extent[0], outline[TOP]),
+               (outline[LEFT] + new_extent[0], outline[TOP] + new_extent[1]), (outline[LEFT], outline[TOP] + new_extent[1])]
     outline_drawings[0].SetStart(pcbnew.VECTOR2I(*corners[0]))
     outline_drawings[0].SetEnd(pcbnew.VECTOR2I(*corners[2]))
-    fill_nets = {fill.GetNetname() for fill in board.Zones()}
     for fill in board.Zones():
         fill.UnFill()
         fill.Outline().RemoveAllContours()
@@ -222,38 +264,37 @@ def main(netlist_path, board_path, squeeze):
         board.Delete(track)
 
     # The other parts leave the board and come back one at a time, each beside what it connects to.
-    default_class = board.GetDesignSettings().m_NetSettings.GetDefaultNetclass()
-    room_for_a_via = default_class.GetViaDiameter() + 2 * default_class.GetClearance()
-    waiting = sorted(set(footprints) - set(fixed), key=lambda name: (-footprints[name].GetPadCount(), name))
-    off_the_board = pcbnew.VECTOR2I(outline[LEFT] - 10 * extent[X], outline[TOP])
-    for name in waiting:
+    off_the_board = pcbnew.VECTOR2I(outline[LEFT] - 10 * extent[0], outline[TOP])
+    for name in inner:
         footprints[name].SetPosition(off_the_board)
-    placed, furthest = set(fixed), (0, None)
-    while waiting:
-        for name in waiting:
-            reach = connections(name, footprints, parts, nets, placed, fill_nets)
-            if reach:
-                break
-        else:
-            sys.exit(f"these connect to nothing that is placed: {' '.join(waiting)}")
-        settle_at_its_connections(board, footprints[name], reach, gap=room_for_a_via)
+    furthest = (0, None)
+    further = sorted(((dx, dy) for dx in range(-FURTHER, FURTHER + 1, FURTHER_GRID)
+                      for dy in range(-FURTHER, FURTHER + 1, FURTHER_GRID)), key=lambda move: math.hypot(*move))
+    for name, reach in in_order(inner, footprints, parts, nets, fixed, fill_nets):
+        places = {number: [place for _, place in targets] for number, targets in reach.items()}
+        try:
+            settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via)
+        except NoFreePlace:
+            try:
+                settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via, moves=further)
+            except NoFreePlace:
+                sys.exit(f"no free place for {name}")
         furthest = max(furthest, (furthest_connection(footprints[name], reach), name))
-        placed.add(name)
-        waiting.remove(name)
     # The third argument keeps KiCad from rewriting the project file with the board.
     pcbnew.SaveBoard(board_path, board, True)
 
     def square_cm(width, height):
         return pcbnew.ToMM(width) * pcbnew.ToMM(height) / 100
 
-    rectangles = [keep_out(footprint) for footprint in footprints.values()]
-    covered = sum(square_cm(box[RIGHT] - box[LEFT], box[BOTTOM] - box[TOP]) for box in rectangles)
-    print(f"squeeze {squeeze:g}: {pcbnew.ToMM(extent[X]):.2f} x {pcbnew.ToMM(extent[Y]):.2f} mm, {square_cm(*extent):.1f} cm2 "
-          f"-> {pcbnew.ToMM(new_extent[X]):.2f} x {pcbnew.ToMM(new_extent[Y]):.2f} mm, {square_cm(*new_extent):.1f} cm2; "
-          f"the parts' rectangles cover {100 * covered / square_cm(*new_extent):.0f} % of it")
-    print("the width is set by: ", ", ".join(chains[X]))
-    print("the height is set by:", ", ".join(chains[Y]))
-    print(f"{len(footprints) - len(fixed)} parts placed beside what they connect to; "
+    print(f"room {room:g}: {pcbnew.ToMM(extent[0]):.2f} x {pcbnew.ToMM(extent[1]):.2f} mm, {square_cm(*extent):.1f} cm2 "
+          f"-> {pcbnew.ToMM(new_extent[0]):.2f} x {pcbnew.ToMM(new_extent[1]):.2f} mm, {square_cm(*new_extent):.1f} cm2")
+    for name in sorted(fixed, key=lambda name: (edge_of[name], name)):
+        box = from_corner(keep_out(footprints[name]))
+        low, high = (LEFT, RIGHT) if edge_of[name] in (TOP, BOTTOM) else (TOP, BOTTOM)
+        print(f"  {name:4} at the {EDGE_NAME[edge_of[name]]:6} edge, {pcbnew.ToMM(box[low]):6.1f} to "
+              f"{pcbnew.ToMM(box[high]):6.1f} mm along it; {belonging[name]:2} parts belong to it, "
+              f"{pcbnew.ToMM(margin[name]):4.1f} mm kept free around it")
+    print(f"{len(inner)} parts placed beside what they connect to; "
           f"the furthest pad from its connection: {pcbnew.ToMM(furthest[0]):.1f} mm, on {furthest[1]}")
 
 
