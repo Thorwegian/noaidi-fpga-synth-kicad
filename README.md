@@ -116,7 +116,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   of a fill on another layer its via and the track to it, before the
   router runs, for the router to work around.
 - `scripts/join_fills.py`: ties the fills of one net together with
-  vias, and joins the pads the fills do not reach.
+  vias, joins the pads the fills do not reach, and ties back a piece of
+  a fill that tracks have cut off from the rest of its net.
 - `scripts/place_designators.py`: puts each part's designator at the
   free place nearest its part, where no part covers it and no pad, hole
   or other print cuts it.

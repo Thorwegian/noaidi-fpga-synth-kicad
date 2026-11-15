@@ -47,6 +47,8 @@ import pcbnew
 # A wire of a Specctra design, on one line: up to its width, the coordinates
 # of its corners, and what follows them.
 WIRE = re.compile(r"^(\s*\(wire \(path \S+ \d+)((?:\s+-?\d+)+)(\).*)$")
+# A via that is on the board, on one line: its padstack, where it is, its net.
+VIA = re.compile(r"^\s*\(via \S+\s+-?\d+\s+-?\d+\s+\(net ")
 
 
 def remove_tracks(board):
@@ -58,14 +60,14 @@ def remove_tracks(board):
 
 def one_wire_per_stretch(specctra_path):
     """Write each wire of the design as one wire per straight stretch, the
-    wires in the order of their text. KiCad writes tracks that follow on
-    each other as one wire through all of their corners, and the router
-    takes two wires for joined only where their ends meet. A track that
-    ends on such a corner, as a branch of a pair does, the router then
+    wires and the vias in the order of their text. KiCad writes tracks that
+    follow on each other as one wire through all of their corners, and the
+    router takes two wires for joined only where their ends meet. A track
+    that ends on such a corner, as a branch of a pair does, the router then
     takes for unjoined: it holds the board for unfinished and leaves out
-    its optimiser. The order KiCad writes the wires in differs from one
-    save of the board to the next, and the router's result follows its
-    input."""
+    its optimiser. The order KiCad writes the wires and the vias in differs
+    from one save of the board to the next, and the router's result follows
+    its input."""
     with open(specctra_path, encoding="utf-8") as file:
         lines = file.readlines()
     stretches = []
@@ -76,10 +78,11 @@ def one_wire_per_stretch(specctra_path):
             corners = list(zip(coordinates[::2], coordinates[1::2]))
             stretches += [f"{wire.group(1)}  {start_x} {start_y}  {end_x} {end_y}{wire.group(3)}\n"
                           for (start_x, start_y), (end_x, end_y) in zip(corners, corners[1:])]
-    first_wire = next((index for index, line in enumerate(lines) if WIRE.match(line)), len(lines))
+    vias = [line for line in lines if VIA.match(line)]
+    first = next((index for index, line in enumerate(lines) if WIRE.match(line) or VIA.match(line)), len(lines))
     with open(specctra_path, "w", encoding="utf-8") as file:
-        file.writelines(lines[:first_wire] + sorted(stretches)
-                        + [line for line in lines[first_wire:] if not WIRE.match(line)])
+        file.writelines(lines[:first] + sorted(stretches) + sorted(vias)
+                        + [line for line in lines[first:] if not WIRE.match(line) and not VIA.match(line)])
 
 
 def draw_outline_in(board):
