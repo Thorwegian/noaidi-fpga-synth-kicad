@@ -94,6 +94,16 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   (resistors and capacitors) are 0805 on hand-solder footprints: JLCPCB
   places them, and the size keeps a board repairable by hand.
 
+## What is printed on it
+
+- **Every part's designator can be read on the assembled board.** It is
+  outside every part's outline, on no pad, hole or via, clear of the
+  other print, and beside its own part.
+- **The lettering is 1.2 mm high with a 0.2 mm line.** JLCPCB prints
+  characters from 1.0 mm high with a 0.15 mm line, calls smaller ones
+  unidentifiable, and prefers a line a sixth of the height
+  (https://jlcpcb.com/capabilities/pcb-capabilities, Legend).
+
 ## The layers
 
 - **Four copper layers,** on JLCPCB's stackup JLC04161H-7628 for a
