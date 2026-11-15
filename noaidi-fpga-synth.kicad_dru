@@ -43,3 +43,13 @@
 (rule "the two tracks of a pair are equally long"
 	(constraint skew (max 3.81mm))
 	(condition "A.inDiffPair('*')"))
+
+# What an antenna's maker wants kept away from it stays out of the areas
+# named "Antenna clearance", which scripts/board_from_circuit.py draws around
+# each antenna of circuit/antennas.toml. The areas close nothing by
+# themselves: copper is laid and filled in them. The net classes named here
+# are that file's.
+
+(rule "kept away from an antenna"
+	(constraint disallow track via pad)
+	(condition "A.NetClass == 'USB' && A.intersectsArea('Antenna clearance')"))

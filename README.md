@@ -24,8 +24,8 @@ two off-the-shelf modules and the few parts around them:
 - **Audio out**: an Adafruit PCM510x I2S DAC module (U5) for analog, an
   RCA socket (J3) for S/PDIF.
 - **Two USB-C sockets**: J9 for power, into each module's 5 V rail
-  through an LM66100 ideal diode (U6, U7), and J14 next to it for the
-  ESP32's USB data pair.
+  through an LM66100 ideal diode (U6, U7), and J14 for the ESP32's USB
+  data pair, below the module's USB pins.
 - Pin headers for the second SPI bus, two I2C buses, UART0, I2S and
   S/PDIF, and 29 test points.
 
@@ -92,6 +92,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   `scripts/squeeze_board.py`.
 - `circuit/layers.toml`: the copper layers and the fill of each, for
   `scripts/board_from_circuit.py`.
+- `circuit/antennas.toml`: which nets stay away from the ESP32 module's
+  antenna, and how far, for `scripts/board_from_circuit.py`,
+  `scripts/squeeze_board.py` and the rule in
+  `noaidi-fpga-synth.kicad_dru` that KiCad's DRC checks it by.
 - `scripts/squeeze_board.py`: makes the board smaller. The parts at
   the edges are packed along them into the smallest outline that leaves
   each the room its own parts need, one number saying how much room

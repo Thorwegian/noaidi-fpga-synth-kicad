@@ -28,14 +28,13 @@
 # and the pair leaves it from A7 and B6: with D- on the left going up from
 # the socket, D- is on the left under the ESP32 module's pins 25 and 26 too.
 # The path goes up midway between the two CC resistors (R17, R18), then
-# left below the edge of the antenna's keep-out, where the layer under it
-# has no copper, and up between the module's two pins.
+# left to below the module's two pins, and up between them.
 [[pair]]
 name = "USB_D"
 layer = "F.Cu"
 from = ["J14.A7", "J14.B6"]
 to = ["U1.25", "U1.26"]
-path_mm = [[183.0, 163.8], [183.0, 161.3], [127.78, 161.3], [127.78, 160.2]]
+path_mm = [[132.83, 163.8], [132.83, 161.3], [127.78, 161.3], [127.78, 160.2]]
 
 # D-'s second pad is on D-'s side of the pair: its track goes up beside the
 # pads and slants over to D-.

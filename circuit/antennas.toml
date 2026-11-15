@@ -1,0 +1,30 @@
+# Copyright © 2026 Thor H. Linløkken <thj@thj.no>
+# License: CERN-OHL-S v2
+#
+# antennas.toml -- what stays away from an antenna, and how far
+# (docs/requirements.md, Where the parts sit). scripts/board_from_circuit.py
+# draws the area on the board, as a rule area named "Antenna clearance" that
+# copper may be laid and filled in, and puts no part with a pad of the named
+# classes inside it. The rule "kept away from an antenna" in
+# noaidi-fpga-synth.kicad_dru reports the pads, tracks and vias of those
+# classes that lie in the area.
+#
+#   part         the part that carries the antenna.
+#   area         the rule area of the part's footprint that marks the antenna.
+#   clear_mm     how far around the rectangle that holds that area the board is
+#                closed to the classes.
+#   net_classes  the classes of nets (circuit/net_classes.py) that stay out.
+
+# Espressif's hardware design guidelines for the ESP32-S3 (PCB layout
+# design, RF): "the USB port, USB-to-serial chip, UART signal lines
+# (including traces, vias, test points, header pins, etc.) must be as far
+# away from the antenna as possible"
+# (https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32s3/pcb-layout-design.html).
+# The guidelines give no distance for it. 15 mm is the clearance the same
+# document recommends around the antenna inside a housing (Positioning a
+# module on a base board), taken here as the least.
+[[antenna]]
+part = "U1"
+area = "Antenna"
+clear_mm = 15.0
+net_classes = ["USB"]

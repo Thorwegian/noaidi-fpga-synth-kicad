@@ -12,8 +12,14 @@ The netlist is the one circuit/board.py writes (board.net).
 The parts at the edges are those circuit/fixed_positions.toml names: what a
 person plugs into. Each stays at its edge, at the distance to it that it
 has, and is free to slide along it; a part the file puts beside another
-moves with that one. Where they sit along their edges on the board that is
-read plays no role.
+moves with that one, and a part the file puts near pads of another sits
+level with them. Where the others sit along their edges on the board that
+is read plays no role.
+
+No part with a pad of a net class that an antenna is kept clear of
+(circuit/antennas.toml) is put inside that antenna's clearance, which
+moves with the antenna's part and is drawn on the board where that part
+ends up.
 
 Every other part belongs to one of them: the one it has the most
 connections to, directly or through a part that belongs to it. A part at
@@ -68,8 +74,10 @@ import tomllib
 import pcbnew
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from board_from_circuit import (BOTTOM, EDGES, FIXED_POSITIONS, LEFT, RIGHT, TOP, NoFreePlace,  # noqa: E402
-                                beside_offset, board_outline, keep_out, read_circuit, settle_at_its_connections)
+from board_from_circuit import (ANTENNAS, BOTTOM, EDGES, FIXED_POSITIONS, LEFT, RIGHT, TOP, NoFreePlace,  # noqa: E402
+                                antenna_clearances, beside_offset, board_outline, closed_to, draw_antenna_clearances,
+                                keep_out, middle, nearer_than, pad_centre, pad_named, read_circuit,
+                                settle_at_its_connections)
 
 STEP = pcbnew.FromMM(2.0)       # of the search for the outline and for the places along the edges
 FURTHER = pcbnew.FromMM(60.0)   # how far from its connections a part is looked for a place when there is none near them
@@ -138,17 +146,23 @@ def margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, lea
     return margin, count
 
 
-def smallest_outline(blocks, margin, extent):
+def smallest_outline(blocks, margin, closed, extent):
     """The smallest width and height, by area, in which the blocks can be
     put down along their edges, and how far each then slides.
 
-    A block is (edge, [(part, rectangle)]): parts that move as one, each
-    with its rectangle (left, top, right, bottom) measured from the board's
-    left and top edge as the board is. A block at the right or the bottom
-    edge moves with that edge.
+    A block is (edge, [(part, rectangle)], near): parts that move as one,
+    each with its rectangle (left, top, right, bottom) measured from the
+    board's left and top edge as the board is. A block at the right or the
+    bottom edge moves with that edge. near is None for a block that is free
+    along its edge; for one that sits level with pads of another part it is
+    (the slide that brings it there as the board is, that part's edge), and
+    the block has that one place.
+
+    closed holds what a part keeps other parts out of, as {part: [(rectangle
+    measured from the left and top of the part's own, the parts kept out)]}.
     """
     def moved(block, slide, width, height):
-        edge, members = block
+        edge, members, _ = block
         dx = slide if edge in (TOP, BOTTOM) else (width - extent[0] if edge == RIGHT else 0)
         dy = slide if edge in (LEFT, RIGHT) else (height - extent[1] if edge == BOTTOM else 0)
         return [(name, (box[LEFT] + dx, box[TOP] + dy, box[RIGHT] + dx, box[BOTTOM] + dy)) for name, box in members]
@@ -159,18 +173,29 @@ def smallest_outline(blocks, margin, extent):
                    for edge, distance in ((LEFT, box[LEFT]), (TOP, box[TOP]),
                                           (RIGHT, width - box[RIGHT]), (BOTTOM, height - box[BOTTOM])))
 
+    def let_in(owner, box, name, other):
+        return not any(name in kept_out and nearer_than(other, (box[LEFT] + area[LEFT], box[TOP] + area[TOP],
+                                                                box[LEFT] + area[RIGHT], box[TOP] + area[BOTTOM]), 0)
+                       for area, kept_out in closed.get(owner, ()))
+
     def apart(members, others):
         return all(max(a[LEFT] - b[RIGHT], b[LEFT] - a[RIGHT], a[TOP] - b[BOTTOM], b[TOP] - a[BOTTOM])
-                   >= margin[name] + margin[other]
+                   >= margin[name] + margin[other] and let_in(name, a, other, b) and let_in(other, b, name, a)
                    for name, a in members for other, b in others)
 
     def slides(block, width, height):
-        edge, members = block
+        edge, members, near = block
         low, high = (LEFT, RIGHT) if edge in (TOP, BOTTOM) else (TOP, BOTTOM)
         length = width if edge in (TOP, BOTTOM) else height
         first = max(margin[name] - box[low] for name, box in members)
         last = min(length - margin[name] - box[high] for name, box in members)
-        return [(slide, members_there) for slide in range(-(-first // STEP) * STEP, last + 1, STEP)
+        candidates = range(-(-first // STEP) * STEP, last + 1, STEP)
+        if near:
+            # The pads it is level with move with their part's edge.
+            level, near_edge = near
+            level += width - extent[0] if near_edge == RIGHT else height - extent[1] if near_edge == BOTTOM else 0
+            candidates = [level] if first <= level <= last else []
+        return [(slide, members_there) for slide in candidates
                 for members_there in [moved(block, slide, width, height)] if inside(block, members_there, width, height)]
 
     def put_down(places):
@@ -210,7 +235,7 @@ def smallest_outline(blocks, margin, extent):
 
 
 def main(netlist_path, board_path, room):
-    parts, nets, _ = read_circuit(netlist_path)
+    parts, nets, class_of_net = read_circuit(netlist_path)
     board = pcbnew.LoadBoard(board_path)
     outline_drawings = [drawing for drawing in board.GetDrawings() if drawing.GetLayer() == pcbnew.Edge_Cuts]
     if len(outline_drawings) != 1 or outline_drawings[0].GetShape() != pcbnew.SHAPE_T_RECTANGLE:
@@ -218,8 +243,10 @@ def main(netlist_path, board_path, room):
     outline = board_outline(board)
     extent = (outline[RIGHT] - outline[LEFT], outline[BOTTOM] - outline[TOP])
     fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
+    antennas = tomllib.load(open(ANTENNAS, "rb"))["antenna"]
     footprints = {footprint.GetReference(): footprint for footprint in board.GetFootprints()}
-    fill_nets = {fill.GetNetname() for fill in board.Zones()}
+    fills = [zone for zone in board.Zones() if not zone.GetIsRuleArea()]
+    fill_nets = {fill.GetNetname() for fill in fills}
     default_class = board.GetDesignSettings().m_NetSettings.GetDefaultNetclass()
     room_for_a_via = default_class.GetViaDiameter() + 2 * default_class.GetClearance()
     inner = sorted(set(footprints) - set(fixed), key=lambda name: (-footprints[name].GetPadCount(), name))
@@ -236,15 +263,33 @@ def main(netlist_path, board_path, room):
             members_of[rule["beside"]].append(name)
     margin, belonging = margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, room_for_a_via)
 
+    # A part that sits near pads of another has one place along its edge: level with them.
+    near = {}
+    for name, rule in fixed.items():
+        if "near" in rule:
+            pads = [pad_named(board, pad) for pad in rule["near"]]
+            near_edge = edge_of[rule["near"][0].split(".")[0]]
+            if (edge_of[name] in (TOP, BOTTOM)) == (near_edge in (TOP, BOTTOM)):
+                sys.exit(f"{name} is near pads of a part at its own edge or the one across: not handled")
+            to_level = middle([pad.GetPosition() for pad in pads]) - pad_centre(footprints[name])
+            near[name] = (to_level.x if edge_of[name] in (TOP, BOTTOM) else to_level.y, near_edge)
+
     def from_corner(box):
         return (box[LEFT] - outline[LEFT], box[TOP] - outline[TOP], box[RIGHT] - outline[LEFT], box[BOTTOM] - outline[TOP])
 
+    # What an antenna keeps out moves with the antenna's part.
+    closed = collections.defaultdict(list)
+    for part, area, kept_out in antenna_clearances(board, antennas):
+        box = keep_out(footprints[part])
+        closed[part].append(((area[LEFT] - box[LEFT], area[TOP] - box[TOP], area[RIGHT] - box[LEFT], area[BOTTOM] - box[TOP]),
+                             {name for name in fixed if closed_to(footprints[name], [(part, area, kept_out)], class_of_net)}))
+
     # The largest first: it has the fewest places.
-    blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members])
+    blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members], near.get(first))
                      for first, members in members_of.items()),
                     key=lambda block: -sum((box[RIGHT] - box[LEFT]) * (box[BOTTOM] - box[TOP]) for _, box in block[1]))
-    new_extent, slides = smallest_outline(blocks, margin, extent)
-    for (edge, members), slide in zip(blocks, slides):
+    new_extent, slides = smallest_outline(blocks, margin, closed, extent)
+    for (edge, members, _), slide in zip(blocks, slides):
         dx = slide if edge in (TOP, BOTTOM) else (new_extent[0] - extent[0] if edge == RIGHT else 0)
         dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
         for name, _ in members:
@@ -254,12 +299,14 @@ def main(netlist_path, board_path, room):
                (outline[LEFT] + new_extent[0], outline[TOP] + new_extent[1]), (outline[LEFT], outline[TOP] + new_extent[1])]
     outline_drawings[0].SetStart(pcbnew.VECTOR2I(*corners[0]))
     outline_drawings[0].SetEnd(pcbnew.VECTOR2I(*corners[2]))
-    for fill in board.Zones():
+    for fill in fills:
         fill.UnFill()
         fill.Outline().RemoveAllContours()
         fill.Outline().NewOutline()
         for corner in corners:
             fill.Outline().Append(*corner)
+    clearances = antenna_clearances(board, antennas)
+    draw_antenna_clearances(board, clearances)
     for track in list(board.GetTracks()):
         board.Delete(track)
 
@@ -272,11 +319,12 @@ def main(netlist_path, board_path, room):
                       for dy in range(-FURTHER, FURTHER + 1, FURTHER_GRID)), key=lambda move: math.hypot(*move))
     for name, reach in in_order(inner, footprints, parts, nets, fixed, fill_nets):
         places = {number: [place for _, place in targets] for number, targets in reach.items()}
+        kept_clear = closed_to(footprints[name], clearances, class_of_net)
         try:
-            settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via)
+            settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via, closed=kept_clear)
         except NoFreePlace:
             try:
-                settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via, moves=further)
+                settle_at_its_connections(board, footprints[name], places, gap=room_for_a_via, moves=further, closed=kept_clear)
             except NoFreePlace:
                 sys.exit(f"no free place for {name}")
             placed_further.append(name)

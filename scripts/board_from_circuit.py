@@ -16,7 +16,8 @@ same as the netlist's, moving as little as possible:
     of its pads where the middle of the old pads was, turned the same way;
   - a part that is new is placed where its pads are nearest to the pads
     they connect to in its own block of the circuit (its SubCircuit);
-  - a part named in circuit/fixed_positions.toml sits where that file says;
+  - a part named in circuit/fixed_positions.toml sits where that file says,
+    and the parts that connect to nothing but that part move with it;
   - every pad gets the net the netlist gives it, and a track on a net that
     has no pad left is removed.
 
@@ -31,9 +32,17 @@ as they are. A keep-out area that a footprint has on both the front and the
 back (the one under the ESP32 module's antenna) is made to hold on the
 layers between them too.
 
-No part enters another's courtyard: one that would is put in the nearest
-free place. Tracks are otherwise left alone, so where a footprint has
-changed the copper no longer meets the pads; scripts/route.sh lays it anew.
+Around each antenna of circuit/antennas.toml the board gets a rule area
+named "Antenna clearance", on every copper layer: the antenna's area in its
+part's footprint, wider by the distance that file states. The area closes
+nothing by itself, so copper is laid and filled in it as anywhere; the rule
+of that name in the project's .kicad_dru says which nets may not lie in it.
+
+No part enters another's courtyard, and no part with a pad of a net class
+that an antenna is kept clear of enters that antenna's clearance: one that
+would is put in the nearest free place. Tracks are otherwise left alone, so
+where a footprint has changed or a part has moved the copper no longer
+meets the pads; scripts/route.sh lays it anew.
 
 Runs under the system's Python, which has KiCad's pcbnew module.
 """
@@ -52,6 +61,8 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KICAD_FOOTPRINT_DIR = os.environ.get("KICAD10_FOOTPRINT_DIR", "/usr/share/kicad/footprints")
 FIXED_POSITIONS = os.path.join(PROJECT_DIR, "circuit", "fixed_positions.toml")
 LAYERS = os.path.join(PROJECT_DIR, "circuit", "layers.toml")
+ANTENNAS = os.path.join(PROJECT_DIR, "circuit", "antennas.toml")
+ANTENNA_CLEARANCE = "Antenna clearance"     # the name the rule in the .kicad_dru knows the areas by
 
 COURTYARD_GAP = pcbnew.FromMM(0.25)     # kept between two parts' courtyards
 GRID = pcbnew.FromMM(0.25)              # the step of the search for a new part's place
@@ -134,9 +145,26 @@ def load_footprint(footprint_id):
 
 
 def pad_centre(footprint):
-    pads = list(footprint.Pads())
-    return pcbnew.VECTOR2I(sum(pad.GetPosition().x for pad in pads) // len(pads),
-                           sum(pad.GetPosition().y for pad in pads) // len(pads))
+    return middle([pad.GetPosition() for pad in footprint.Pads()])
+
+
+def middle(points):
+    return pcbnew.VECTOR2I(sum(point.x for point in points) // len(points),
+                           sum(point.y for point in points) // len(points))
+
+
+def pad_named(board, name):
+    """The pad that designator.pad names."""
+    designator, number = name.split(".")
+    footprint = board.FindFootprintByReference(designator)
+    pads = [pad for pad in footprint.Pads() if pad.GetNumber() == number] if footprint else []
+    if not pads:
+        sys.exit(f"no pad {name} on the board")
+    return pads[0]
+
+
+def rectangle(box):
+    return (box.GetLeft(), box.GetTop(), box.GetRight(), box.GetBottom())
 
 
 def keep_out(footprint):
@@ -158,9 +186,59 @@ def keep_out(footprint):
             max(box.GetRight() for box in boxes), max(box.GetBottom() for box in boxes))
 
 
-def too_close(a, b, gap):
+def nearer_than(a, b, gap):
     return (a[LEFT] < b[RIGHT] + gap and b[LEFT] < a[RIGHT] + gap
             and a[TOP] < b[BOTTOM] + gap and b[TOP] < a[BOTTOM] + gap)
+
+
+def antenna_clearances(board, antennas):
+    """What circuit/antennas.toml keeps clear, as [(part, rectangle, net
+    classes)]: the rectangle around the antenna's area in the part's
+    footprint, wider by the file's distance on every side."""
+    clearances = []
+    for antenna in antennas:
+        footprint = board.FindFootprintByReference(antenna["part"])
+        areas = [area for area in footprint.Zones() if area.GetZoneName() == antenna["area"]] if footprint else []
+        if not areas:
+            sys.exit(f"{antenna['part']} has no rule area named {antenna['area']}")
+        box = areas[0].GetBoundingBox()
+        box.Inflate(pcbnew.FromMM(antenna["clear_mm"]))
+        clearances.append((antenna["part"], rectangle(box), set(antenna["net_classes"])))
+    return clearances
+
+
+def draw_antenna_clearances(board, clearances):
+    """Make the board's rule areas named ANTENNA_CLEARANCE the clearances'
+    rectangles, on every copper layer. Areas that are already those are left
+    as they are."""
+    copper = pcbnew.LSET.AllCuMask(board.GetCopperLayerCount())
+    drawn = [area for area in board.Zones() if area.GetIsRuleArea() and area.GetZoneName() == ANTENNA_CLEARANCE]
+    if (sorted(rectangle(area.GetBoundingBox()) for area in drawn) == sorted(box for _, box, _ in clearances)
+            and all(list(area.GetLayerSet().Seq()) == list(copper.Seq()) for area in drawn)):
+        return
+    for area in drawn:
+        board.Delete(area)
+    for _, (left, top, right, bottom), _ in clearances:
+        area = pcbnew.ZONE(board)
+        area.SetIsRuleArea(True)
+        area.SetZoneName(ANTENNA_CLEARANCE)
+        area.SetLayerSet(copper)
+        # What may not lie in the area is for the rule in the .kicad_dru to say: it knows the nets.
+        for close in (area.SetDoNotAllowTracks, area.SetDoNotAllowVias, area.SetDoNotAllowPads,
+                      area.SetDoNotAllowZoneFills, area.SetDoNotAllowFootprints):
+            close(False)
+        area.Outline().NewOutline()
+        for x, y in ((left, top), (right, top), (right, bottom), (left, bottom)):
+            area.Outline().Append(x, y)
+        board.Add(area)
+
+
+def closed_to(footprint, clearances, class_of_net):
+    """The antenna clearances the footprint may not enter: those kept clear
+    of a net class one of its pads is in."""
+    classes = {class_of_net.get(pad.GetNetname(), "Default") for pad in footprint.Pads() if pad.GetNetname()}
+    return [box for part, box, kept_out in clearances
+            if part != footprint.GetReference() and kept_out & classes]
 
 
 def on_board(box, outline, open_edge):
@@ -199,7 +277,7 @@ def set_layers(board, layers):
         for area in footprint.Zones():
             if area.GetIsRuleArea() and area.IsOnLayer(pcbnew.F_Cu) and area.IsOnLayer(pcbnew.B_Cu):
                 area.SetLayerSet(pcbnew.LSET.AllCuMask(len(layers)))
-    fills = list(board.Zones())
+    fills = [zone for zone in board.Zones() if not zone.GetIsRuleArea()]
     if sorted((fill.GetLayerSet().Seq()[0], fill.GetNetname()) for fill in fills) == sorted(wanted):
         return False
     for fill in fills:
@@ -222,12 +300,13 @@ def set_layers(board, layers):
     return True
 
 
-def settle(board, footprint, cost, moves, turns=None, open_edge=None, gap=COURTYARD_GAP):
+def settle(board, footprint, cost, moves, turns=None, open_edge=None, gap=COURTYARD_GAP, closed=()):
     """Move the footprint to the free place of lowest cost. moves lists the
     candidates as (dx, dy) from where the footprint is; cost(dx, dy, pads)
     prices one, pads being the footprint's [(number, x, y)] there; turns
     lists the orientations to try, the footprint's own when left out; gap
-    is what the footprint keeps to every other part."""
+    is what the footprint keeps to every other part; closed lists the
+    rectangles the footprint may not enter."""
     outline = board_outline(board)
     others = [keep_out(other) for other in board.GetFootprints()
               if other.GetReference() != footprint.GetReference()]
@@ -242,7 +321,8 @@ def settle(board, footprint, cost, moves, turns=None, open_edge=None, gap=COURTY
             if best and price >= best[0]:
                 continue
             moved = (box[LEFT] + dx, box[TOP] + dy, box[RIGHT] + dx, box[BOTTOM] + dy)
-            if on_board(moved, outline, open_edge) and not any(too_close(moved, other, gap) for other in others):
+            if (on_board(moved, outline, open_edge) and not any(nearer_than(moved, other, gap) for other in others)
+                    and not any(nearer_than(moved, area, 0) for area in closed)):
                 best = (price, turn, dx, dy)
     if not best:
         raise NoFreePlace(footprint.GetReference())
@@ -263,12 +343,13 @@ def beside_offset(rule, edge):
     return pcbnew.VECTOR2I(step, 0) if edge in (TOP, BOTTOM) else pcbnew.VECTOR2I(0, step)
 
 
-def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=NEARBY):
+def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=NEARBY, closed=()):
     """Move the footprint to the free place where its pads are nearest to the
     pads they connect to, turned whichever way brings them nearest. reach
     holds, for each of its pads by number, the places of those pads; gap is
     what the footprint keeps to every other part; moves lists the places
-    tried, as (dx, dy) from the middle of the pads it connects to."""
+    tried, as (dx, dy) from the middle of the pads it connects to; closed
+    lists the rectangles the footprint may not enter."""
     targets = [target for group in reach.values() for target in group]
     footprint.SetPosition(pcbnew.VECTOR2I(sum(target.x for target in targets) // len(targets),
                                           sum(target.y for target in targets) // len(targets)))
@@ -277,7 +358,7 @@ def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=
         return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
                    for number, x, y in pads if number in reach)
 
-    settle(board, footprint, distance_to_reach, moves, turns=QUARTER_TURNS, gap=gap)
+    settle(board, footprint, distance_to_reach, moves, turns=QUARTER_TURNS, gap=gap, closed=closed)
 
 
 def main(netlist_path, net_classes_path, board_path):
@@ -285,6 +366,7 @@ def main(netlist_path, net_classes_path, board_path):
     net_of_pad = {pad: name for name, pads in nets.items() for pad in pads}
     fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
     layers = tomllib.load(open(LAYERS, "rb"))["layer"]
+    antennas = tomllib.load(open(ANTENNAS, "rb"))["antenna"]
     # KiCad reads the project file when it loads the board.
     write_net_classes(os.path.splitext(board_path)[0] + ".kicad_pro",
                       json.load(open(net_classes_path, encoding="utf-8")), class_of_net)
@@ -341,28 +423,45 @@ def main(netlist_path, net_classes_path, board_path):
         if in_kicad != class_of_net.get(name, "Default"):
             sys.exit(f"KiCad has the net {name} in the class {in_kicad}, the circuit in {class_of_net.get(name, 'Default')}")
     new_fills = set_layers(board, layers)
+    clearances = antenna_clearances(board, antennas)
+    draw_antenna_clearances(board, clearances)
     nets_with_pads = {pad.GetNetname() for footprint in board.GetFootprints() for pad in footprint.Pads()}
     stale_tracks = [track for track in board.GetTracks() if track.GetNetname() not in nets_with_pads]
     for track in stale_tracks:
         board.Delete(track)
 
-    # The parts whose place is stated.
+    def followers(designator):
+        """The parts that connect to nothing but this part, the nets of the
+        fills aside: a socket's pull-down resistors."""
+        fill_nets = {layer["fill"] for layer in layers}
+        parts_of_net = [{part for part, _ in pads} for name, pads in nets.items() if name not in fill_nets]
+        found = []
+        for other in sorted(set(parts) - set(fixed)):
+            connected = set().union(*(joined for joined in parts_of_net if other in joined)) - {other}
+            if connected == {designator}:
+                found.append(board.FindFootprintByReference(other))
+        return found
+
+    # The parts whose place is stated. What connects to nothing but such a part moves with it.
     waiting = {footprint.GetReference() for footprint in new}
     open_edge_of = {}
     for designator, rule in fixed.items():
         footprint = board.FindFootprintByReference(designator)
+        start = footprint.GetPosition()
         slides = range(-2 * REACH, 2 * REACH + 1, EDGE_STEP)
         if "edge" in rule:
             open_edge_of[designator] = EDGES[rule["edge"]]
             if "edge_line_mm" not in rule:
                 continue    # placed by eye: it stays where it is drawn
             inset = pcbnew.FromMM(rule["edge_line_mm"])
-            position = footprint.GetPosition()
+            along = start
+            if "near" in rule:
+                along = start + middle([pad_named(board, name).GetPosition() for name in rule["near"]]) - pad_centre(footprint)
             footprint.SetPosition({
-                LEFT: pcbnew.VECTOR2I(outline[LEFT] + inset, position.y),
-                TOP: pcbnew.VECTOR2I(position.x, outline[TOP] + inset),
-                RIGHT: pcbnew.VECTOR2I(outline[RIGHT] - inset, position.y),
-                BOTTOM: pcbnew.VECTOR2I(position.x, outline[BOTTOM] - inset),
+                LEFT: pcbnew.VECTOR2I(outline[LEFT] + inset, along.y),
+                TOP: pcbnew.VECTOR2I(along.x, outline[TOP] + inset),
+                RIGHT: pcbnew.VECTOR2I(outline[RIGHT] - inset, along.y),
+                BOTTOM: pcbnew.VECTOR2I(along.x, outline[BOTTOM] - inset),
             }[open_edge_of[designator]])
         else:
             neighbour = board.FindFootprintByReference(rule["beside"])
@@ -374,13 +473,20 @@ def main(netlist_path, net_classes_path, board_path):
             slides = range(0, 2 * REACH + 1, EDGE_STEP) if offset.x + offset.y > 0 else range(0, -2 * REACH - 1, -EDGE_STEP)
         along_x = open_edge_of[designator] in (TOP, BOTTOM)
         settle(board, footprint, displacement, [(s, 0) if along_x else (0, s) for s in slides],
-               open_edge=open_edge_of[designator])
+               open_edge=open_edge_of[designator], closed=closed_to(footprint, clearances, class_of_net))
         waiting.discard(designator)
+        moved_by = footprint.GetPosition() - start
+        if moved_by.x or moved_by.y:
+            print("moved  ", describe(footprint))
+            for follower in followers(designator):
+                follower.SetPosition(follower.GetPosition() + moved_by)
+                settle(board, follower, displacement, NEARBY, closed=closed_to(follower, clearances, class_of_net))
+                print("moved  ", describe(follower))
 
     # A swapped part that now enters a neighbour's courtyard moves the least it can.
     for footprint in swapped:
         if footprint.GetReference() not in fixed:
-            settle(board, footprint, displacement, NEARBY)
+            settle(board, footprint, displacement, NEARBY, closed=closed_to(footprint, clearances, class_of_net))
         print("swapped", describe(footprint))
 
     # A new part goes where its pads are nearest to the pads they connect to in its own block.
@@ -398,7 +504,7 @@ def main(netlist_path, net_classes_path, board_path):
             reach = {number: targets for number, targets in reach.items() if targets}
             if not reach:
                 sys.exit(f"{designator} connects to nothing on the board in its block {parts[designator]['block']}")
-            settle_at_its_connections(board, footprint, reach)
+            settle_at_its_connections(board, footprint, reach, closed=closed_to(footprint, clearances, class_of_net))
             waiting.discard(designator)
         print("added  ", describe(footprint))
 
