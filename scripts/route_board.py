@@ -119,7 +119,7 @@ def main(action, board_path, specctra_path):
     board = pcbnew.LoadBoard(board_path)
     if action == "export":
         remove_tracks(board)
-        fill_nets = {fill.GetNetname() for fill in board.Zones()}
+        fill_nets = {fill.GetNetname() for fill in board.Zones() if not fill.GetIsRuleArea()}
         for fill in list(board.Zones()):
             board.Delete(fill)
         for footprint in board.GetFootprints():

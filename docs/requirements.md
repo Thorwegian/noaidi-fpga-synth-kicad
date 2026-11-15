@@ -148,8 +148,31 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   figure. The DIN and RCA sockets and the modules are placed by eye to
   that end, and their positions carry no precision; a USB-C socket
   sits on its maker's board-edge line (`circuit/fixed_positions.toml`).
-- **The USB MIDI socket (J14) sits next to the power socket (J9), at
-  the same edge.**
+- **The ESP32 module's USB ports face the board's edge, so its antenna
+  lies over the board.** The module has its ports at one end and its
+  antenna at the other, and a plug has to reach the ports. Espressif's
+  hardware design guidelines for the ESP32-S3 ask for a module's
+  antenna outside the base board, or else its feed point as close to
+  the board's edge as possible
+  (https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32s3/pcb-layout-design.html,
+  Positioning a module on a base board). Three things make up for it:
+  the module sits on headers, away from the board; no copper is filled
+  under the antenna on any layer (The layers); and what the guidelines
+  want kept away from the antenna is kept away from it.
+- **The USB data pair and its socket stay 15 mm or more from the
+  antenna's area.** The same guidelines (RF): "the USB port,
+  USB-to-serial chip, UART signal lines (including traces, vias, test
+  points, header pins, etc.) must be as far away from the antenna as
+  possible". They give no distance for it; 15 mm is the clearance they
+  recommend around the antenna inside a housing, taken here as the
+  least. `circuit/antennas.toml` states the nets and the distance,
+  `scripts/board_from_circuit.py` puts no part of those nets nearer,
+  and KiCad's DRC reports a pad, a track or a via of them that is
+  (`noaidi-fpga-synth.kicad_dru`).
+- **The USB MIDI socket (J14) sits at the bottom edge, below the ESP32
+  module's USB pins,** which are at the far end of the module from its
+  antenna: the data pair is as short as it gets. The power socket (J9)
+  is at the same edge and carries no data.
 
 ## Not required of this board
 
@@ -172,3 +195,6 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   the pair is `ESP_3V3`, where Espressif recommends ground.
 - **The fixed positions:** which connectors sit at which edge, the
   board's outline and its mounting holes wait for the enclosure.
+- **The radio's range with the antenna over the board** is not
+  measured. Espressif's guidelines ask for the end product to be
+  tested for throughput and communication range.
