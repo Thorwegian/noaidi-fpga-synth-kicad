@@ -99,6 +99,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/route.sh`: lays the board's signals anew with Freerouting and
   prints what KiCad's DRC finds; `scripts/route_board.py` writes the
   board for the router and reads its result back.
+- `circuit/pair_paths.toml`: the path of each differential pair, and
+  `scripts/lay_pairs.py`, which lays the pair's two tracks side by side
+  along it for the router to work around.
 - `scripts/join_fills.py`: ties the fills of one net together with
   vias, and joins the pads the fills do not reach.
 - `scripts/place_designators.py`: puts each part's designator at the
