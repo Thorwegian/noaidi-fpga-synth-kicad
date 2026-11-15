@@ -49,6 +49,14 @@ edge move; the fills follow the outline. Without a width the outline is no
 larger than the board is. With one it is no wider than that, and as tall
 as it takes: the smallest outline is not the narrowest.
 
+Of the ways the parts at the edges can be put down in that outline, the
+script takes the one in which their connections are shortest, taken
+together, so that two of them with many connections are neighbours where
+the outline allows it. A connection is a net that joins two of them,
+directly or through the parts that belong to them; it is measured between
+the two parts' pads on that net, or to the whole part where the net only
+reaches a part that belongs to it.
+
 Every other part is then placed anew, the ones with the most pads first:
 at the free place where its pads are nearest to the pads they connect to,
 turned whichever way brings them nearest. A pad's connections are looked
@@ -132,8 +140,8 @@ def furthest_connection(footprint, reach):
 
 
 def margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, least):
-    """What each part at an edge keeps free around it, and how many parts
-    belong to it."""
+    """What each part at an edge keeps free around it, how many parts belong
+    to it, and for every part the part at an edge it belongs to."""
     owner = {name: name for name in fixed}
     for name, reach in in_order(inner, footprints, parts, nets, fixed, fill_nets):
         votes = collections.Counter(owner[part] for targets in reach.values() for part, _ in targets)
@@ -150,13 +158,47 @@ def margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, lea
         free_sides = 2 * (width + height) - (height if edge_of[name] in (LEFT, RIGHT) else width)
         # margin * free_sides + 2 * margin ** 2 = room * area: the band and its two corners.
         margin[name] = max(least, int((math.sqrt(free_sides ** 2 + 8 * room * area[name]) - free_sides) / 4))
-    return margin, count
+    return margin, count, owner
 
 
-def smallest_outline(blocks, margin, closed, least, extent, largest):
+def links_between(owner, nets, fill_nets, footprints):
+    """The connections between the parts at the edges, one for each net
+    that joins two of them directly or through the parts that belong to
+    them, as [(part, where, other part, where)]. where is a rectangle
+    measured from the left and top of the part's own: the part's pad on that
+    net, or the whole part when only a part that belongs to it is on the net."""
+    links = []
+    for net, pads in sorted(nets.items()):
+        if net in fill_nets:
+            continue
+        ends = {}
+        for part, number in pads:
+            box = keep_out(footprints[owner[part]])
+            if part == owner[part]:
+                place = [pad.GetPosition() for pad in footprints[part].Pads() if pad.GetNumber() == number][0]
+                ends[part] = (place.x - box[LEFT], place.y - box[TOP], place.x - box[LEFT], place.y - box[TOP])
+            else:
+                ends.setdefault(owner[part], (0, 0, box[RIGHT] - box[LEFT], box[BOTTOM] - box[TOP]))
+        names = sorted(ends)
+        links += [(a, ends[a], b, ends[b]) for index, a in enumerate(names) for b in names[index + 1:]]
+    return links
+
+
+def within(box, where):
+    return (box[LEFT] + where[LEFT], box[TOP] + where[TOP], box[LEFT] + where[RIGHT], box[TOP] + where[BOTTOM])
+
+
+def distance_between(a, b):
+    """From one rectangle to another, along the board's two directions."""
+    return max(0, a[LEFT] - b[RIGHT], b[LEFT] - a[RIGHT]) + max(0, a[TOP] - b[BOTTOM], b[TOP] - a[BOTTOM])
+
+
+def smallest_outline(blocks, margin, closed, links, least, extent, largest):
     """The smallest width and height, by area, in which the blocks can be
-    put down along their edges, and how far each then slides. extent is the
-    width and height the board has, largest the ones the search starts from.
+    put down along their edges, and how far each then slides: of the ways
+    they can be put down in that outline, the one in which the links are
+    shortest, taken together. extent is the width and height the board has,
+    largest the ones the search starts from.
 
     A block is (edge, [(part, rectangle)], near): parts that move as one,
     each with its rectangle (left, top, right, bottom) measured from the
@@ -168,9 +210,14 @@ def smallest_outline(blocks, margin, closed, least, extent, largest):
 
     closed holds what a part keeps other parts out of, as {part: [(rectangle
     measured from the left and top of the part's own, the parts kept out)]}.
-    least is what two parts at the same edge keep between them.
+    links is what links_between gives. least is what two parts at the same
+    edge keep between them.
     """
     at = {name: edge for edge, members, _ in blocks for name, _ in members}
+    links_of = collections.defaultdict(list)
+    for a, where_a, b, where_b in links:
+        links_of[a].append((where_a, b, where_b))
+        links_of[b].append((where_b, a, where_a))
 
     def moved(block, slide, width, height):
         edge, members, _ = block
@@ -228,6 +275,31 @@ def smallest_outline(blocks, margin, closed, least, extent, largest):
     def fits(width, height):
         return put_down([slides(block, width, height) for block in blocks])
 
+    def links_to(down, members):
+        """How long the links from these parts to the parts that are down are, taken together."""
+        return sum(distance_between(within(box, where), within(down[other], other_where))
+                   for name, box in members for where, other, other_where in links_of[name] if other in down)
+
+    def with_shortest_links(width, height):
+        """How far each block slides in the way of putting them down in which the links are shortest."""
+        best = [math.inf, None]
+
+        def put_down_all(places, down, slid, length):
+            if not places:
+                best[:] = [length, slid]
+                return
+            for added, slide, members in sorted(((links_to(down, members), slide, members) for slide, members in places[0]),
+                                                key=lambda place: place[:2]):
+                if length + added >= best[0]:
+                    break
+                left = [[(other_slide, others) for other_slide, others in candidates if apart(members, others)]
+                        for candidates in places[1:]]
+                if all(left):
+                    put_down_all(left, {**down, **dict(members)}, slid + [slide], length + added)
+
+        put_down_all([slides(block, width, height) for block in blocks], {}, [], 0)
+        return best[1]
+
     if fits(*largest) is None:
         sys.exit("the parts at the edges do not fit in an outline that size with this much room")
     low, height = 0, largest[1]             # no room at low, room at height
@@ -243,7 +315,7 @@ def smallest_outline(blocks, margin, closed, least, extent, largest):
         if width * height < best[0] * best[1]:
             best = (width, height)
         width -= STEP
-    return best, fits(*best)
+    return best, with_shortest_links(*best)
 
 
 def main(netlist_path, board_path, room, widest=None):
@@ -286,7 +358,8 @@ def main(netlist_path, board_path, room, widest=None):
             footprints[name].SetOrientationDegrees(neighbour.GetOrientationDegrees())
             footprints[name].SetPosition(neighbour.GetPosition() + beside_offset(rule, edge_of[name]))
             members_of[rule["beside"]].append(name)
-    margin, belonging = margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, room_for_a_via)
+    margin, belonging, owner = margins(inner, footprints, parts, nets, fixed, fill_nets, edge_of, room, room_for_a_via)
+    links = links_between(owner, nets, fill_nets, footprints)
 
     # A part that sits near pads of another has one place along its edge: level with them.
     near = {}
@@ -319,12 +392,15 @@ def main(netlist_path, board_path, room, widest=None):
     if widest is not None:
         largest = (min(extent[0], pcbnew.FromMM(widest)),
                    sum(box[BOTTOM] - box[TOP] + 2 * margin[name] for _, members, _ in blocks for name, box in members))
-    new_extent, slides = smallest_outline(blocks, margin, closed, room_for_a_via, extent, largest)
+    new_extent, slides = smallest_outline(blocks, margin, closed, links, room_for_a_via, extent, largest)
     for (edge, members, _), slide in zip(blocks, slides):
         dx = slide if edge in (TOP, BOTTOM) else (new_extent[0] - extent[0] if edge == RIGHT else 0)
         dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
         for name, _ in members:
             footprints[name].Move(pcbnew.VECTOR2I(dx, dy))
+    between = collections.defaultdict(list)
+    for a, where_a, b, where_b in links:
+        between[a, b].append(distance_between(within(keep_out(footprints[a]), where_a), within(keep_out(footprints[b]), where_b)))
 
     corners = [(outline[LEFT], outline[TOP]), (outline[LEFT] + new_extent[0], outline[TOP]),
                (outline[LEFT] + new_extent[0], outline[TOP] + new_extent[1]), (outline[LEFT], outline[TOP] + new_extent[1])]
@@ -375,6 +451,9 @@ def main(netlist_path, board_path, room, widest=None):
         print(f"  {name:4} at the {EDGE_NAME[edge_of[name]]:6} edge, {pcbnew.ToMM(box[low]):6.1f} to "
               f"{pcbnew.ToMM(box[high]):6.1f} mm along it; {belonging[name]:2} parts belong to it, "
               f"{pcbnew.ToMM(margin[name]):4.1f} mm kept free around it")
+    print("connections between the parts at the edges, the most first, and how far apart their ends are:")
+    for (a, b), lengths in sorted(between.items(), key=lambda pair: (-len(pair[1]), pair[0])):
+        print(f"  {a:4} and {b:4} {len(lengths):2}, {pcbnew.ToMM(sum(lengths) / len(lengths)):5.1f} mm on average")
     print(f"{len(inner)} parts placed beside what they connect to; "
           f"the furthest pad from its connection: {pcbnew.ToMM(furthest[0]):.1f} mm, on {furthest[1]}")
     if placed_further:

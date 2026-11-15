@@ -148,9 +148,11 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   figure. The DIN and RCA sockets and the modules are placed by eye to
   that end, and their positions carry no precision; a USB-C socket
   sits on its maker's board-edge line (`circuit/fixed_positions.toml`).
-- **Related parts sit together.** A part that is not at the board's
-  edge sits beside what it connects to; where it sits otherwise is
-  free.
+- **Related parts sit together.** Two large parts with many connections
+  between them are neighbours. A part that is not at the board's edge
+  sits beside what it connects to; where it sits otherwise is free, and
+  the small parts need no order of their own as long as they are packed
+  well around the large ones.
 - **A part at the board's edge stays at its edge and may sit anywhere
   along it,** where nothing below says otherwise. The order of the
   parts along an edge is not specified while the board has no
