@@ -135,13 +135,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP26"
-			(at 2.5 0 180)
+			(at -0.030258 -4.196427 0)
 			(layer "F.SilkS")
 			(uuid "363af713-692f-45ab-9c0b-6b3e63c2a36b")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -246,13 +246,13 @@
 		(descr "Through hole straight pin header, 1x05, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x05 2.54mm single row")
 		(property "Reference" "J10"
-			(at 0.11 -3.11 180)
+			(at 0.060258 13.726428 0)
 			(layer "F.SilkS")
 			(uuid "88f2644d-bd0d-4873-a907-2791e7c29ac4")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -520,13 +520,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP29"
-			(at -2.36 -0.15 180)
+			(at -2.769742 -0.103573 0)
 			(layer "F.SilkS")
 			(uuid "5ea7007e-6b52-4127-bbc6-fbeda7d2dfce")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -631,13 +631,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP21"
-			(at -2.57 0.10792 180)
+			(at -4.310713 -0.030258 90)
 			(layer "F.SilkS")
 			(uuid "b0038019-7db5-48a7-8c66-88cea4d43449")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -742,13 +742,13 @@
 		(descr "Through hole straight pin header, 1x03, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x03 2.54mm single row")
 		(property "Reference" "J11"
-			(at 0 -2.96 180)
+			(at -0.060258 -3.566428 0)
 			(layer "F.SilkS")
 			(uuid "55d5624d-b36c-4487-a5c9-06ec868b1588")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -994,13 +994,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP22"
-			(at -2.57 0 180)
+			(at -4.310713 -0.030258 90)
 			(layer "F.SilkS")
 			(uuid "283a06a1-9652-47a9-8621-2c2d2ca88fd5")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1105,13 +1105,13 @@
 		(descr "USB Type-C receptacle for USB 2.0 and PD, http://www.krhro.com/uploads/soft/180320/1-1P320120243.pdf")
 		(tags "usb usb-c 2.0 pd")
 		(property "Reference" "J9"
-			(at 0 -5.645 0)
+			(at 0.005001 -6.239742 0)
 			(layer "F.SilkS")
 			(uuid "50dd642e-fd43-4376-b6db-2ef788df45b8")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1508,13 +1508,13 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing)")
 		(tags "capacitor handsolder")
 		(property "Reference" "C4"
-			(at 0 -1.68 180)
+			(at 3.304999 -0.350258 0)
 			(layer "F.SilkS")
 			(uuid "c5e8dc0f-2e8e-4063-b5bf-a26614544f95")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1666,13 +1666,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP5"
-			(at 0.03 2.75 0)
+			(at 0.175 2.880258 0)
 			(layer "F.SilkS")
 			(uuid "dc5f8c02-51ce-4996-a73b-3bb6c9d2b200")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1777,13 +1777,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP1"
-			(at -2.5 0 180)
+			(at 0.030258 -3.739286 0)
 			(layer "F.SilkS")
 			(uuid "26cc2c10-1597-40a9-aba1-6de5b979109a")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1888,13 +1888,13 @@
 		(descr "6-lead surface-mounted (SMD) DIP package, row spacing 9.53mm (375 mils)")
 		(tags "SMD DIP DIL PDIP SMDIP 2.54mm 9.53mm 375mil")
 		(property "Reference" "U4"
-			(at 0 -4.87 270)
+			(at 0.060258 5.51357 0)
 			(layer "F.SilkS")
 			(uuid "e0766dd7-ffce-4159-819e-5171f4fb00ea")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2166,13 +2166,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP8"
-			(at 0 -2.498 0)
+			(at 0.030258 -3.739285 90)
 			(layer "F.SilkS")
 			(uuid "77d54158-2da4-41aa-bc14-9e7d98b660d8")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2277,13 +2277,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP2"
-			(at -2.5 0 180)
+			(at -2.769742 -0.175 0)
 			(layer "F.SilkS")
 			(uuid "58b4af88-8e84-4112-82af-036dbf91eb0f")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2388,13 +2388,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP9"
-			(at -2.5 0 180)
+			(at 0.030258 3.625 0)
 			(layer "F.SilkS")
 			(uuid "3655781d-5182-4c95-a05f-76023255e817")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2499,13 +2499,13 @@
 		(descr "Through hole straight pin header, 1x03, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x03 2.54mm single row")
 		(property "Reference" "J12"
-			(at 0.14 7.85 180)
+			(at 0.060258 8.646428 0)
 			(layer "F.SilkS")
 			(uuid "fa5d92b3-2efc-49e7-90a4-bc7b84d96c87")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2751,14 +2751,13 @@
 		(at 147.8396 63.9512)
 		(tags "0105 05 ")
 		(property "Reference" "J1"
-			(at -7.5896 7.7988 0)
-			(unlocked yes)
+			(at -19.533099 -2.874942 0)
 			(layer "F.SilkS")
 			(uuid "b9acde81-9f23-411d-a3f3-15574d28e1de")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3045,13 +3044,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP19"
-			(at 2.75 0 180)
+			(at 0.030258 4.196427 0)
 			(layer "F.SilkS")
 			(uuid "f28dbbe9-6f45-409b-a76a-1c9d769be5f7")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3156,13 +3155,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R7"
-			(at 0 -1.65 90)
+			(at 2.819742 -0.075 0)
 			(layer "F.SilkS")
 			(uuid "6eafdbbd-c6ea-47f4-b491-83101bd94b44")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3317,13 +3316,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP3"
-			(at 0.25 -3.25 180)
+			(at 0.280258 -3.739286 0)
 			(layer "F.SilkS")
 			(uuid "3728aac5-e1d8-44f5-b4cf-c32ac030b29c")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3428,13 +3427,13 @@
 		(descr "6-lead surface-mounted (SMD) DIP package, row spacing 9.53mm (375 mils)")
 		(tags "SMD DIP DIL PDIP SMDIP 2.54mm 9.53mm 375mil")
 		(property "Reference" "U3"
-			(at 0 -4.87 270)
+			(at 0.060258 5.456428 0)
 			(layer "F.SilkS")
 			(uuid "a33735f3-8d19-4a4f-a941-66ad3e212318")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3706,13 +3705,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R1"
-			(at 0 -1.65 270)
+			(at -2.819742 0.017856 0)
 			(layer "F.SilkS")
 			(uuid "4b0c6c38-543f-4882-bef0-426896727197")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3867,13 +3866,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R8"
-			(at 0 -1.65 90)
+			(at -2.930258 -0.017856 0)
 			(layer "F.SilkS")
 			(uuid "807036e9-c78d-4cc2-b963-c060bb7bdcb1")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4028,13 +4027,13 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing)")
 		(tags "capacitor handsolder")
 		(property "Reference" "C3"
-			(at 0 -1.68 180)
+			(at 3.247857 -0.350258 0)
 			(layer "F.SilkS")
 			(uuid "34d4bc53-4e2f-4a42-8783-b485176ce25e")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4186,13 +4185,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R2"
-			(at 0 -1.65 270)
+			(at -2.819742 0.017856 0)
 			(layer "F.SilkS")
 			(uuid "a47c47b0-a219-4f8f-bd75-f9f77d397d90")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4347,13 +4346,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP13"
-			(at 0.01 -2.75 0)
+			(at -0.603573 -2.880258 0)
 			(layer "F.SilkS")
 			(uuid "6dbffa0e-6725-478f-9c33-7462b60328c6")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4458,13 +4457,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP25"
-			(at 2.61 -0.02 0)
+			(at 2.769742 0.103573 0)
 			(layer "F.SilkS")
 			(uuid "f5ee9900-0295-494e-884d-8231942c4236")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4569,13 +4568,13 @@
 		(descr "ESP32-S3 general-purpose development board, based on ESP32-S3-WROOM-1 or ESP32-S3-WROOM-1U,It has all the ESP32-S3 pins exposed and is easy to connect and use.")
 		(tags "ESP32-S3")
 		(property "Reference" "U1"
-			(at 11.25 -3.98 180)
+			(at -2.504742 27.928708 0)
 			(layer "F.SilkS")
 			(uuid "9c1b07cc-fd65-4bb7-b5b6-47f004049abe")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5816,13 +5815,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R4"
-			(at 0 -1.65 180)
+			(at 3.275 -0.130258 0)
 			(layer "F.SilkS")
 			(uuid "1f8f86fe-6cf4-4735-aff5-a9cd8c9c5fa8")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5977,13 +5976,13 @@
 		(descr "Through hole straight pin header, 1x03, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x03 2.54mm single row")
 		(property "Reference" "J8"
-			(at 0 -2.38 90)
+			(at -0.060258 8.132143 0)
 			(layer "F.SilkS")
 			(uuid "b90cf2d4-2fb8-4138-aea0-bb7d0d78ceb3")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6230,13 +6229,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R15"
-			(at 0 -1.65 0)
+			(at 0.010715 2.030258 0)
 			(layer "F.SilkS")
 			(uuid "0fca305c-13ad-42c6-b690-8efbc5e52372")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6391,13 +6390,13 @@
 		(descr "Socket for the Adafruit PCM510x I2S DAC breakout (30.48 x 20.32 mm): two rows of 0.1\" female pin headers (8 + 6) at the breakout's JP2/JP1 positions, breakout outline on F.Fab and F.CrtYd, its four 2.5 mm mounting holes as NPTH. Generated from adafruit/Adafruit-PCM510x-I2S-DAC-PCB (Eagle 9.6.2).")
 		(tags "adafruit pcm5102 pcm510x i2s dac breakout socket header 2.54")
 		(property "Reference" "U5"
-			(at 0 -11.6 270)
+			(at -16.459742 0.006428 0)
 			(layer "F.SilkS")
 			(uuid "d2fd3537-206e-4231-9890-f8c37c848609")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7153,13 +7152,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP18"
-			(at 2.75 0 180)
+			(at 0.030258 4.196427 0)
 			(layer "F.SilkS")
 			(uuid "703315cf-9f37-48f6-99b6-61c6ce0f8561")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7264,13 +7263,13 @@
 		(descr "SOT, 6 Pin (https://home.jeita.or.jp/tsc/std-pdf/ED-7500A.pdf#page=170, JEDEC MO-203, variant AB, https://www.jedec.org/document_search?search_api_views_fulltext=MO-203)")
 		(tags "SOT TO_SOT_SMD SC-88 SOT-363 SC-70-6 US6 UMT6 S-Mini6 TSSOP6")
 		(property "Reference" "U6"
-			(at 4.075001 0.8248 0)
+			(at 2.846428 -0.185258 0)
 			(layer "F.SilkS")
 			(uuid "edddfa5b-ab32-48bd-bdef-9c47a1211213")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7637,13 +7636,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP23"
-			(at -2.57 -0.02 180)
+			(at 0.030258 4.196427 0)
 			(layer "F.SilkS")
 			(uuid "af44b503-f4ea-4f95-a532-57d98307ba71")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7748,13 +7747,13 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing)")
 		(tags "capacitor handsolder")
 		(property "Reference" "C2"
-			(at 0 -1.68 180)
+			(at 3.247857 -0.100258 0)
 			(layer "F.SilkS")
 			(uuid "acee418c-8618-4d94-9d27-53ba457ca925")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7909,13 +7908,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP28"
-			(at -2.36 0 180)
+			(at -0.469742 4.196427 0)
 			(layer "F.SilkS")
 			(uuid "2f07fee6-61eb-48f5-a727-473c44a8113b")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8020,14 +8019,13 @@
 		(descr "Kycon KLPX-0848A-2-x card-edge RCA, SamacSys geometry via DigiKey ECAD, pads made plated (were np_thru_hole). Pitch 4.5 mm.")
 		(tags "KLPX-0848A-2-B ")
 		(property "Reference" "J3"
-			(at 0 -1.5 0)
-			(unlocked yes)
+			(at 0.016001 7.393058 0)
 			(layer "F.SilkS")
 			(uuid "ec9b54b2-1cf4-4f2d-ad46-7ebe6cb528a2")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8289,13 +8287,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP24"
-			(at 2.61 -0.02 180)
+			(at -0.030258 4.310715 0)
 			(layer "F.SilkS")
 			(uuid "440f1bea-ce71-414b-bc5f-ab32fd5c30ad")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8400,13 +8398,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP7"
-			(at 2.75 -0.03 180)
+			(at 0.030258 -3.739286 0)
 			(layer "F.SilkS")
 			(uuid "87be73f9-8890-4b3d-8cd5-7cfbdffc1665")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8511,13 +8509,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R14"
-			(at 0 -1.65 90)
+			(at 2.819742 -0.146427 0)
 			(layer "F.SilkS")
 			(uuid "4b9e886e-a823-407d-8724-09f1e0cc7acb")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8671,14 +8669,13 @@
 		(at 178.8396 63.9512)
 		(tags "0105 05 ")
 		(property "Reference" "J2"
-			(at -7.5896 7.7988 0)
-			(unlocked yes)
+			(at -19.533099 -2.874942 0)
 			(layer "F.SilkS")
 			(uuid "28bbe34e-70c6-4d02-95f7-5760599a86f4")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8965,13 +8962,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP15"
-			(at 2.750001 0 180)
+			(at -2.769742 -0.103573 0)
 			(layer "F.SilkS")
 			(uuid "34198996-2156-4ee9-9151-4fc1d321f4ea")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9076,13 +9073,13 @@
 		(descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x02 2.54mm single row")
 		(property "Reference" "JP1"
-			(at -2.25 1.26 180)
+			(at -2.739742 1.344999 0)
 			(layer "F.SilkS")
 			(uuid "426f9379-d064-4760-a0b5-52183694f39e")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9317,13 +9314,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R17"
-			(at 0 -1.65 180)
+			(at 3.846427 0.119742 0)
 			(layer "F.SilkS")
 			(uuid "abdcc029-906f-465a-abcf-797705542777")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9475,13 +9472,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R18"
-			(at 0 -1.65 0)
+			(at 0.010715 -1.919742 0)
 			(layer "F.SilkS")
 			(uuid "24d0912a-604d-4126-8811-4ddcaef98c6f")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9633,13 +9630,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R11"
-			(at 0 -1.65 270)
+			(at 2.930258 0.089285 0)
 			(layer "F.SilkS")
 			(uuid "2450940c-4b72-4b54-86a2-af620dd08687")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9794,13 +9791,13 @@
 		(descr "USB Type-C receptacle for USB 2.0 and PD, http://www.krhro.com/uploads/soft/180320/1-1P320120243.pdf")
 		(tags "usb usb-c 2.0 pd")
 		(property "Reference" "J14"
-			(at 0 -5.645 0)
+			(at -7.17357 -0.439742 0)
 			(layer "F.SilkS")
 			(uuid "1d7d0109-8ca2-49fa-ae72-dece77757fa5")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10197,13 +10194,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP30"
-			(at -3.75 0 0)
+			(at -4.196427 0.030258 0)
 			(layer "F.SilkS")
 			(uuid "7144edbf-7210-44e0-adac-0b7c3f8e25f4")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10308,13 +10305,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP6"
-			(at 2.75 0 180)
+			(at 0.030258 3.625 0)
 			(layer "F.SilkS")
 			(uuid "0dfa1a0b-42d0-49c0-8a04-221c8ed59c57")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10419,13 +10416,13 @@
 		(descr "Through hole straight pin header, 1x04, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x04 2.54mm single row")
 		(property "Reference" "J7"
-			(at 0 -2.66 180)
+			(at 0.060258 10.672143 0)
 			(layer "F.SilkS")
 			(uuid "791e204f-e6a4-4a6b-a468-29ac939e51ee")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10682,13 +10679,13 @@
 		(descr "Through hole straight pin header, 1x03, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x03 2.54mm single row")
 		(property "Reference" "J13"
-			(at -0.25 -2.67 0)
+			(at -0.266428 -2.739742 0)
 			(layer "F.SilkS")
 			(uuid "8119a127-526e-4a74-8115-12dc045b869c")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10934,13 +10931,13 @@
 		(descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x02 2.54mm single row")
 		(property "Reference" "JP2"
-			(at -2.25 1.26 180)
+			(at -2.739742 1.344999 0)
 			(layer "F.SilkS")
 			(uuid "86b38226-94ad-4da0-8905-c8480c528d00")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11175,13 +11172,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R13"
-			(at 0 -1.65 90)
+			(at 2.819742 -0.089285 0)
 			(layer "F.SilkS")
 			(uuid "97073160-3c61-49ef-94bc-c16fcc83ec68")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11336,13 +11333,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R12"
-			(at 0 -1.65 180)
+			(at -0.010715 1.919742 0)
 			(layer "F.SilkS")
 			(uuid "138f520a-8f4d-4d84-be25-937dcadb1d75")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11497,13 +11494,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP4"
-			(at -2.5 0.75 180)
+			(at -3.739284 0.969742 90)
 			(layer "F.SilkS")
 			(uuid "c0762a8c-3c8a-466c-a2ed-e9fc8de311f4")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11608,13 +11605,13 @@
 		(descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x02 2.54mm single row")
 		(property "Reference" "J6"
-			(at 2.500001 1.54 180)
+			(at -2.739742 1.244999 0)
 			(layer "F.SilkS")
 			(uuid "01137805-dc3f-4b4c-b924-4485cae86b67")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11849,13 +11846,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP16"
-			(at 0.25 2.75 0)
+			(at -4.196427 0.030258 0)
 			(layer "F.SilkS")
 			(uuid "7e7d172a-0bcb-4cd7-95dc-0a603e7bada2")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11960,13 +11957,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP27"
-			(at 2.5 0 180)
+			(at -0.030258 4.310715 0)
 			(layer "F.SilkS")
 			(uuid "a24f3c43-e440-4141-8c5a-9c8f8a2ffa0b")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12071,13 +12068,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP20"
-			(at -2.57 0 180)
+			(at -2.769742 -1.103573 0)
 			(layer "F.SilkS")
 			(uuid "4b64d7a5-d8f5-45cf-8040-f0db64a73d83")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12182,13 +12179,13 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing)")
 		(tags "capacitor handsolder")
 		(property "Reference" "C1"
-			(at 0 -1.68 90)
+			(at 2.849742 -0.047857 0)
 			(layer "F.SilkS")
 			(uuid "da01a132-9b61-412f-9a19-a570539d4fd4")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12343,13 +12340,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP12"
-			(at 2.75 0 180)
+			(at 0.030258 4.196427 0)
 			(layer "F.SilkS")
 			(uuid "8f8e17a0-dba3-47c7-8384-e23c5b931a26")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12454,13 +12451,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R16"
-			(at 0 -1.65 180)
+			(at -0.010715 1.919742 0)
 			(layer "F.SilkS")
 			(uuid "ad19c954-d808-485f-be79-8f524cfdd893")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12615,13 +12612,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP11"
-			(at -2.75 0 180)
+			(at -0.030258 -4.196427 0)
 			(layer "F.SilkS")
 			(uuid "a5b46116-c02c-4de3-9c90-dfc2721cf393")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12726,13 +12723,13 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R3"
-			(at 0 -1.65 180)
+			(at 3.217856 -0.130258 0)
 			(layer "F.SilkS")
 			(uuid "0592025f-45d8-4565-9cd6-6d9f0ad82f2b")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12887,13 +12884,13 @@
 		(descr "SOD-123")
 		(tags "SOD-123")
 		(property "Reference" "D2"
-			(at 0 -2 180)
+			(at -0.082144 2.119742 0)
 			(layer "F.SilkS")
 			(uuid "db81003a-21be-4d94-bf61-3f68150fc916")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13178,13 +13175,13 @@
 		(descr "SOT, 6 Pin (https://home.jeita.or.jp/tsc/std-pdf/ED-7500A.pdf#page=170, JEDEC MO-203, variant AB, https://www.jedec.org/document_search?search_api_views_fulltext=MO-203)")
 		(tags "SOT TO_SOT_SMD SC-88 SOT-363 SC-70-6 US6 UMT6 S-Mini6 TSSOP6")
 		(property "Reference" "U7"
-			(at -2.7725 -0.175 180)
+			(at 0.119742 2.484286 0)
 			(layer "F.SilkS")
 			(uuid "59cf2dd1-3a0b-4d57-8438-ebeeb8beb1c0")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13551,13 +13548,13 @@
 		(descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x02 2.54mm single row")
 		(property "Reference" "J5"
-			(at 0 -2.38 180)
+			(at -2.739742 1.244999 0)
 			(layer "F.SilkS")
 			(uuid "c653bf09-c67d-4617-9f6f-eaee8727e412")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13792,13 +13789,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP14"
-			(at 2.75 0 180)
+			(at -2.769742 -0.046429 0)
 			(layer "F.SilkS")
 			(uuid "3b7ebe37-5250-4bfd-a0ab-c3b8b7dd58d0")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13903,13 +13900,13 @@
 		(descr "SOD-123")
 		(tags "SOD-123")
 		(property "Reference" "D1"
-			(at 0 -2 180)
+			(at -0.082144 2.119742 0)
 			(layer "F.SilkS")
 			(uuid "f1f6c888-5e1b-4c16-8a5e-318b1b753b90")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -14192,13 +14189,13 @@
 		(uuid "f667a13f-dd90-477a-9b4a-fcf78c9ce9ef")
 		(at 214.99 109.59 180)
 		(property "Reference" "U2"
-			(at 0 12.84 0)
+			(at 28.971428 0.620367 0)
 			(layer "F.SilkS")
 			(uuid "7cc9d60b-b0ea-4daf-9393-8af2d8e20bc1")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.16)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -14822,13 +14819,13 @@
 		(descr "Plated Hole as test Point, diameter 2.0mm")
 		(tags "test point plated hole")
 		(property "Reference" "TP10"
-			(at 0 2.5 0)
+			(at 4.310715 0.030258 0)
 			(layer "F.SilkS")
 			(uuid "16976d3a-c5bc-4e6f-a6ea-15a4de457b20")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 1.2 1.2)
+					(thickness 0.2)
 				)
 			)
 		)
