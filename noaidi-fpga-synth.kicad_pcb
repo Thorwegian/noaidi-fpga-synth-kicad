@@ -183,9 +183,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/f6e3c6da-bfe7-4831-a61a-71b8ca69ec10")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -302,9 +299,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/7e01731d-3d13-4da4-904e-ec739c59acd2")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -568,9 +562,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/76354a9d-2fe4-43a1-9563-a23a1b74f321")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -679,9 +670,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/a99b6a37-b91c-4832-b20c-79f2ef2c26c6")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -798,9 +786,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/079eebc2-16c5-42e7-95ab-d718891fcd56")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -1042,9 +1027,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/f259e70d-7769-4c79-9b02-59df91c2b3f9")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -1164,9 +1146,6 @@
 				)
 			)
 		)
-		(path "/1997901a-a311-458e-a1d2-7be14440efeb")
-		(sheetname "/USB/")
-		(sheetfile "usb.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1714,9 +1693,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/b0484d87-5a26-4982-b9e6-67cf19bc406f")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -1825,9 +1801,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/3705a078-9e72-4673-853c-473be58095f3")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -1955,9 +1928,6 @@
 				)
 			)
 		)
-		(path "/1415bb8d-142f-4f6e-80a8-cdfe596d2d9f")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2214,9 +2184,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/41671606-f434-43d2-ba11-a57b4530c823")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -2325,9 +2292,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/71ec2b65-d912-4f95-bab7-8a364af2716c")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -2436,9 +2400,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/2b70aa49-072b-421f-9dca-50b3105beea1")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -2555,9 +2516,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/9c83121e-bb57-47d0-ace3-6556630225c0")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -2796,9 +2754,6 @@
 			)
 		)
 		(property ki_fp_filters "DIN*")
-		(path "/d6c2fefc-e0d0-4440-b589-731c877be87b")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -3092,9 +3047,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/f1eef824-822b-4dda-b120-7e935eb749c1")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -3222,9 +3174,6 @@
 				)
 			)
 		)
-		(path "/a590fad4-f7ce-4ce7-b3f5-5b530e2b83fe")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3364,9 +3313,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/4633dd1e-3de9-4458-8084-ba59eb6c6658")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -3494,9 +3440,6 @@
 				)
 			)
 		)
-		(path "/2be5663a-d7a0-4768-9efe-601085a3bd58")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3772,9 +3715,6 @@
 				)
 			)
 		)
-		(path "/5f29a3f2-eb44-43b5-9822-4444c6ab065c")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3933,9 +3873,6 @@
 				)
 			)
 		)
-		(path "/eeffaf95-f4ee-44fa-a8e3-259724aef1b3")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4252,9 +4189,6 @@
 				)
 			)
 		)
-		(path "/2f17d872-7c29-4555-ae0b-edb2b9735de4")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4394,9 +4328,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/20b3a6a0-274b-4757-873c-842613351b28")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -4505,9 +4436,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/2374adf9-a055-4a06-98c6-9d774763ac85")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -4611,9 +4539,6 @@
 				)
 			)
 		)
-		(path "/a8026219-5d67-436a-a3e1-5e77f9df7a1b")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5882,9 +5807,6 @@
 				)
 			)
 		)
-		(path "/13aa4729-fd9c-4d8b-8d4e-2ca83f6c0c1d")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6032,9 +5954,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/6528251a-5c40-4268-857c-7457fcffa01f")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -6296,9 +6215,6 @@
 				)
 			)
 		)
-		(path "/52792d6c-c5e4-4262-863c-3fcb5ee73561")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6435,9 +6351,6 @@
 				)
 			)
 		)
-		(path "/c57512a7-c66d-4b3a-a9db-e6643a823624")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6969,9 +6882,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/8936afba-d486-4d45-9ca8-71a9745112ad")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -7100,9 +7010,6 @@
 			)
 		)
 		(property ki_fp_filters "*SC?70*")
-		(path "/4ca9ba51-b449-404c-9709-ebd560869324")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -7453,9 +7360,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/21f233dc-ce74-4edc-abb8-52f41125ab12")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -7583,9 +7487,6 @@
 				)
 			)
 		)
-		(path "/0c84a2de-acb0-4c8e-9946-fad415e9c909")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7725,9 +7626,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/c182854e-c600-4752-979f-75fcdde1492b")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -7833,9 +7731,6 @@
 			)
 		)
 		(property ki_fp_filters "*BNC* *SMA* *SMB* *SMC* *Cinch* *LEMO* *UMRF* *MCX* *U.FL*")
-		(path "/728cec33-d2a6-43f0-917a-f84a60b9ba40")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -5.1308 -4.127)
@@ -8104,9 +7999,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/5000611f-4f2c-4bc2-99c9-61cd3e0b91e1")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -8215,9 +8107,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/68986084-54dc-4714-9a40-5e799673587f")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -8345,9 +8234,6 @@
 				)
 			)
 		)
-		(path "/2a052e4f-d93b-4591-a755-3ca1c7cc6c1c")
-		(sheetname "/USB/")
-		(sheetfile "usb.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8483,9 +8369,6 @@
 			)
 		)
 		(property ki_fp_filters "DIN*")
-		(path "/d1ed4ad8-9e10-47bd-80eb-c9506ac7d541")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -8779,9 +8662,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/0502a66e-1ded-42ca-a01d-095681d7fec9")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -8898,9 +8778,6 @@
 			)
 		)
 		(property ki_fp_filters "Jumper* TestPoint*2Pads* TestPoint*Bridge*")
-		(path "/cd6fc354-07c2-4356-9eaa-c34cb15444b1")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -9466,9 +9343,6 @@
 				)
 			)
 		)
-		(path "/842c2171-b8b2-4ca9-b376-a7d0f156b3a5")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10011,9 +9885,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/e8059826-01b9-45a0-89e7-dcb202d835d9")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -10122,9 +9993,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/aac4855b-45ce-4c7b-bc2a-11c92c49eae1")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -10241,9 +10109,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/4cbc282d-14c6-418c-aaa9-da604626bfcc")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -10504,9 +10369,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/ec5cc095-54ff-472e-8b21-3beea2d3fab9")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -10756,9 +10618,6 @@
 			)
 		)
 		(property ki_fp_filters "Jumper* TestPoint*2Pads* TestPoint*Bridge*")
-		(path "/5d1be162-7531-4c74-8e51-58d972769096")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -11008,9 +10867,6 @@
 				)
 			)
 		)
-		(path "/2b95b4b3-191d-4b43-a34d-328ba2971deb")
-		(sheetname "/USB/")
-		(sheetfile "usb.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11169,9 +11025,6 @@
 				)
 			)
 		)
-		(path "/37aa18c4-8c27-4c93-a513-fb95c294151b")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11311,9 +11164,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/d696bdfd-5285-4b3b-bb90-de4cba77afef")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -11430,9 +11280,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/15eee3c5-ccac-48fe-9321-d0ac8db2ee0d")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -11663,9 +11510,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/6a111875-eb9e-4b80-91a1-9ebafb3b1259")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -11774,9 +11618,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/025d435a-b701-4bcf-ad4b-a04ae607559c")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -11885,9 +11726,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/73089fe7-ba0f-4d14-899a-ec3d823d0143")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -12015,9 +11853,6 @@
 				)
 			)
 		)
-		(path "/1ddafcb6-4e1d-4901-a1b9-f13ac94385e3")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12157,9 +11992,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/df999f9a-4315-48f4-b52f-b04da7bb68dc")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -12287,9 +12119,6 @@
 				)
 			)
 		)
-		(path "/af7d910b-21f0-41b8-88c3-46a8cc400bfc")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12429,9 +12258,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/08c027bd-d4c7-4d51-9f35-895d93ccdf28")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -12559,9 +12385,6 @@
 				)
 			)
 		)
-		(path "/6e50bfe4-187f-43ac-b120-634ebe7ec750")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12712,9 +12535,6 @@
 				)
 			)
 		)
-		(path "/df1022ab-35ac-41aa-a7dc-8d4f24a7d50e")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13012,9 +12832,6 @@
 			)
 		)
 		(property ki_fp_filters "*SC?70*")
-		(path "/ab09861a-fd10-4fc8-873c-86a3536383bb")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -13373,9 +13190,6 @@
 			)
 		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
-		(path "/c767f977-cfd6-4d24-8e90-7d90b6df808d")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -13606,9 +13420,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/071727fb-a5f6-4df4-95ec-b55d2904a3e3")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
@@ -13728,9 +13539,6 @@
 				)
 			)
 		)
-		(path "/35a5d2a3-d0a7-49f5-a5ca-53eaaa35866b")
-		(sheetname "/ESP32/")
-		(sheetfile "esp32.kicad_sch")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -14017,9 +13825,6 @@
 				)
 			)
 		)
-		(path "/86900145-c432-4bc1-b40c-d20056dea461")
-		(sheetname "/Tang Nano 20K/")
-		(sheetfile "tang_nano_20k.kicad_sch")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
@@ -14636,9 +14441,6 @@
 			)
 		)
 		(property ki_fp_filters "Pin* Test*")
-		(path "/40b50899-81ae-4ac1-a336-e68a3c593ce5")
-		(sheetname "/Test points/")
-		(sheetfile "test_points.kicad_sch")
 		(units
 			(unit
 				(name "A")
