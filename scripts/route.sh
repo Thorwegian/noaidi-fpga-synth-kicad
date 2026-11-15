@@ -44,6 +44,7 @@ echo "$jar_sha256  $jar" | sha256sum --check --quiet || exit 1
 
 # pcbnew writes its own chatter to the standard error stream.
 scripts/lay_pairs.py $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+scripts/lay_fill_vias.py $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 layers_with_tracks=$(scripts/route_board.py export $board $out/board.dsn 2>> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
 
 if ! java -Djava.awt.headless=true -jar $jar -de $out/board.dsn -do $out/board.ses \
