@@ -68,7 +68,11 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   `.kicad_pcb`, `.kicad_dru`
 - `noaidi-fpga-synth.kicad_sym` and `noaidi-fpga-synth.pretty/`: the
   project's own symbols and footprints (the two modules, the DAC, the
-  DIN sockets, the RCA and USB-C connectors)
+  DIN sockets, the RCA and USB-C connectors). The ESP32 module's
+  footprint is Espressif's, from
+  [espressif/kicad-libraries](https://github.com/espressif/kicad-libraries)
+  (CC-BY-SA 4.0 with the exception KiCad's own libraries have), with a
+  keep-out for copper fills under the antenna.
 - `scripts/render.sh`: regenerates the images above into `build/` with
   `kicad-cli` (KiCad 10); `scripts/crop.py` trims the 3D renders to the
   board
