@@ -299,9 +299,6 @@ def main(netlist_path, net_classes_path, board_path):
             if old:
                 footprint.SetOrientationDegrees(old.GetOrientationDegrees())
                 footprint.SetPosition(footprint.GetPosition() + pad_centre(old) - pad_centre(footprint))
-                footprint.SetPath(old.GetPath())
-                footprint.SetSheetname(old.GetSheetname())
-                footprint.SetSheetfile(old.GetSheetfile())
                 board.Delete(old)
             (swapped if old else new).append(footprint)
             board.Add(footprint)

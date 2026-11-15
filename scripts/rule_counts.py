@@ -3,7 +3,7 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-"""rule_counts.py -- count the findings in kicad-cli's DRC and ERC reports by type.
+"""rule_counts.py -- count the findings in kicad-cli's DRC reports by type.
 
     rule_counts.py <report.json> ...
 
@@ -17,14 +17,10 @@ import sys
 
 
 def findings(report):
-    """The findings of a DRC report (the board's) or an ERC report (per sheet)."""
+    """The findings of a DRC report: the rule violations and the missing connections."""
     yield from report.get("violations", [])
-    for sheet in report.get("sheets", []):
-        yield from sheet["violations"]
     for item in report.get("unconnected_items", []):
         yield {"severity": item["severity"], "type": "unconnected_items"}
-    for item in report.get("schematic_parity", []):
-        yield {"severity": item["severity"], "type": "schematic_parity"}
 
 
 for path in sys.argv[1:]:

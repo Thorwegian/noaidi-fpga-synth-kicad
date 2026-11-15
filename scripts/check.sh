@@ -3,19 +3,22 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-# check.sh -- is the circuit in text, the drawn sheets and the board one board?
+# check.sh -- is the board the circuit in text?
 #
 #     scripts/check.sh
 #
-# Runs circuit/board.py (SKiDL's rule check, the netlist, docs/pins.md),
-# exports the drawn sheets' netlists and compares the three with each
-# other. Then counts the findings of KiCad's own checks by type into
-# build/check/counts.txt, for comparing with the same file from main.
+# Runs circuit/board.py (SKiDL's rule check, the netlist, docs/pins.md)
+# and compares the netlist with the board. Then counts the findings of
+# KiCad's DRC by type into build/check/counts.txt, for comparing with
+# the same file from main, and measures the board's print against its
+# pads, which KiCad's DRC does not (scripts/silkscreen_clearance.py).
 #
-# Exit code 0 when the rule check is clean and the three agree.
+# Exit code 0 when the rule check is clean, the board agrees with the
+# circuit and no print is nearer a pad than JLCPCB prints it.
 #
-# Needs kicad-cli (KiCad 10) and the Python environment of
-# scripts/requirements.txt in the main checkout's .venv/.
+# Needs kicad-cli (KiCad 10), the Python environment of
+# scripts/requirements.txt in the main checkout's .venv/, and the system's
+# Python with KiCad's pcbnew module.
 
 set -u
 cd "$(dirname "$0")/.."
@@ -24,7 +27,6 @@ cd "$(dirname "$0")/.."
 python="$(git rev-parse --path-format=absolute --git-common-dir)/../.venv/bin/python"
 export KICAD10_SYMBOL_DIR="${KICAD10_SYMBOL_DIR:-/usr/share/kicad/symbols}"
 
-sheets="usb esp32 tang_nano_20k test_points"
 board=noaidi-fpga-synth.kicad_pcb
 out=build/check
 mkdir -p $out/skidl
@@ -42,20 +44,9 @@ else
     echo "circuit in text: the rule check is clean"
 fi
 
-drawn=""
-for sheet in $sheets; do
-    kicad-cli sch export netlist --format kicadsexpr -o $out/$sheet.net $sheet.kicad_sch > /dev/null || exit 1
-    drawn="${drawn:+$drawn+}$out/$sheet.net"
-done
-
-compare() {
-    echo "$1:"
-    "$python" scripts/netlist_summary.py "$2" "$3" | sed 's/^/    /'
-    [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
-}
-compare "drawn sheets against the board" "$drawn" $board
-compare "circuit in text against the drawn sheets" $out/skidl/board.net "$drawn"
-compare "circuit in text against the board" $out/skidl/board.net $board
+echo "circuit in text against the board:"
+"$python" scripts/netlist_summary.py $out/skidl/board.net $board | sed 's/^/    /'
+[ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
 if git diff --quiet -- docs/pins.md; then
     echo "docs/pins.md: unchanged"
@@ -64,13 +55,13 @@ else
 fi
 
 kicad-cli pcb drc --severity-all --format json -o $out/drc.json $board > /dev/null || exit 1
-reports=$out/drc.json
-for sheet in $sheets; do
-    kicad-cli sch erc --severity-all --format json -o $out/erc-$sheet.json $sheet.kicad_sch > /dev/null
-    reports="$reports $out/erc-$sheet.json"
-done
-"$python" scripts/rule_counts.py $reports > $out/counts.txt
-echo "KiCad's own checks, by type ($out/counts.txt):"
+"$python" scripts/rule_counts.py $out/drc.json > $out/counts.txt
+echo "KiCad's DRC, by type ($out/counts.txt):"
 sed 's/^/    /' $out/counts.txt
+
+echo "the print against the pads:"
+# pcbnew writes its own chatter to the standard error stream.
+scripts/silkscreen_clearance.py $board 2> /dev/null | sed 's/^/    /'
+[ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
 exit $failed
