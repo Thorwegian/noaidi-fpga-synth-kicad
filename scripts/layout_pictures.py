@@ -15,7 +15,9 @@ Writes into build/pictures/, or into the folder given:
                            tiles of 1080 x 1020 pixels;
   detail_<designator>.png  for each designator given, a piece of the same
                            size at 1200 dpi around that part: for sockets
-                           and parts with fine pitch.
+                           and parts with fine pitch;
+  fill_<layer>.png         each copper layer with its fill at 600 dpi, the
+                           copper black.
 
 The whole board and the quarters are for a person to zoom into, and carry a
 title, the track counts and the legend. The tiles and the details are for an
@@ -26,7 +28,8 @@ Front copper is red and back copper blue. Where both layers have copper the
 picture is dark purple: with a white hole it is a pad or a via, where the
 layers are joined; without one it is a crossing. Part outlines and
 designators are black, the board's edge is green. The copper pours are left
-out: with them a layer is one filled area. The board file is not changed.
+out of all but the fill pictures: with them a layer is one filled area. The
+board file is not changed.
 
 Needs kicad-cli (KiCad 10), pdftoppm (poppler-utils) and the system's
 Python, which has KiCad's pcbnew module and Pillow (python3-pil).
@@ -155,6 +158,14 @@ def main():
             sys.exit(f"no part {designator} on the board")
         centre = footprint.GetBoundingBox(False).Centre()
         centres[designator] = (pcbnew.ToMM(centre.x), pcbnew.ToMM(centre.y))
+    for layer in board.GetEnabledLayers().CuStack():
+        name = board.GetLayerName(layer)
+        os.makedirs(os.path.join(out, "layers", "filled"), exist_ok=True)
+        filled = layer_image(arguments.board, name, True, extent, os.path.join(out, "layers", "filled"))
+        filled = filled.resize((filled.width // 2, filled.height // 2), Image.LANCZOS).convert("RGB")
+        ImageDraw.Draw(filled).text((40, 16), f"{title}: {name} with its fill. Black = copper.",
+                                    fill=(200, 0, 0), font=ImageFont.load_default(36))
+        filled.save(os.path.join(out, f"fill_{name}.png"), optimize=True)
     for pour in list(board.Zones()):
         board.Delete(pour)
     without_pours = os.path.join(out, "layers", "board.kicad_pcb")
