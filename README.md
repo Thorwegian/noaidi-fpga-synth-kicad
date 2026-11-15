@@ -60,20 +60,24 @@ Each module's underside is 11.04 mm above the base board: the 8.5 mm of
 the socket, from KiCad's model of it, and the 2.54 mm body of the
 module's pin headers.
 
-The DIN sockets are rendered from Lumberg's model of the 8-pole
-version of the socket, the 0105 08-1, with the solder pins of poles 6,
-7 and 8 removed and the openings of their contacts in the face closed
-(`docs/thirdparty/lumberg_0105_05_from_08-1.stp`): the 5-pole 0105 05
-has the same body, the other seven pins and five contacts. The model's
-pins are where Lumberg's drawing and the footprint have them, which
-those of Lumberg's own model of the 0105 05 are not. The RCA socket
-renders as a footprint only: the project has no 3D model of it.
+The DIN sockets are rendered from a model made of Lumberg's two
+(`docs/thirdparty/lumberg_0105_05_with_pins_of_08-1.step`): the body is
+that of Lumberg's model of the 0105 05, with its contacts cut off at
+the body's underside, and the solder pins below it are those of poles
+1 to 5 and the two ground pins of Lumberg's model of the 8-pole
+version, the 0105 08-1. Those pins are where Lumberg's drawing and the
+footprint have them, which the 0105 05 model's own are not. The colours
+are the project's: dark grey for the plastic, as the part is, and
+tinned metal for the contacts and pins. The RCA socket renders as a
+footprint only: the project has no 3D model of it.
 
 The ESP32 module's model is from DigiKey's page for the part, the DAC
 module's from Adafruit's repository of CAD files on GitHub
-([adafruit/Adafruit_CAD_Parts](https://github.com/adafruit/Adafruit_CAD_Parts)),
-and the 8-pole DIN socket's from
-[Lumberg's page for the 0105](https://www.lumberg.com/en/products/product/0105).
+([adafruit/Adafruit_CAD_Parts](https://github.com/adafruit/Adafruit_CAD_Parts)).
+Of Lumberg's two DIN socket models, the 0105 05's is from DigiKey's
+page for the part and the 0105 08-1's from
+[Lumberg's page for the 0105](https://www.lumberg.com/en/products/product/0105),
+which carries the same file of the 0105 05 as DigiKey.
 
 ## Files
 
@@ -179,7 +183,7 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
   the Adafruit PCM510x's 3D model (`.step`) and fab print with its
   dimensions, and a 3D model of the Lumberg 0105 05 DIN socket made
-  from Lumberg's model of the 0105 08-1 (`.stp`).
+  from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`).
   Electrical: the Tang Nano 20K's schematic and pinout, the
   GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide, pinouts and
   schematic (v1.1), the

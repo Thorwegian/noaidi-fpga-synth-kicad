@@ -2516,9 +2516,9 @@
 			(uuid "c8fcbafb-6d9a-4c7a-8c32-b44dbac595f8")
 		)
 		(embedded_fonts no)
-		(model "${KIPRJMOD}/docs/thirdparty/lumberg_0105_05_from_08-1.stp"
+		(model "${KIPRJMOD}/docs/thirdparty/lumberg_0105_05_with_pins_of_08-1.step"
 			(offset
-				(xyz -7.5 -6.5 9.75)
+				(xyz 3.48 -0.8 0.214)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -7957,9 +7957,9 @@
 			(uuid "83d81399-9e3d-4167-947b-a1dd921e672d")
 		)
 		(embedded_fonts no)
-		(model "${KIPRJMOD}/docs/thirdparty/lumberg_0105_05_from_08-1.stp"
+		(model "${KIPRJMOD}/docs/thirdparty/lumberg_0105_05_with_pins_of_08-1.step"
 			(offset
-				(xyz -7.5 -6.5 9.75)
+				(xyz 3.48 -0.8 0.214)
 			)
 			(scale
 				(xyz 1 1 1)
