@@ -68,8 +68,12 @@ the body's underside, and the solder pins below it are those of poles
 version, the 0105 08-1. Those pins are where Lumberg's drawing and the
 footprint have them, which the 0105 05 model's own are not. The colours
 are the project's: dark grey for the plastic, as the part is, and
-tinned metal for the contacts and pins. The RCA socket renders as a
-footprint only: the project has no 3D model of it.
+tinned metal for the contacts and pins.
+
+The RCA socket is rendered from Kycon's model of the part
+(`docs/thirdparty/KLPX-0848A-2-x.IGS`), unaltered: the housing is dark,
+as that of the black KLPX-0848A-2-B is, and the barrel reaches beyond
+the board's bottom edge.
 
 The ESP32 module's model is from DigiKey's page for the part, the DAC
 module's from Adafruit's repository of CAD files on GitHub
@@ -77,7 +81,9 @@ module's from Adafruit's repository of CAD files on GitHub
 Of Lumberg's two DIN socket models, the 0105 05's is from DigiKey's
 page for the part and the 0105 08-1's from
 [Lumberg's page for the 0105](https://www.lumberg.com/en/products/product/0105),
-which carries the same file of the 0105 05 as DigiKey.
+which carries the same file of the 0105 05 as DigiKey. The RCA socket's
+model is Kycon's own, and so is its
+[dimension drawing](https://cloud.kycon.com/Pub_Eng_Draw/KLPX-0848A-2-x.pdf).
 
 ## Files
 
@@ -184,8 +190,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
   the Adafruit PCM510x's 3D model (`.step`) and fab print with its
-  dimensions, and a 3D model of the Lumberg 0105 05 DIN socket made
-  from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`).
+  dimensions, a 3D model of the Lumberg 0105 05 DIN socket made
+  from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`), and
+  Kycon's 3D model of the KLPX-0848A-2-x RCA socket (`.IGS`) with its
+  dimension drawing, which has the recommended PCB layout.
   Electrical: the Tang Nano 20K's schematic and pinout, the
   GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide, pinouts and
   schematic (v1.1), the

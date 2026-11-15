@@ -7110,6 +7110,17 @@
 			(uuid "388c7528-2c9d-4593-befe-ce844262a038")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/docs/thirdparty/KLPX-0848A-2-x.IGS"
+			(offset
+				(xyz 0 4 1.5)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz -90 0 180)
+			)
+		)
 	)
 	(footprint "TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm"
 		(layer "F.Cu")
