@@ -68,6 +68,8 @@
 
 - Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files with `scripts/fab_files.py`; Thor uploads them and orders.
 
+- What an order costs is estimated with `scripts/cost_estimate.py`, not by hand. The price of the bare boards and of each shipping method is read from JLCPCB's quote page (https://cart.jlcpcb.com/quote) with the values the script prints typed in: the page gives them without a sign-in, and nothing is put in a cart. The estimate is posted on its issue as one comment, and is made anew when the layer count, the board's size, the quantity or a placed part changes.
+
 ## Code and documents
 
 - Agents write elegant and highly structured code at a senior developer level.

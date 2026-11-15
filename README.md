@@ -106,6 +106,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/fab_files.py`: writes what JLCPCB's order page takes into
   `build/fab/`: the Gerber and drill files as one archive, the list of
   the parts JLCPCB places, and the list of where each of them sits.
+- `scripts/cost_estimate.py`: prints what an order of the board costs at
+  JLCPCB, delivered to Norway with VAT: the parts and the assembly fees
+  fetched from JLCPCB as it runs, the bare boards and shipping at the
+  prices read from JLCPCB's quote page.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.

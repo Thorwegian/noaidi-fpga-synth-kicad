@@ -103,10 +103,7 @@ def main():
     table = turns()
     lines = collections.defaultdict(list)
     placements, turned = [], []
-    for footprint in sorted(board.GetFootprints(), key=lambda footprint: natural(footprint.GetReference())):
-        number = footprint.GetFieldText("LCSC") if footprint.HasField("LCSC") else ""
-        if not number:
-            continue
+    for footprint, number in placed_footprints(board):
         designator = footprint.GetReference()
         package = str(footprint.GetFPID().GetLibItemName())
         lines[(number, footprint.GetValue(), package)].append(designator)
@@ -132,6 +129,14 @@ def main():
     print(f"bom.csv: {len(placements)} parts in {len(lines)} lines")
     print(f"placement.csv: {len(placements)} parts, {sum(1 for row in placements if row[3] == 'bottom')} of them on the back; "
           f"turned for JLCPCB's library: {' '.join(turned) or 'none'}")
+
+
+def placed_footprints(board):
+    """The footprints JLCPCB places, each with its LCSC number, J9 before J14."""
+    for footprint in sorted(board.GetFootprints(), key=lambda footprint: natural(footprint.GetReference())):
+        number = footprint.GetFieldText("LCSC") if footprint.HasField("LCSC") else ""
+        if number:
+            yield footprint, number
 
 
 def natural(designator):
