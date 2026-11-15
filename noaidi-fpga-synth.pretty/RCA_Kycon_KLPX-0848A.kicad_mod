@@ -234,4 +234,15 @@
 		(uuid "135723fd-a191-4ec7-a5f6-08cefbaabff3")
 	)
 	(embedded_fonts no)
+	(model "${KIPRJMOD}/docs/thirdparty/KLPX-0848A-2-x.IGS"
+		(offset
+			(xyz 0 4 1.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 180)
+		)
+	)
 )
