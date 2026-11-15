@@ -60,6 +60,9 @@ EDGE_STEP = pcbnew.FromMM(0.05)         # the step of a slide along the board's 
 QUARTER_TURNS = (0.0, 90.0, 180.0, 270.0)
 LEFT, TOP, RIGHT, BOTTOM = range(4)
 EDGES = {"left": LEFT, "top": TOP, "right": RIGHT, "bottom": BOTTOM}
+# Every move within REACH on the GRID, the shortest first.
+NEARBY = sorted(((dx, dy) for dx in range(-REACH, REACH + 1, GRID) for dy in range(-REACH, REACH + 1, GRID)),
+                key=lambda move: math.hypot(*move))
 
 
 def read_circuit(path):
@@ -235,6 +238,21 @@ def displacement(dx, dy, pads):
     return math.hypot(dx, dy)
 
 
+def settle_at_its_connections(board, footprint, reach):
+    """Move the footprint to the free place where its pads are nearest to the
+    pads they connect to, turned whichever way brings them nearest. reach
+    holds, for each of its pads by number, the places of those pads."""
+    targets = [target for group in reach.values() for target in group]
+    footprint.SetPosition(pcbnew.VECTOR2I(sum(target.x for target in targets) // len(targets),
+                                          sum(target.y for target in targets) // len(targets)))
+
+    def distance_to_reach(dx, dy, pads):
+        return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
+                   for number, x, y in pads if number in reach)
+
+    settle(board, footprint, distance_to_reach, NEARBY, turns=QUARTER_TURNS)
+
+
 def main(netlist_path, net_classes_path, board_path):
     parts, nets, class_of_net = read_circuit(netlist_path)
     net_of_pad = {pad: name for name, pads in nets.items() for pad in pads}
@@ -335,11 +353,9 @@ def main(netlist_path, net_classes_path, board_path):
         waiting.discard(designator)
 
     # A swapped part that now enters a neighbour's courtyard moves the least it can.
-    square = sorted(((dx, dy) for dx in range(-REACH, REACH + 1, GRID) for dy in range(-REACH, REACH + 1, GRID)),
-                    key=lambda move: math.hypot(*move))
     for footprint in swapped:
         if footprint.GetReference() not in fixed:
-            settle(board, footprint, displacement, square)
+            settle(board, footprint, displacement, NEARBY)
         print("swapped", describe(footprint))
 
     # A new part goes where its pads are nearest to the pads they connect to in its own block.
@@ -357,15 +373,7 @@ def main(netlist_path, net_classes_path, board_path):
             reach = {number: targets for number, targets in reach.items() if targets}
             if not reach:
                 sys.exit(f"{designator} connects to nothing on the board in its block {parts[designator]['block']}")
-            targets = [target for group in reach.values() for target in group]
-            footprint.SetPosition(pcbnew.VECTOR2I(sum(t.x for t in targets) // len(targets),
-                                                  sum(t.y for t in targets) // len(targets)))
-
-            def distance_to_reach(dx, dy, pads):
-                return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
-                           for number, x, y in pads if number in reach)
-
-            settle(board, footprint, distance_to_reach, square, turns=QUARTER_TURNS)
+            settle_at_its_connections(board, footprint, reach)
             waiting.discard(designator)
         print("added  ", describe(footprint))
 
