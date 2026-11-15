@@ -98,7 +98,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   vias, and joins the pads the fills do not reach.
 - `scripts/layout_pictures.py`: pictures of the board's copper to judge
   a layout by: the whole board, its quarters, tiles small enough for an
-  agent to see every track, and each layer with its fill.
+  agent to see every track, each layer with its fill, and the fills
+  laid over each other.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.

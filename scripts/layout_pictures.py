@@ -17,7 +17,9 @@ Writes into build/pictures/, or into the folder given:
                            size at 1200 dpi around that part: for sockets
                            and parts with fine pitch;
   fill_<layer>.png         each copper layer with its fill at 600 dpi, the
-                           copper black.
+                           copper black;
+  overlay.png              the whole board at 600 dpi with every layer's
+                           fill laid over the others in a pale colour.
 
 The whole board and the quarters are for a person to zoom into, and carry a
 title, the track counts and the legend. The tiles and the details are for an
@@ -26,10 +28,16 @@ than a pixel. The script prints which part of the board each tile shows.
 
 Front copper is red and back copper blue. Where both layers have copper the
 picture is dark purple: with a white hole it is a pad or a via, where the
-layers are joined; without one it is a crossing. Part outlines and
-designators are black, the board's edge is green. The copper pours are left
-out of all but the fill pictures: with them a layer is one filled area. The
-board file is not changed.
+layers are joined; without one it is a crossing. The fabrication layer's
+part outlines and designators are black, the silkscreen is ochre (a module's
+outline is often drawn there only), the board's edge is green. The copper pours are left
+out of all but the fill pictures and the overlay: with them a layer is one
+filled area. In the overlay the front's fill is pale red, the back's pale
+blue and the inner layers' pale green and yellow, so where a layer has no
+copper its colour is missing from the mix: a band beside a track is the gap
+that track makes in its layer's fill, a ring around a hole the gap in the
+inner fills, and white has no copper on any layer. The board file is not
+changed.
 
 Needs kicad-cli (KiCad 10), pdftoppm (poppler-utils) and the system's
 Python, which has KiCad's pcbnew module and Pillow (python3-pil).
@@ -49,6 +57,7 @@ LAYERS = (
     ("B.Cu", (40, 110, 230), True),
     ("F.Cu", (225, 45, 45), True),
     ("F.Fab", (0, 0, 0), False),
+    ("F.Silkscreen", (185, 120, 0), False),
     ("Edge.Cuts", (0, 130, 0), False),
 )
 DPI = 1200                  # of the quarters and details; the whole board and the tiles have half
@@ -56,10 +65,16 @@ MARGIN_MM = 1.5             # around what is drawn
 QUARTER = 0.55              # of the board's width and height, so that the four overlap
 TILE = (1080, 1020)
 TILE_OVERLAP_MM = 1.0
+FILL_FRONT, FILL_BACK, FILL_INNER = (255, 190, 190), (190, 210, 255), ((195, 240, 195), (255, 240, 170))
+OVERLAY_LEGEND = (
+    "Fills in pale colour, laid over each other: front red, inner layers green and yellow, back blue. Where a layer",
+    "has no copper its colour is missing from the mix: a band beside a track is the gap in that layer's fill, a ring",
+    "around a hole the gap in the inner fills, white no copper at all.  Tracks and pads: red = front, blue = back.",
+)
 LEGEND = (
     "Red = front copper.  Blue = back copper.  Dark purple = copper on both layers at that spot:",
     "with a white hole it is a pad or via (the layers are joined), without one it is a crossing (not joined).",
-    "Black = part outlines and designators.  Green = board edge.  Copper pours left out.",
+    "Black = part outlines and designators (fabrication layer).  Ochre = silkscreen.  Green = board edge.  Fills left out.",
 )
 
 
@@ -108,11 +123,11 @@ def cut_to_drawing(picture, extent):
     return picture.crop(box), (extent[0] + box[0] * 25.4 / DPI, extent[1] + box[1] * 25.4 / DPI)
 
 
-def with_heading(picture, title, dpi, counts):
+def with_heading(picture, title, dpi, counts, legend=LEGEND):
     """The picture under its title, the counts and the legend."""
     size = picture.width / 3200
     lines = [(title, 48), (f"{counts}  {dpi} dpi: a 0.2 mm track is {0.2 * dpi / 25.4:.0f} pixels wide.", 30)]
-    lines += [(line, 27) for line in LEGEND]
+    lines += [(line, 27) for line in legend]
     heading = round((sum(height for _, height in lines) * 1.4 + 32) * size)
     out = Image.new("RGB", (picture.width, picture.height + heading), "white")
     out.paste(picture, (0, heading))
@@ -158,11 +173,15 @@ def main():
             sys.exit(f"no part {designator} on the board")
         centre = footprint.GetBoundingBox(False).Centre()
         centres[designator] = (pcbnew.ToMM(centre.x), pcbnew.ToMM(centre.y))
-    for layer in board.GetEnabledLayers().CuStack():
+    stack = list(board.GetEnabledLayers().CuStack())
+    fills = None
+    for number, layer in enumerate(stack):
         name = board.GetLayerName(layer)
         os.makedirs(os.path.join(out, "layers", "filled"), exist_ok=True)
-        filled = layer_image(arguments.board, name, True, extent, os.path.join(out, "layers", "filled"))
-        filled = filled.resize((filled.width // 2, filled.height // 2), Image.LANCZOS).convert("RGB")
+        grey = layer_image(arguments.board, name, True, extent, os.path.join(out, "layers", "filled"))
+        pale = (FILL_FRONT if number == 0 else FILL_BACK if layer == stack[-1] else FILL_INNER[number % 2])
+        fills = ImageChops.multiply(fills, tinted(grey, pale)) if fills else tinted(grey, pale)
+        filled = grey.resize((grey.width // 2, grey.height // 2), Image.LANCZOS).convert("RGB")
         ImageDraw.Draw(filled).text((40, 16), f"{title}: {name} with its fill. Black = copper.",
                                     fill=(200, 0, 0), font=ImageFont.load_default(36))
         filled.save(os.path.join(out, f"fill_{name}.png"), optimize=True)
@@ -177,6 +196,10 @@ def main():
     close = layers[0]
     for layer in layers[1:]:
         close = ImageChops.multiply(close, layer)
+    overlay, _ = cut_to_drawing(ImageChops.multiply(fills, close), extent)
+    overlay = overlay.resize((overlay.width // 2, overlay.height // 2), Image.LANCZOS)
+    with_heading(overlay, f"{title}, the fills overlaid", DPI // 2, counts, OVERLAY_LEGEND).save(
+        os.path.join(out, "overlay.png"), optimize=True)
     close, origin = cut_to_drawing(close, extent)
     whole = close.resize((close.width // 2, close.height // 2), Image.LANCZOS)
 
