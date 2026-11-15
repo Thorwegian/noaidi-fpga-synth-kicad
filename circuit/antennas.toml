@@ -11,7 +11,8 @@
 #
 #   part         the part that carries the antenna.
 #   area         the rule area of the part's footprint that marks the antenna.
-#   clear_mm     how far around that area the board is closed to the classes.
+#   clear_mm     how far around the rectangle that holds that area the board is
+#                closed to the classes.
 #   net_classes  the classes of nets (circuit/net_classes.py) that stay out.
 
 # Espressif's hardware design guidelines for the ESP32-S3 (PCB layout
