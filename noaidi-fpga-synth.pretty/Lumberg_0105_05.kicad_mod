@@ -274,4 +274,15 @@
 		(uuid "d386a163-fd81-43f7-b473-59d389dcd049")
 	)
 	(embedded_fonts no)
+	(model "${KIPRJMOD}/docs/thirdparty/lumberg_0105_05.stp"
+		(offset
+			(xyz 3.48 -0.8 0.214)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 180 0)
+		)
+	)
 )

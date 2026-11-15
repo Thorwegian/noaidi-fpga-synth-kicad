@@ -2516,6 +2516,17 @@
 			(uuid "c8fcbafb-6d9a-4c7a-8c32-b44dbac595f8")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/docs/thirdparty/lumberg_0105_05.stp"
+			(offset
+				(xyz 3.48 -0.8 0.214)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 180 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 		(layer "F.Cu")
@@ -7946,6 +7957,17 @@
 			(uuid "83d81399-9e3d-4167-947b-a1dd921e672d")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/docs/thirdparty/lumberg_0105_05.stp"
+			(offset
+				(xyz 3.48 -0.8 0.214)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 180 0)
+			)
+		)
 	)
 	(footprint "TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm"
 		(layer "F.Cu")

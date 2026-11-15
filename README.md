@@ -58,8 +58,22 @@ first two models have the module's pin headers; Adafruit's has none,
 and KiCad's model of a pin header stands in under each of its rows.
 Each module's underside is 11.04 mm above the base board: the 8.5 mm of
 the socket, from KiCad's model of it, and the 2.54 mm body of the
-module's pin headers. The DIN and RCA sockets render as footprints
-only: the project has no 3D models of them.
+module's pin headers.
+
+The DIN sockets are rendered from a model of the Lumberg 0105 05
+(`docs/thirdparty/lumberg_0105_05.stp`), placed by its body as
+Lumberg's drawing dimensions it: standing on the board, its face
+12.4 mm in front of the row of pins 1 to 3, the middle of its round
+opening over pin 2. The model's pins are not where the drawing and the
+footprint have them (the signal pins are 2.1 mm nearer the face, the
+ground pins 0.7 mm), so in the model they do not meet the board's
+holes. The RCA socket renders as a footprint only: the project has no
+3D model of it.
+
+The ESP32 module's and the DIN socket's models are from DigiKey's pages
+for those parts, the DAC module's from Adafruit's repository of CAD
+files on GitHub
+([adafruit/Adafruit_CAD_Parts](https://github.com/adafruit/Adafruit_CAD_Parts)).
 
 ## Files
 
@@ -163,8 +177,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
-  and the Adafruit PCM510x's 3D model (`.step`) and fab print with its
-  dimensions. Electrical: the Tang Nano 20K's schematic and pinout, the
+  the Adafruit PCM510x's 3D model (`.step`) and fab print with its
+  dimensions, and the Lumberg 0105 05 DIN socket's 3D model (`.stp`).
+  Electrical: the Tang Nano 20K's schematic and pinout, the
   GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide, pinouts and
   schematic (v1.1), the
   Adafruit PCM510x guide and schematic, the 6N138 MIDI input circuit and
