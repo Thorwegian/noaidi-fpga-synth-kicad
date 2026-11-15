@@ -94,6 +94,31 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   (resistors and capacitors) are 0805 on hand-solder footprints: JLCPCB
   places them, and the size keeps a board repairable by hand.
 
+## The layers
+
+- **Four copper layers,** on JLCPCB's stackup JLC04161H-7628 for a
+  1.6 mm board, which has 0.21 mm between each outer layer and the
+  inner layer next to it (https://jlcpcb.com/impedance).
+  `circuit/layers.toml` states what each carries:
+  - front and back: the signals, with ground filled around them;
+  - inner layer 1: `ESP_3V3`, one unbroken fill;
+  - inner layer 2: `NANO_5V`, one unbroken fill.
+- **Ground is one net everywhere.** A fill on a layer that also takes
+  tracks is cut into pieces by them. The two ground fills are tied
+  together by a via every 10 mm and by every through-hole ground pad,
+  so that a piece of one is joined through the other.
+- **A supply with a layer of its own reaches a pad through a via
+  beside the pad,** and no track is laid for it.
+- **The USB data pair is 0.3 mm tracks 0.2 mm apart,** which over a
+  layer 0.21 mm below comes to about 87 Ω between the two lines by the
+  microstrip approximation JLCPCB prints
+  (https://jlcpcb.com/blog/standard-pcb-thickness), with their
+  dielectric constant of 4.6. Espressif's hardware design guidelines
+  for the ESP32-S3 ask for 90 Ω ±10 %. On a two-layer board, with the
+  nearest layer 1.5 mm below, the same pair comes to about 143 Ω.
+- **No copper is filled under the ESP32 module's antenna,** on any
+  layer.
+
 ## Where the parts sit
 
 - **A pin header sits near what it belongs to:** the connector, the
@@ -125,5 +150,8 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 - **What the board does on a weak supply.** Through a USB-A to USB-C
   cable, or from a computer's port, the source may offer only 0.5 to
   1.5 A.
+- **The USB data pair's impedance,** by JLCPCB's own calculator for
+  the stackup: the figure above is an approximation, and the layer under
+  the pair is `ESP_3V3`, where Espressif recommends ground.
 - **The fixed positions:** which connectors sit at which edge, the
   board's outline and its mounting holes wait for the enclosure.

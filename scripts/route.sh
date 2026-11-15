@@ -7,11 +7,13 @@
 #
 #     scripts/route.sh
 #
-# Removes every track and via from the board and has Freerouting lay them
-# anew, to the net classes' widths and clearances: scripts/route_board.py
-# writes the board for the router and reads its result back. Then runs
-# KiCad's DRC, whose counts are the verdict; the router's own count of
-# violations is not.
+# Removes every track and via from the board and has Freerouting lay the
+# signals anew, to the net classes' widths and clearances, on the layers
+# that take tracks: scripts/route_board.py writes the board for the router
+# and reads its result back. The nets of the board's fills get no track:
+# the fills join their pads, and scripts/join_fills.py joins the pads the
+# fills do not reach. Then prints the counts of KiCad's DRC, which are the
+# verdict; the router's own count of violations is not.
 #
 # The router narrows a track where the going is tight, which is how it gets
 # every connection through between the modules' pins; where it narrows below
@@ -37,18 +39,22 @@ fi
 echo "$jar_sha256  $jar" | sha256sum --check --quiet || exit 1
 
 # pcbnew writes its own chatter to the standard error stream.
-scripts/route_board.py export $board $out/board.dsn 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+layers_with_tracks=$(scripts/route_board.py export $board $out/board.dsn 2> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
 
 if ! java -Djava.awt.headless=true -jar $jar -de $out/board.dsn -do $out/board.ses \
-        --router.autorouter.max_passes=30 > $out/freerouting.log 2>&1; then
+        --router.autorouter.max_passes=30 --router.layers.routable=$layers_with_tracks > $out/freerouting.log 2>&1; then
     echo "Freerouting failed, see $out/freerouting.log"
     exit 1
 fi
 grep --only-matching "Auto-routing stage completed.*violations)" $out/freerouting.log \
     | sed 's/^/Freerouting says: /'
+# An option the router does not know is a warning in its log, and the run goes on without it.
+if grep --quiet "Unknown settings property" $out/freerouting.log; then
+    grep --only-matching "Unknown settings property.*" $out/freerouting.log
+    exit 1
+fi
 
 scripts/route_board.py import $board $out/board.ses 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
-
-kicad-cli pcb drc --severity-all --format json -o $out/drc.json $board > /dev/null || exit 1
+scripts/join_fills.py $board $out/drc.json 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 echo "KiCad's DRC, by type ($out/drc.json):"
 /usr/bin/python3 scripts/rule_counts.py $out/drc.json | sed 's/^/    /'
