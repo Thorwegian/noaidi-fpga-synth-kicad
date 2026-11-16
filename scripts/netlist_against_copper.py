@@ -168,8 +168,8 @@ def main(netlist_path, board_path, report_path):
 
     for line in not_connected + sorted(wrongly_connected, key=in_reading_order):
         print(line)
-    print(f"{len(connected_nets)} nets of more than one pin: {len(not_connected)} missing connections, "
-          f"{len(wrongly_connected)} connections that should not be")
+    print(f"{len(connected_nets)} nets of more than one pin: {len(not_connected)} not connected, "
+          f"{len(wrongly_connected)} connected that should not be")
     sys.exit(1 if not_connected or wrongly_connected else 0)
 
 
