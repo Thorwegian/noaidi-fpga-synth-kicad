@@ -24,30 +24,49 @@
 # circuit in its pads and in its copper, KiCad's DRC has no finding of
 # severity error and no print is nearer a pad than JLCPCB prints it.
 #
-# Needs kicad-cli (KiCad 10), the Python environment of
-# scripts/requirements.txt in the main checkout's .venv/, and the system's
-# Python with KiCad's pcbnew module.
+# Needs KiCad 10 (kicad-cli, and the Python with its pcbnew module: the
+# system's on Linux, the one inside the KiCad application on macOS) and a
+# Python with the packages of scripts/requirements.txt: the environment in
+# the main checkout's .venv/ where there is one, else python3 as the shell
+# finds it.
 
 set -u
 cd "$(dirname "$0")/.."
 
 # A worktree has no environment of its own: the main checkout's serves them all.
 python="$(git rev-parse --path-format=absolute --git-common-dir)/../.venv/bin/python"
-export KICAD10_SYMBOL_DIR="${KICAD10_SYMBOL_DIR:-/usr/share/kicad/symbols}"
+[ -x "$python" ] || python=python3
+
+# Where KiCad keeps what this script uses of it.
+if [ "$(uname)" = Darwin ]; then
+    kicad=/Applications/KiCad/KiCad.app/Contents
+    pcbnew_python=$kicad/Frameworks/Python.framework/Versions/Current/bin/python3
+    symbols=$kicad/SharedSupport/symbols
+    PATH="$PATH:$kicad/MacOS"   # kicad-cli, where no package manager has put it on the PATH
+else
+    pcbnew_python=/usr/bin/python3
+    symbols=/usr/share/kicad/symbols
+fi
+export KICAD10_SYMBOL_DIR="${KICAD10_SYMBOL_DIR:-$symbols}"
+if ! command -v kicad-cli > /dev/null; then
+    echo "kicad-cli is not on the PATH: KiCad 10 has to be installed"
+    exit 1
+fi
 
 board=noaidi-fpga-synth.kicad_pcb
 out=build/check
 mkdir -p $out/skidl
 failed=0
 
-# Runs a script that reads the board with KiCad's pcbnew module and prints
-# what it says, indented. pcbnew writes its own chatter to the standard
-# error stream, which goes to a log. Each of these scripts ends with a
-# count, so one that printed nothing did not run, and the log says why.
+# Runs a script that reads the board with KiCad's pcbnew module, under the
+# Python that has it, and prints what it says, indented. pcbnew writes its
+# own chatter to the standard error stream, which goes to a log. Each of
+# these scripts ends with a count, so one that printed nothing did not
+# run, and the log says why.
 run_on_board() {
     local name
     name=$(basename "$1" .py)
-    "$@" > $out/$name.txt 2> $out/$name.log
+    "$pcbnew_python" "$@" > $out/$name.txt 2> $out/$name.log
     local status=$?
     sed 's/^/    /' $out/$name.txt
     if [ ! -s $out/$name.txt ]; then
@@ -59,7 +78,9 @@ run_on_board() {
 
 # SKiDL writes its log files where it is run.
 if ! (cd $out/skidl && "$python" ../../../circuit/board.py > board.out 2>&1); then
-    echo "circuit in text: circuit/board.py failed, see $out/skidl/board.out"
+    echo "circuit in text: circuit/board.py failed under $python ($out/skidl/board.out):"
+    tail -n 1 $out/skidl/board.out | sed 's/^/    /'
+    echo "    the packages it needs are listed in scripts/requirements.txt"
     exit 1
 fi
 if grep -q -E "ERC (WARNING|ERROR)" $out/skidl/board.out; then

@@ -261,6 +261,13 @@ at the root, which is not committed:
   `KICAD10_SYMBOL_DIR` (`/usr/share/kicad/symbols` on Ubuntu).
 - `pillow`: for `scripts/crop.py`.
 
+`scripts/check.sh` runs on Linux and on macOS. On macOS it takes KiCad's
+own Python, the one with the `pcbnew` module, and the symbol libraries
+from the KiCad application (`/Applications/KiCad/KiCad.app`). On both it
+runs the other Python tools under `.venv/` where there is one, and else
+under `python3` as the shell finds it, which then has to hold the
+packages of `scripts/requirements.txt`.
+
 ## The circuit in text
 
 `circuit/` describes the board's circuit in Python, and it is where the
