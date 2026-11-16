@@ -123,6 +123,14 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   (`build/pcb-iso-rear.jpg`); `scripts/crop.py` trims each 3D render to
   the board and the parts on it, what reaches beyond the board's edge
   included
+- `scripts/render_enclosure.sh`: renders the board in a clear acrylic
+  enclosure, lit in the dark by LEDs inside the acrylic, into
+  `build/enclosure-<shot>.png`, one picture for each of its shots, with
+  `kicad-cli` and Blender; `scripts/enclosure_scene.py` builds the scene
+  around the board's 3D model, with an opening in the wall for each part
+  at an edge, lists the shots and says how the light is modelled. The
+  enclosure is the picture's and decides nothing about the one that will
+  be built.
 - `circuit/`: the circuit described in Python with SKiDL, one file
   per sheet (`usb.py`, `esp32.py`, `tang_nano_20k.py`, `test_points.py`),
   the nets that cross sheets in `global_nets.py`, the parts used on more
@@ -227,7 +235,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 
 ## Build tools
 
-`kicad-cli` (KiCad 10), `pdftoppm` (poppler-utils) and
+`kicad-cli` (KiCad 10), `pdftoppm` (poppler-utils), `blender` (4, with
+Cycles, for `scripts/render_enclosure.sh`) and
 `java` (25, for Freerouting, whose jar `scripts/route.sh` fetches into
 `build/tools/`) come from the system's packages, and so does the Python
 with KiCad's `pcbnew` module and Pillow (python3-pil) that the scripts
