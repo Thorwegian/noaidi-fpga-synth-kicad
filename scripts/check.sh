@@ -8,13 +8,17 @@
 #     scripts/check.sh
 #
 # Runs circuit/board.py (SKiDL's rule check, the netlist, docs/pins.md)
-# and compares the netlist with the board. Then counts the findings of
-# KiCad's DRC by type into build/check/counts.txt, for comparing with
-# the same file from main, and measures the board's print against its
-# pads, which KiCad's DRC does not (scripts/silkscreen_clearance.py).
+# and compares the netlist with the board: the net of every pad. Whether
+# the copper joins the pads of a net, and no others, is for KiCad's DRC
+# to say; its findings are counted by type into build/check/counts.txt,
+# for comparing with the same file from main. Then measures the board's
+# print against its pads, which KiCad's DRC does not
+# (scripts/silkscreen_clearance.py).
 #
 # Exit code 0 when the rule check is clean, the board agrees with the
-# circuit and no print is nearer a pad than JLCPCB prints it.
+# circuit, KiCad's DRC has no finding of severity error (a missing
+# connection and copper that joins two nets are errors) and no print is
+# nearer a pad than JLCPCB prints it.
 #
 # Needs kicad-cli (KiCad 10), the Python environment of
 # scripts/requirements.txt in the main checkout's .venv/, and the system's
@@ -55,9 +59,14 @@ else
 fi
 
 kicad-cli pcb drc --severity-all --format json -o $out/drc.json $board > /dev/null || exit 1
-"$python" scripts/rule_counts.py $out/drc.json > $out/counts.txt
 echo "KiCad's DRC, by type ($out/counts.txt):"
+"$python" scripts/rule_counts.py $out/drc.json > $out/counts.txt
+has_errors=$?
 sed 's/^/    /' $out/counts.txt
+if [ $has_errors -ne 0 ]; then
+    echo "    a finding of severity error fails the check"
+    failed=1
+fi
 
 echo "the print against the pads:"
 # pcbnew writes its own chatter to the standard error stream.

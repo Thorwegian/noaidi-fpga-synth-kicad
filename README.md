@@ -138,8 +138,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   The circuit in text, below.
 - `scripts/netlist_summary.py`: compares netlists and the board by
   connectivity.
-- `scripts/check.sh`: checks that the board is the circuit in text,
-  counts the findings of KiCad's DRC with `scripts/rule_counts.py`, and
+- `scripts/check.sh`: checks that the board is the circuit in text
+  (the net of every pad), counts the findings of KiCad's DRC with
+  `scripts/rule_counts.py` and fails on one of severity error, which a
+  missing connection and copper that joins two nets are, and
   measures the print against the pads with
   `scripts/silkscreen_clearance.py`.
 - `scripts/board_from_circuit.py`: brings the board up to the circuit
