@@ -5,7 +5,12 @@
 #
 """netlist_against_copper.py -- does the board's copper connect what the netlist connects, and nothing else?
 
+    scripts/netlist_against_copper.py
     scripts/netlist_against_copper.py <netlist> <board> <DRC report>
+
+Without arguments it takes the project's own files: the netlist that
+scripts/check.sh last wrote (build/check/skidl/board.net), the board, and
+a DRC report that it has kicad-cli make of the board as it is now.
 
 scripts/netlist_summary.py compares the netlist with the net each pad of
 the board is assigned to. This compares it with the copper, and says what
@@ -31,18 +36,29 @@ it finds as pins (R15.1 is pin 1 of R15), one line for each:
 A pin of the netlist that has no pad on the board is named too. Prints
 the counts last. The exit status is 1 when there is a line of either kind.
 
-Runs under the Python that has KiCad's pcbnew module.
+Needs KiCad's pcbnew module. The system's Python has it on Linux; on
+macOS it is in the Python inside the KiCad application, and the script
+starts itself again under that one.
 """
 import collections
 import json
 import math
+import os
 import re
+import subprocess
 import sys
 
-import pcbnew
+KICAD_PYTHON_ON_MACOS = "/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3"
+try:
+    import pcbnew
+except ModuleNotFoundError:
+    if "UNDER_KICAD_PYTHON" in os.environ or not os.path.exists(KICAD_PYTHON_ON_MACOS):
+        raise
+    os.execve(KICAD_PYTHON_ON_MACOS, [KICAD_PYTHON_ON_MACOS] + sys.argv, {**os.environ, "UNDER_KICAD_PYTHON": "1"})
 
 from netlist_summary import read_netlist
 
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOUCHING = ("shorting_items", "tracks_crossing")    # the DRC findings that are copper of two nets in contact
 NO_DISTANCE = re.compile(r"actual 0\.0+ mm")        # in a clearance finding's description: the two items touch
 
@@ -181,7 +197,20 @@ def main(netlist_path, board_path, report_path):
     sys.exit(1 if not_connected or wrongly_connected else 0)
 
 
+def project_files():
+    """The netlist, the board and a DRC report of the project the script
+    is in, the report made now."""
+    netlist = os.path.join(PROJECT_DIR, "build", "check", "skidl", "board.net")
+    board = os.path.join(PROJECT_DIR, "noaidi-fpga-synth.kicad_pcb")
+    report = os.path.join(PROJECT_DIR, "build", "check", "drc.json")
+    if not os.path.exists(netlist):
+        sys.exit(f"no netlist at {netlist}: scripts/check.sh writes it, or name one (see the top of this file)")
+    subprocess.run(["kicad-cli", "pcb", "drc", "--severity-all", "--all-track-errors", "--format", "json",
+                    "-o", report, board], check=True, stdout=subprocess.DEVNULL)
+    return netlist, board, report
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) not in (1, 4):
         sys.exit(__doc__)
-    main(*sys.argv[1:])
+    main(*(sys.argv[1:] or project_files()))
