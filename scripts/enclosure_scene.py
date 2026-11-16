@@ -110,11 +110,16 @@ class Shot:
     elevation_degrees: float
 
 
-# The pictures that are rendered. A wide lens stands near and gives a strong
-# perspective.
+# The pictures that are rendered: the render list, which is Thor's choice of
+# views. A shot is named for the edges of the board the camera stands beyond
+# and for its height. The wide lens stands near and gives a strong perspective.
 SHOTS = {
-    'corner-low': Shot(28.0, 215.0, 30.0),   # past the board's left and bottom edges
-    'corner-high': Shot(28.0, 215.0, 55.0),  # the same corner, from higher up
+    'left-bottom-low': Shot(28.0, 215.0, 30.0),
+    'right-top-high': Shot(28.0, 35.0, 55.0),
+    'bottom-low': Shot(28.0, 260.0, 30.0),
+    'left-top-low': Shot(28.0, 125.0, 30.0),
+    'right-low': Shot(28.0, 350.0, 30.0),
+    'right-high': Shot(28.0, 350.0, 55.0),
 }
 CAMERA_BACK_OFF = 1.12                  # the distance that fills the frame, times this
 ASPECT_RATIO = 3 / 2
