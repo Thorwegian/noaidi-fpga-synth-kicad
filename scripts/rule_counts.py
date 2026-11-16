@@ -13,7 +13,9 @@ two runs can be compared with diff.
 
 With --errors, prints each finding of severity error: what KiCad says is
 wrong, then every item it names (the pad with its part and net, the track
-with its net and layer) and where on the board that item is.
+with its net and layer) and where on the board that item is. A missing
+connection is left out of that list: KiCad names the two ends of the gap,
+tracks as a rule, and scripts/net_pieces.py names the pins on each side.
 
 Exit code 1 when a report holds a finding of severity error. The project
 file sets each type's severity; a missing connection and copper that
@@ -23,6 +25,8 @@ import collections
 import json
 import os
 import sys
+
+MISSING_CONNECTION = "unconnected_items"    # the type KiCad's report gives one
 
 
 def findings(report):
@@ -41,6 +45,8 @@ def print_counts(name, found):
 
 def print_errors(errors, units):
     for error in errors:
+        if error["type"] == MISSING_CONNECTION:
+            continue
         print(f"{error['description']} ({error['type']})")
         for item in error["items"]:
             print(f"    {item['description']}, at {item['pos']['x']:.2f}, {item['pos']['y']:.2f} {units}")

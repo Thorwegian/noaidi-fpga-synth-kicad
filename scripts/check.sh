@@ -8,18 +8,21 @@
 #     scripts/check.sh
 #
 # Runs circuit/board.py (SKiDL's rule check, the netlist, docs/pins.md)
-# and compares the netlist with the board: the net of every pad. Whether
-# the copper joins the pads of a net, and no others, is for KiCad's DRC
-# to say; its findings are counted by type into build/check/counts.txt,
-# for comparing with the same file from main, and each finding of
-# severity error is printed with the pads and tracks it names and where
-# they are on the board. Then measures the board's print against its
-# pads, which KiCad's DRC does not (scripts/silkscreen_clearance.py).
+# and compares the netlist with the board twice: with the net each pad
+# is assigned to (scripts/netlist_summary.py), and with the copper, which
+# has to join the pins of every net (scripts/net_pieces.py). A difference
+# is printed as the pins it concerns.
+#
+# Copper that joins two nets is for KiCad's DRC to find. Its findings are
+# counted by type into build/check/counts.txt, for comparing with the same
+# file from main, and each finding of severity error is printed with the
+# pads and tracks it names and where they are on the board. Then measures
+# the board's print against its pads, which KiCad's DRC does not
+# (scripts/silkscreen_clearance.py).
 #
 # Exit code 0 when the rule check is clean, the board agrees with the
-# circuit, KiCad's DRC has no finding of severity error (a missing
-# connection and copper that joins two nets are errors) and no print is
-# nearer a pad than JLCPCB prints it.
+# circuit in its pads and in its copper, KiCad's DRC has no finding of
+# severity error and no print is nearer a pad than JLCPCB prints it.
 #
 # Needs kicad-cli (KiCad 10), the Python environment of
 # scripts/requirements.txt in the main checkout's .venv/, and the system's
@@ -49,8 +52,13 @@ else
     echo "circuit in text: the rule check is clean"
 fi
 
-echo "circuit in text against the board:"
+echo "circuit in text against the board, the net of each pad:"
 "$python" scripts/netlist_summary.py $out/skidl/board.net $board | sed 's/^/    /'
+[ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
+
+echo "circuit in text against the board, the copper:"
+# pcbnew writes its own chatter to the standard error stream.
+scripts/net_pieces.py $out/skidl/board.net $board 2> /dev/null | sed 's/^/    /'
 [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
 if git diff --quiet -- docs/pins.md; then
@@ -65,13 +73,11 @@ echo "KiCad's DRC, by type ($out/counts.txt):"
 has_errors=$?
 sed 's/^/    /' $out/counts.txt
 if [ $has_errors -ne 0 ]; then
-    echo "KiCad's DRC, the errors, each with the items it names:"
-    "$python" scripts/rule_counts.py --errors $out/drc.json | sed 's/^/    /'
+    "$python" scripts/rule_counts.py --errors $out/drc.json | sed 's/^/        /'
     failed=1
 fi
 
 echo "the print against the pads:"
-# pcbnew writes its own chatter to the standard error stream.
 scripts/silkscreen_clearance.py $board 2> /dev/null | sed 's/^/    /'
 [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
