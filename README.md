@@ -147,7 +147,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   `scripts/silkscreen_clearance.py`.
 - `scripts/net_pieces.py`: compares the netlist with the board's copper:
   names each net whose pins the tracks, vias and fills leave in more
-  than one piece, with the pins of each piece; `scripts/check.sh` runs
+  than one piece, with the pins of each piece and the pins either side
+  of the gap that splits it from the rest; `scripts/check.sh` runs
   it.
 - `scripts/board_from_circuit.py`: brings the board up to the circuit
   in text: removes, swaps and adds footprints, sets every pad's net and
