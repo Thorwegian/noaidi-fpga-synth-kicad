@@ -9,14 +9,16 @@
 #
 # Runs circuit/board.py (SKiDL's rule check, the netlist, docs/pins.md)
 # and compares the netlist with the board twice: with the net each pad
-# is assigned to (scripts/netlist_summary.py), and with the copper, which
-# has to join the pins of every net (scripts/net_pieces.py). A difference
-# is printed as the pins it concerns.
+# is assigned to (scripts/netlist_summary.py), and with the copper
+# (scripts/netlist_against_copper.py), which says in pins what the copper
+# does not connect that the netlist does, and what it connects that the
+# netlist does not.
 #
-# Copper that joins two nets is for KiCad's DRC to find. Its findings are
-# counted by type into build/check/counts.txt, for comparing with the same
-# file from main, and each finding of severity error is printed with the
-# pads and tracks it names and where they are on the board. Then measures
+# KiCad's DRC finds where copper of two nets touches, and the comparison
+# with the copper reads its report. Its findings are counted by type into
+# build/check/counts.txt, for comparing with the same file from main, and
+# each finding of severity error that is not about a connection is printed
+# with the items it names and where they are on the board. Then measures
 # the board's print against its pads, which KiCad's DRC does not
 # (scripts/silkscreen_clearance.py).
 #
@@ -73,8 +75,10 @@ echo "circuit in text against the board, the net of each pad:"
 "$python" scripts/netlist_summary.py $out/skidl/board.net $board | sed 's/^/    /'
 [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
+kicad-cli pcb drc --severity-all --format json -o $out/drc.json $board > /dev/null || exit 1
+
 echo "circuit in text against the board, the copper:"
-run_on_board scripts/net_pieces.py $out/skidl/board.net $board || failed=1
+run_on_board scripts/netlist_against_copper.py $out/skidl/board.net $board $out/drc.json || failed=1
 
 if git diff --quiet -- docs/pins.md; then
     echo "docs/pins.md: unchanged"
@@ -82,7 +86,6 @@ else
     echo "docs/pins.md: changed by this run, to be committed with the circuit"
 fi
 
-kicad-cli pcb drc --severity-all --format json -o $out/drc.json $board > /dev/null || exit 1
 echo "KiCad's DRC, by type ($out/counts.txt):"
 "$python" scripts/rule_counts.py $out/drc.json > $out/counts.txt
 has_errors=$?
