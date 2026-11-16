@@ -2,11 +2,14 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-"""enclosure_scene.py -- a picture of the board in a clear acrylic enclosure,
+"""enclosure_scene.py -- pictures of the board in a clear acrylic enclosure,
 lit by LEDs inside the acrylic, in the dark.
 
     blender -b --python-exit-code 1 --python scripts/enclosure_scene.py -- \\
-        <board.glb> <picture.png> [width px, default 960] [samples, default 256]
+        <board.glb> <folder> [width px, default 960] [samples, default 256] [shot ...]
+
+Writes <folder>/enclosure-<shot>.png for each shot named, and for every shot
+in SHOTS when none is.
 
 The board is `kicad-cli pcb export glb`'s model of it: metres, the board's
 underside at z = 0, each footprint a node named by its designator.
@@ -97,9 +100,22 @@ LED_DIE_RADIANCE = 40.0                 # what the camera sees of an LED itself
 FLOOR_REFLECTANCE = 0.035
 FLOOR_SIZE = 4.0
 
-CAMERA_FOCAL_LENGTH_MM = 28.0           # on a 36 mm sensor: a wide lens, near, for a strong perspective
-CAMERA_AZIMUTH = radians(215.0)         # from the board's centre: towards its left and bottom edges
-CAMERA_ELEVATION = radians(30.0)
+@dataclass
+class Shot:
+    """Where the camera stands: its lens on a 36 mm sensor, and the direction
+    from the enclosure's middle to it. An azimuth of 0 is towards the board's
+    right edge and of 90 towards its top edge."""
+    focal_length_mm: float
+    azimuth_degrees: float
+    elevation_degrees: float
+
+
+# The pictures that are rendered. A wide lens stands near and gives a strong
+# perspective.
+SHOTS = {
+    'corner-low': Shot(28.0, 215.0, 30.0),   # past the board's left and bottom edges
+    'corner-high': Shot(28.0, 215.0, 55.0),  # the same corner, from higher up
+}
 CAMERA_BACK_OFF = 1.12                  # the distance that fills the frame, times this
 ASPECT_RATIO = 3 / 2
 
@@ -532,16 +548,16 @@ def lay_floor(height, collection):
     return floor
 
 
-def aim_camera(scene, subject):
-    """A camera that looks at the subject's middle from CAMERA_AZIMUTH and
-    CAMERA_ELEVATION, as near as holds all of it, then backed off."""
-    lens = bpy.data.cameras.new('Camera')
-    lens.lens = CAMERA_FOCAL_LENGTH_MM
-    camera = bpy.data.objects.new('Camera', lens)
+def aim_camera(scene, subject, name, shot):
+    """The scene's camera for a shot: it looks at the subject's middle from
+    the shot's direction, as near as holds all of it, then backed off."""
+    lens = bpy.data.cameras.new(name)
+    lens.lens = shot.focal_length_mm
+    camera = bpy.data.objects.new(name, lens)
     scene.collection.objects.link(camera)
     scene.camera = camera
-    towards_camera = Vector((cos(CAMERA_ELEVATION) * cos(CAMERA_AZIMUTH),
-                             cos(CAMERA_ELEVATION) * sin(CAMERA_AZIMUTH), sin(CAMERA_ELEVATION)))
+    azimuth, elevation = radians(shot.azimuth_degrees), radians(shot.elevation_degrees)
+    towards_camera = Vector((cos(elevation) * cos(azimuth), cos(elevation) * sin(azimuth), sin(elevation)))
     camera.rotation_euler = towards_camera.to_track_quat('Z', 'Y').to_euler()
     camera.location = subject.centre + towards_camera
     bpy.context.view_layer.update()
@@ -563,7 +579,7 @@ def aim_camera(scene, subject):
     lens.shift_y = (middle_up - 0.5) / ASPECT_RATIO
 
 
-def set_up_render(scene, picture_path, width, samples):
+def set_up_render(scene, width, samples):
     scene.render.engine = 'CYCLES'
     cycles = scene.cycles
     cycles.device = 'CPU'
@@ -584,7 +600,6 @@ def set_up_render(scene, picture_path, width, samples):
     scene.render.resolution_y = round(width / ASPECT_RATIO)
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = 'PNG'
-    scene.render.filepath = str(Path(picture_path).resolve())
     scene.world = bpy.data.worlds.new('Dark')
     scene.world.use_nodes = True
     scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value = 0.0
@@ -592,9 +607,13 @@ def set_up_render(scene, picture_path, width, samples):
 
 def main():
     arguments = sys.argv[sys.argv.index('--') + 1:]
-    board_path, picture_path = arguments[:2]
+    board_path, folder = arguments[0], Path(arguments[1]).resolve()
     width = int(arguments[2]) if len(arguments) > 2 else 960
     samples = int(arguments[3]) if len(arguments) > 3 else 256
+    names = arguments[4:] or list(SHOTS)
+    unknown = [name for name in names if name not in SHOTS]
+    if unknown:
+        sys.exit(f'no shot named {", ".join(unknown)}: the shots are {", ".join(SHOTS)}')
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
@@ -602,11 +621,13 @@ def main():
     root = next(node for node in scene.objects if node.parent is None)
     enclosure = build_enclosure(root, scene.collection)
     lay_floor(enclosure.low.z - JOINT_GAP, scene.collection)
-    set_up_render(scene, picture_path, width, samples)
-    aim_camera(scene, enclosure)
-    bpy.ops.render.render(write_still=True)
-    print('picture', scene.render.filepath, scene.render.resolution_x, 'x', scene.render.resolution_y,
-          'at', samples, 'samples')
+    set_up_render(scene, width, samples)
+    for name in names:
+        aim_camera(scene, enclosure, name, SHOTS[name])
+        scene.render.filepath = str(folder / f'enclosure-{name}.png')
+        bpy.ops.render.render(write_still=True)
+        print('picture', scene.render.filepath, scene.render.resolution_x, 'x', scene.render.resolution_y,
+              'at', samples, 'samples')
 
 
 if __name__ == '__main__':
