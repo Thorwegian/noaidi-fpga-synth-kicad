@@ -28,10 +28,13 @@ around the board's bounding rectangle:
   it nearest its wall, seen from the wall, with OPENING_MARGIN around it. A
   module's sockets are the solids of its mouth that stand apart, one opening
   each; its own circuit board is not one of them. A mouth that fills the
-  ellipse in its bounding rectangle gets a round opening.
-- The board stands on four acrylic posts, clear of the base by its longest
-  solder pin and UNDERSIDE_CLEARANCE. The board has no mounting holes: the
-  posts stand in for whatever will hold it.
+  ellipse in its bounding rectangle gets a round opening. Two openings that
+  overlap are one.
+- The base and the lid stand clear of the parts by UNDERSIDE_CLEARANCE and
+  LID_CLEARANCE, and further apart where an opening needs it: OPENING_LAND of
+  wall is left below the lowest opening and above the highest.
+- The board stands on four acrylic posts. The board has no mounting holes:
+  the posts stand in for whatever will hold it.
 
 The light is path traced from four LEDs, point lights of four colours inside
 the lid, one at each corner, and there is no other light in the scene. Three
@@ -72,8 +75,9 @@ POST_RADIUS = 2.5 * MILLIMETRE
 POST_INSET = 5.0 * MILLIMETRE           # a post's axis from the board's corner
 
 OPENING_MOUTH_DEPTH = 1.0 * MILLIMETRE
-OPENING_MARGIN = 1.0 * MILLIMETRE
-OPENING_CORNER_RADIUS = 0.8 * MILLIMETRE
+OPENING_MARGIN = 3.0 * MILLIMETRE
+OPENING_CORNER_RADIUS = 2.8 * MILLIMETRE
+OPENING_LAND = 1.5 * MILLIMETRE         # the wall left between an opening and the base or the lid
 OPENING_SMALLEST = 2.0 * MILLIMETRE     # a mouth narrower or lower than this is no socket
 MOUTH_PIECES_APART = 1.0 * MILLIMETRE   # pieces of a mouth nearer than this are one socket
 ROUND_MOUTH_TOLERANCE = 1.06
@@ -403,20 +407,19 @@ def sheet(name, box, materials, collection):
     return object_from(name, mesh, materials, collection)
 
 
-def cutter(name, wall, inner_face, openings, materials, collection):
-    """What is cut out of a wall: each opening's profile, through the sheet and beyond both faces."""
+def cutter(name, wall, inner_face, opening, materials, collection):
+    """What is cut out of a wall for an opening: its profile, through the sheet and beyond both faces."""
     mesh = bmesh.new()
-    for opening in openings:
-        profile = opening.profile()
-        inside = [mesh.verts.new(wall.point(along, height, inner_face - SHEET_THICKNESS))
-                  for along, height in profile]
-        outside = [mesh.verts.new(wall.point(along, height, inner_face + 2 * SHEET_THICKNESS))
-                   for along, height in profile]
-        mesh.faces.new(inside)
-        mesh.faces.new(outside)
-        for corner in range(len(profile)):
-            following = (corner + 1) % len(profile)
-            mesh.faces.new((inside[corner], inside[following], outside[following], outside[corner]))
+    profile = opening.profile()
+    inside = [mesh.verts.new(wall.point(along, height, inner_face - SHEET_THICKNESS))
+              for along, height in profile]
+    outside = [mesh.verts.new(wall.point(along, height, inner_face + 2 * SHEET_THICKNESS))
+               for along, height in profile]
+    mesh.faces.new(inside)
+    mesh.faces.new(outside)
+    for corner in range(len(profile)):
+        following = (corner + 1) % len(profile)
+        mesh.faces.new((inside[corner], inside[following], outside[following], outside[corner]))
     for face in mesh.faces:
         face.material_index = CUT
     made = object_from(name, mesh, materials, collection)
@@ -484,10 +487,23 @@ def build_enclosure(root, collection):
     """The enclosure around the imported board. Returns the box it fills."""
     board = bounds_of([child for child in root.children if child.type == 'MESH'])
     everything = bounds_of(meshes_under(root))
+    parts = {}
+    for child in root.children:
+        if child.type != 'MESH':
+            parts.setdefault(designator_of(child), []).extend(meshes_under(child))
+    openings = {name: [] for name in WALLS}
+    for designator, edge in edges_of_parts().items():
+        openings[edge] += openings_for(designator, parts[designator], WALLS[edge])
+    outlines = [opening.outline for on_a_wall in openings.values() for opening in on_a_wall]
+
+    # The base and the lid stand clear of the parts, and far enough apart to
+    # leave OPENING_LAND of wall below the lowest opening and above the highest.
     inside = Box(Vector((board.low.x - WALL_CLEARANCE, board.low.y - WALL_CLEARANCE,
-                         everything.low.z - UNDERSIDE_CLEARANCE)),
+                         min([everything.low.z - UNDERSIDE_CLEARANCE]
+                             + [outline.bottom - OPENING_LAND for outline in outlines]))),
                  Vector((board.high.x + WALL_CLEARANCE, board.high.y + WALL_CLEARANCE,
-                         everything.high.z + LID_CLEARANCE)))
+                         max([everything.high.z + LID_CLEARANCE]
+                             + [outline.top + OPENING_LAND for outline in outlines]))))
     outside = inside.grown(SHEET_THICKNESS, down=SHEET_THICKNESS, up=SHEET_THICKNESS)
     materials = [acrylic('Acrylic, polished face', 0.0), acrylic('Acrylic, cut edge', CUT_EDGE_ROUGHNESS)]
 
@@ -502,14 +518,6 @@ def build_enclosure(root, collection):
         post('Post', Vector((corner[0], corner[1], inside.low.z + JOINT_GAP)),
              board.low.z - inside.low.z - JOINT_GAP, materials[:1], collection)
 
-    parts = {}
-    for child in root.children:
-        if child.type != 'MESH':
-            parts.setdefault(designator_of(child), []).extend(meshes_under(child))
-    openings = {name: [] for name in WALLS}
-    for designator, edge in edges_of_parts().items():
-        openings[edge] += openings_for(designator, parts[designator], WALLS[edge])
-
     place_leds(outside, collection)
     floor_height, lid_height = inside.low.z + JOINT_GAP, inside.high.z - JOINT_GAP
     for name, wall in WALLS.items():
@@ -523,13 +531,14 @@ def build_enclosure(root, collection):
                      Box.around((wall.point(along_low, floor_height, inner_face),
                                  wall.point(along_high, lid_height, inner_face + SHEET_THICKNESS))),
                      materials, collection)
-        if openings[name]:
-            cut = made.modifiers.new('Openings', 'BOOLEAN')
-            cut.operation = 'DIFFERENCE'
-            cut.solver = 'EXACT'
-            cut.object = cutter(f'Openings, {name}', wall, inner_face, openings[name], materials, collection)
         print(f'wall {name}: {len(openings[name])} openings')
         for opening in openings[name]:
+            # One cut for each opening: two that overlap leave one opening.
+            cut = made.modifiers.new(f'Opening, {opening.designator}', 'BOOLEAN')
+            cut.operation = 'DIFFERENCE'
+            cut.solver = 'EXACT'
+            cut.object = cutter(f'Opening, {name}, {opening.designator}', wall, inner_face, opening,
+                                materials, collection)
             outline = opening.outline
             print('    %-4s %-5s %5.1f x %4.1f mm, its middle %5.1f mm above the board' % (
                 opening.designator, 'round' if opening.is_round else 'slot',
