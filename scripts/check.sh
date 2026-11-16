@@ -75,7 +75,8 @@ echo "circuit in text against the board, the net of each pad:"
 "$python" scripts/netlist_summary.py $out/skidl/board.net $board | sed 's/^/    /'
 [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
-kicad-cli pcb drc --severity-all --format json -o $out/drc.json $board > /dev/null || exit 1
+# A track's first error hides its others unless all are asked for, and a short may be the second.
+kicad-cli pcb drc --severity-all --all-track-errors --format json -o $out/drc.json $board > /dev/null || exit 1
 
 echo "circuit in text against the board, the copper:"
 run_on_board scripts/netlist_against_copper.py $out/skidl/board.net $board $out/drc.json || failed=1
