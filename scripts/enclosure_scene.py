@@ -54,6 +54,7 @@ from pathlib import Path
 
 import bmesh
 import bpy
+from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
 MILLIMETRE = 0.001
@@ -96,7 +97,7 @@ LED_DIE_RADIANCE = 40.0                 # what the camera sees of an LED itself
 FLOOR_REFLECTANCE = 0.035
 FLOOR_SIZE = 4.0
 
-CAMERA_FOCAL_LENGTH_MM = 85.0
+CAMERA_FOCAL_LENGTH_MM = 28.0           # on a 36 mm sensor: a wide lens, near, for a strong perspective
 CAMERA_AZIMUTH = radians(215.0)         # from the board's centre: towards its left and bottom edges
 CAMERA_ELEVATION = radians(30.0)
 CAMERA_BACK_OFF = 1.12                  # the distance that fills the frame, times this
@@ -550,6 +551,16 @@ def aim_camera(scene, subject):
     camera.location = location + towards_camera * distance * (CAMERA_BACK_OFF - 1.0)
     lens.clip_start = 0.01
     lens.clip_end = 10.0
+    # A near, wide lens draws the subject's near end larger than its far end,
+    # and its outline is no longer about the middle of the frame. The lens is
+    # shifted, as a view camera's is, until the same room is left on both
+    # sides and above and below: the perspective stays as it is.
+    bpy.context.view_layer.update()
+    in_frame = [world_to_camera_view(scene, camera, corner) for corner in subject.corners]
+    middle_across = (min(point.x for point in in_frame) + max(point.x for point in in_frame)) / 2
+    middle_up = (min(point.y for point in in_frame) + max(point.y for point in in_frame)) / 2
+    lens.shift_x = middle_across - 0.5
+    lens.shift_y = (middle_up - 0.5) / ASPECT_RATIO
 
 
 def set_up_render(scene, picture_path, width, samples):
