@@ -10,7 +10,7 @@ feed no rail."""
 from skidl import *
 
 from global_nets import ESP_5V, EXT_5V, GND, NANO_5V, USB_D_MINUS, USB_D_PLUS
-from parts import ideal_diode_supply, jlcpcb_part, resistor, test_point
+from parts import PROJECT, ideal_diode_supply, jlcpcb_part, resistor, test_point
 
 
 @subcircuit
@@ -23,7 +23,7 @@ def usb_c_socket(name, gnd, socket_ref, cc1_pulldown_ref, cc2_pulldown_ref, supp
     of its own, as (rail, the designators ideal_diode_supply takes)."""
     socket = jlcpcb_part(Part("Connector", "USB_C_Receptacle_USB2.0_16P", ref=socket_ref,
                               tag="socket",
-                              footprint="Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"),
+                              footprint=f"{PROJECT}:USB_C_Receptacle_HRO_TYPE-C-31-M-12"),
                          "C165948")
     cc1_pulldown = resistor(ref=cc1_pulldown_ref, value="5.1k", tag="cc1_pulldown")
     cc2_pulldown = resistor(ref=cc2_pulldown_ref, value="5.1k", tag="cc2_pulldown")

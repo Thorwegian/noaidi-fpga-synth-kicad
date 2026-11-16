@@ -1148,7 +1148,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(footprint "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+	(footprint "noaidi-fpga-synth:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
 		(layer "F.Cu")
 		(uuid "14fa94ce-aaa6-4c94-beb8-0e30030c4b39")
 		(at 114.56 161.34 -90)
@@ -1534,15 +1534,15 @@
 			(uuid "3c5d2577-c47d-495f-82ae-aae534286ac3")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_HRO_TYPE-C-31-M-12.step"
+		(model "${KIPRJMOD}/docs/thirdparty/Hroparts_TYPE-C-31-M-12_model_ai03.step"
 			(offset
-				(xyz 0 0 0)
+				(xyz -4.47 -3.65 0)
 			)
 			(scale
 				(xyz 1 1 1)
 			)
 			(rotate
-				(xyz 0 0 0)
+				(xyz -90 0 0)
 			)
 		)
 	)
@@ -9292,7 +9292,7 @@
 			)
 		)
 	)
-	(footprint "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+	(footprint "noaidi-fpga-synth:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
 		(layer "F.Cu")
 		(uuid "8bff28b0-562b-480a-ba5c-eeba50b46788")
 		(at 114.56 143.34 -90)
@@ -9682,15 +9682,15 @@
 			(uuid "911475cf-5ff1-4010-b292-a2da3229073b")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_HRO_TYPE-C-31-M-12.step"
+		(model "${KIPRJMOD}/docs/thirdparty/Hroparts_TYPE-C-31-M-12_model_ai03.step"
 			(offset
-				(xyz 0 0 0)
+				(xyz -4.47 -3.65 0)
 			)
 			(scale
 				(xyz 1 1 1)
 			)
 			(rotate
-				(xyz 0 0 0)
+				(xyz -90 0 0)
 			)
 		)
 	)

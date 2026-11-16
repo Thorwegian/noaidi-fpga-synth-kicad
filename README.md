@@ -75,6 +75,14 @@ The RCA socket is rendered from Kycon's model of the part
 as that of the black KLPX-0848A-2-B is, and the barrel reaches beyond
 the board's bottom edge.
 
+The two USB sockets are rendered from a model of the Hroparts
+TYPE-C-31-M-12 that is not its maker's
+(`docs/thirdparty/Hroparts_TYPE-C-31-M-12_model_ai03.step`). It is a
+simplified one: a single solid in one colour, with twelve solder tails
+where the part has sixteen, the two of each supply and ground pair
+drawn as one. Its shell, mouth, legs and pegs are where Hroparts'
+drawing has them.
+
 The ESP32 module's model is from DigiKey's page for the part, the DAC
 module's from Adafruit's repository of CAD files on GitHub
 ([adafruit/Adafruit_CAD_Parts](https://github.com/adafruit/Adafruit_CAD_Parts)).
@@ -84,6 +92,9 @@ page for the part and the 0105 08-1's from
 which carries the same file of the 0105 05 as DigiKey. The RCA socket's
 model is Kycon's own, and so is its
 [dimension drawing](https://cloud.kycon.com/Pub_Eng_Draw/KLPX-0848A-2-x.pdf).
+The USB sockets' model is ai03's, from the KiCad library
+[ai03-2725/Type-C.pretty](https://github.com/ai03-2725/Type-C.pretty)
+on GitHub, which states no licence.
 
 ## Files
 
@@ -101,7 +112,11 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   footprint is Espressif's, from
   [espressif/kicad-libraries](https://github.com/espressif/kicad-libraries)
   (CC-BY-SA 4.0 with the exception KiCad's own libraries have), with a
-  keep-out for copper fills under the antenna.
+  keep-out for copper fills under the antenna. The USB sockets'
+  footprint, `USB_C_Receptacle_HRO_TYPE-C-31-M-12`, is the one of that
+  name in KiCad's library `Connector_USB` (the same licence), naming a
+  3D model that the repository holds: KiCad's names one that KiCad does
+  not ship.
 - `scripts/render.sh`: regenerates the images above into `build/` with
   `kicad-cli` (KiCad 10), and with them the view at an angle from the
   other side, the sockets at the board's top edge facing the camera
@@ -192,9 +207,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
   the Adafruit PCM510x's 3D model (`.step`) and fab print with its
   dimensions, a 3D model of the Lumberg 0105 05 DIN socket made
-  from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`), and
+  from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`),
   Kycon's 3D model of the KLPX-0848A-2-x RCA socket (`.IGS`) with its
-  dimension drawing, which has the recommended PCB layout.
+  dimension drawing, which has the recommended PCB layout, and ai03's
+  3D model of the Hroparts TYPE-C-31-M-12 USB-C socket (`.step`).
   Electrical: the Tang Nano 20K's schematic and pinout, the
   GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide, pinouts and
   schematic (v1.1), the
