@@ -30,8 +30,9 @@ around the board's bounding rectangle:
   solder pin and UNDERSIDE_CLEARANCE. The board has no mounting holes: the
   posts stand in for whatever will hold it.
 
-The light is path traced from the LEDs, point lights inside the walls, and
-there is no other light in the scene. Three things make the acrylic show it:
+The light is path traced from four LEDs, point lights of four colours inside
+the lid, one at each corner, and there is no other light in the scene. Three
+things make the acrylic show it:
 
 - A sheet's cut edges are matte, as sawn or milled acrylic is, and its faces
   polished: light that travels inside a sheet leaves it at the edges.
@@ -73,21 +74,24 @@ OPENING_SMALLEST = 2.0 * MILLIMETRE     # a mouth narrower or lower than this is
 MOUTH_PIECES_APART = 1.0 * MILLIMETRE   # pieces of a mouth nearer than this are one socket
 ROUND_MOUTH_TOLERANCE = 1.06
 WELD_DISTANCE = 0.001 * MILLIMETRE
-MODULE_BOARD_THICKEST = 2.0 * MILLIMETRE
-MODULE_BOARD_NARROWEST = 10.0 * MILLIMETRE
+MODULE_BOARD_FLATNESS = 4.0
 
 ACRYLIC_INDEX_OF_REFRACTION = 1.49
 CUT_EDGE_ROUGHNESS = 0.35
 HAZE_DENSITY = 12.0                     # scattering per metre of path inside the acrylic
 
-LED_PITCH = 26.0 * MILLIMETRE
-LED_BELOW_LID = 3.0 * MILLIMETRE
-LED_FROM_WALL_END = 8.0 * MILLIMETRE
-LED_FROM_OPENING = 2.0 * MILLIMETRE
-LED_RADIUS = 0.35 * MILLIMETRE
-LED_POWER_WATT = 0.05
-LED_COLOUR_TEMPERATURE_KELVIN = 12000.0
-LED_DIE_RADIANCE = 400.0                # what the camera sees of an LED itself
+LED_FROM_CORNER = 4.0 * MILLIMETRE      # an LED from each of the two outer faces at its corner
+LED_RADIUS = 0.2 * MILLIMETRE
+LED_POWER_WATT = 0.2
+# One LED in each top corner of the enclosure, by the board's edges that meet
+# there, each of its own colour (linear RGB).
+LED_COLOURS = {
+    ('left', 'top'): (1.0, 0.04, 0.35),      # magenta
+    ('right', 'top'): (1.0, 0.42, 0.03),     # amber
+    ('left', 'bottom'): (0.0, 0.65, 1.0),    # cyan
+    ('right', 'bottom'): (0.22, 0.12, 1.0),  # violet
+}
+LED_DIE_RADIANCE = 40.0                 # what the camera sees of an LED itself
 
 FLOOR_REFLECTANCE = 0.035
 FLOOR_SIZE = 4.0
@@ -188,9 +192,6 @@ class Rectangle:
         return max(self.left - other.right, other.left - self.right,
                    self.bottom - other.top, other.bottom - self.top)
 
-    def holds(self, point):
-        return self.left <= point[0] <= self.right and self.bottom <= point[1] <= self.top
-
 
 @dataclass
 class Opening:
@@ -261,9 +262,10 @@ def solids_of(mesh_object):
 
 
 def is_circuit_board(solid):
-    """A module's own board: a plate no thicker than a circuit board is."""
+    """A module's own board, with what its model has made one solid with it:
+    a plate, MODULE_BOARD_FLATNESS times as wide and as long as it is thick."""
     size = Box.around(solid).size
-    return size.z <= MODULE_BOARD_THICKEST and min(size.x, size.y) >= MODULE_BOARD_NARROWEST
+    return min(size.x, size.y) >= MODULE_BOARD_FLATNESS * size.z
 
 
 def edges_of_parts():
@@ -408,62 +410,52 @@ def post(name, foot, height, materials, collection):
     return object_from(name, mesh, materials, collection)
 
 
-def led_light():
-    light = bpy.data.lights.new('LED', 'POINT')
+def led_light(name, colour):
+    light = bpy.data.lights.new(name, 'POINT')
     light.energy = LED_POWER_WATT
+    light.color = colour
     light.shadow_soft_size = LED_RADIUS
-    light.use_nodes = True
-    nodes, link = light.node_tree.nodes, light.node_tree.links.new
-    black_body = nodes.new('ShaderNodeBlackbody')
-    black_body.inputs['Temperature'].default_value = LED_COLOUR_TEMPERATURE_KELVIN
-    link(black_body.outputs['Color'], nodes['Emission'].inputs['Color'])
     return light
 
 
-def led_die():
-    """The LED as the camera sees it: a point light has no surface to look at.
-    The die lights nothing, and no ray to the light inside it is stopped by it."""
-    material = bpy.data.materials.new('LED die')
+def led_die(name, colour):
+    """The LED as the camera sees it, directly or through polished acrylic: a
+    point light has no surface to look at. The die lights nothing: place_leds
+    hides it from every ray but the camera's and the mirrored and refracted."""
+    material = bpy.data.materials.new(name)
     material.use_nodes = True
     nodes, link = material.node_tree.nodes, material.node_tree.links.new
     glow = nodes.new('ShaderNodeEmission')
+    glow.inputs['Color'].default_value = (*colour, 1.0)
     glow.inputs['Strength'].default_value = LED_DIE_RADIANCE
-    black_body = nodes.new('ShaderNodeBlackbody')
-    black_body.inputs['Temperature'].default_value = LED_COLOUR_TEMPERATURE_KELVIN
-    link(black_body.outputs['Color'], glow.inputs['Color'])
     link(glow.outputs['Emission'], nodes['Material Output'].inputs['Surface'])
     material.cycles.emission_sampling = 'NONE'
     mesh = bmesh.new()
     bmesh.ops.create_icosphere(mesh, subdivisions=2, radius=LED_RADIUS)
-    data = bpy.data.meshes.new('LED die')
+    data = bpy.data.meshes.new(name)
     mesh.to_mesh(data)
     mesh.free()
     data.materials.append(material)
     return data
 
 
-def place_leds(wall_name, wall, inner_face, along_low, along_high, height, openings, light, die, collection):
-    """LEDs in the middle of the wall's thickness, LED_PITCH apart about the
-    wall's middle, none nearer an opening than LED_FROM_OPENING."""
-    usable = along_high - along_low - 2 * LED_FROM_WALL_END
-    count = int(usable / LED_PITCH) + 1
-    first = (along_low + along_high) / 2 - (count - 1) * LED_PITCH / 2
-    placed = 0
-    for index in range(count):
-        along = first + index * LED_PITCH
-        if any(opening.outline.grown(LED_FROM_OPENING).holds((along, height)) for opening in openings):
-            continue
-        position = wall.point(along, height, inner_face + SHEET_THICKNESS / 2)
-        for data in (light, die):
-            made = bpy.data.objects.new(f'{data.name} {wall_name} {index}', data)
+def place_leds(outside, collection):
+    """An LED in the middle of the lid's thickness at each of its corners."""
+    height = outside.high.z - SHEET_THICKNESS / 2
+    for (side, end), colour in LED_COLOURS.items():
+        position = Vector((
+            outside.low.x + LED_FROM_CORNER if side == 'left' else outside.high.x - LED_FROM_CORNER,
+            outside.high.y - LED_FROM_CORNER if end == 'top' else outside.low.y + LED_FROM_CORNER,
+            height))
+        name = f'LED, {end} {side}'
+        light = bpy.data.objects.new(name, led_light(name, colour))
+        die = bpy.data.objects.new(f'{name}, die', led_die(f'{name}, die', colour))
+        die.visible_shadow = False
+        die.visible_diffuse = False
+        die.visible_volume_scatter = False
+        for made in (light, die):
             made.location = position
             collection.objects.link(made)
-            if data is die:
-                made.visible_shadow = False
-                made.visible_diffuse = False
-                made.visible_volume_scatter = False
-        placed += 1
-    return placed
 
 
 def build_enclosure(root, collection):
@@ -496,7 +488,7 @@ def build_enclosure(root, collection):
     for designator, edge in edges_of_parts().items():
         openings[edge] += openings_for(designator, parts[designator], WALLS[edge])
 
-    light, die = led_light(), led_die()
+    place_leds(outside, collection)
     floor_height, lid_height = inside.low.z + JOINT_GAP, inside.high.z - JOINT_GAP
     for name, wall in WALLS.items():
         inner_face = board.reach(wall.outward) + WALL_CLEARANCE
@@ -514,9 +506,7 @@ def build_enclosure(root, collection):
             cut.operation = 'DIFFERENCE'
             cut.solver = 'EXACT'
             cut.object = cutter(f'Openings, {name}', wall, inner_face, openings[name], materials, collection)
-        leds = place_leds(name, wall, inner_face, along_low, along_high, inside.high.z - LED_BELOW_LID,
-                          openings[name], light, die, collection)
-        print(f'wall {name}: {leds} LEDs, {len(openings[name])} openings')
+        print(f'wall {name}: {len(openings[name])} openings')
         for opening in openings[name]:
             outline = opening.outline
             print('    %-4s %-5s %5.1f x %4.1f mm, its middle %5.1f mm above the board' % (
@@ -608,4 +598,5 @@ def main():
           'at', samples, 'samples')
 
 
-main()
+if __name__ == '__main__':
+    main()
