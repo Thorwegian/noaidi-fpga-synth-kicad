@@ -28,7 +28,9 @@ around the board's bounding rectangle:
   it nearest its wall, seen from the wall, with OPENING_MARGIN around it. A
   module's sockets are the solids of its mouth that stand apart, one opening
   each; its own circuit board is not one of them. A mouth that fills the
-  ellipse in its bounding rectangle gets a round opening. Two openings that
+  ellipse in its bounding rectangle gets a round opening, and so does a
+  socket that has a round face in a mouth that is not round, a DIN socket's
+  in its square body: the opening is about that face. Two openings that
   overlap are one.
 - The base and the lid stand clear of the parts by UNDERSIDE_CLEARANCE and
   LID_CLEARANCE, and further apart where an opening needs it: OPENING_LAND of
@@ -80,7 +82,8 @@ OPENING_CORNER_RADIUS = 2.8 * MILLIMETRE
 OPENING_LAND = 1.5 * MILLIMETRE         # the wall left between an opening and the base or the lid
 OPENING_SMALLEST = 2.0 * MILLIMETRE     # a mouth narrower or lower than this is no socket
 MOUTH_PIECES_APART = 1.0 * MILLIMETRE   # pieces of a mouth nearer than this are one socket
-ROUND_MOUTH_TOLERANCE = 1.06
+ROUND_MOUTH_TOLERANCE = 1.1             # a circle's outline measures 1.0, an octagon's 1.17
+ROUND_FACE_SHARE_OF_MOUTH = 0.5         # a round face this much of its mouth's width is where the plug enters
 WELD_DISTANCE = 0.001 * MILLIMETRE
 MODULE_BOARD_FLATNESS = 4.0
 
@@ -259,32 +262,52 @@ def bounds_of(meshes):
     return Box.around(mesh.matrix_world @ Vector(corner) for mesh in meshes for corner in mesh.bound_box)
 
 
-def solids_of(mesh_object):
-    """The object's solids, each a list of its points. kicad-cli writes every
-    surface of a part's CAD model as a piece of mesh of its own: welding the
-    points the surfaces share along their edges leaves one connected piece
-    for each solid."""
+def pieces_of(mesh_object, welded):
+    """The connected pieces of the object's mesh, each a list of its points.
+    kicad-cli writes every surface of a part's CAD model as a piece of its
+    own. Welding the points that surfaces share along their edges leaves one
+    piece for each solid."""
     mesh = bmesh.new()
     mesh.from_mesh(mesh_object.data)
-    bmesh.ops.remove_doubles(mesh, verts=mesh.verts, dist=WELD_DISTANCE)
+    if welded:
+        bmesh.ops.remove_doubles(mesh, verts=mesh.verts, dist=WELD_DISTANCE)
     visited = set()
-    solids = []
+    pieces = []
     for first in mesh.verts:
         if first.index in visited:
             continue
         visited.add(first.index)
-        pending, solid = [first], []
+        pending, piece = [first], []
         while pending:
             vertex = pending.pop()
-            solid.append(mesh_object.matrix_world @ vertex.co)
+            piece.append(mesh_object.matrix_world @ vertex.co)
             for edge in vertex.link_edges:
                 neighbour = edge.other_vert(vertex)
                 if neighbour.index not in visited:
                     visited.add(neighbour.index)
                     pending.append(neighbour)
-        solids.append(solid)
+        pieces.append(piece)
     mesh.free()
-    return solids
+    return pieces
+
+
+def solids_of(mesh_object):
+    return pieces_of(mesh_object, welded=True)
+
+
+def surfaces_of(mesh_object):
+    return pieces_of(mesh_object, welded=False)
+
+
+def fills_its_ellipse(points_on_the_wall):
+    """Whether the points all lie in the ellipse their bounding rectangle holds: a round outline."""
+    outline = Rectangle.around(points_on_the_wall)
+    if min(outline.width, outline.height) <= 0.0:
+        return False
+    centre_along, centre_height = outline.centre
+    return all(((along - centre_along) / (outline.width / 2)) ** 2
+               + ((height - centre_height) / (outline.height / 2)) ** 2 <= ROUND_MOUTH_TOLERANCE
+               for along, height in points_on_the_wall)
 
 
 def is_circuit_board(solid):
@@ -312,12 +335,12 @@ def openings_for(designator, meshes, wall):
     """The openings a part needs in its wall: one for each piece of its mouth."""
     solids = [solid for mesh in meshes for solid in solids_of(mesh) if not is_circuit_board(solid)]
     reach = max(wall.outward.dot(point) for solid in solids for point in solid)
-    pieces = []
-    for solid in solids:
-        on_the_wall = [(wall.along.dot(point), point.z) for point in solid
-                       if reach - wall.outward.dot(point) <= OPENING_MOUTH_DEPTH]
-        if on_the_wall:
-            pieces.append(on_the_wall)
+
+    def on_the_wall(points):
+        return [(wall.along.dot(point), point.z) for point in points
+                if reach - wall.outward.dot(point) <= OPENING_MOUTH_DEPTH]
+
+    pieces = [piece for piece in map(on_the_wall, solids) if piece]
     merged = True
     while merged:
         merged = False
@@ -330,17 +353,32 @@ def openings_for(designator, meshes, wall):
                     break
             if merged:
                 break
+    round_faces = [Rectangle.around(face)
+                   for face in map(on_the_wall, (surface for mesh in meshes for surface in surfaces_of(mesh)))
+                   if face and fills_its_ellipse(face)]
     openings = []
     for piece in pieces:
         mouth = Rectangle.around(piece)
         if min(mouth.width, mouth.height) < OPENING_SMALLEST:
             continue
-        centre_along, centre_height = mouth.centre
-        fills_its_ellipse = all(
-            ((along - centre_along) / (mouth.width / 2)) ** 2
-            + ((height - centre_height) / (mouth.height / 2)) ** 2 <= ROUND_MOUTH_TOLERANCE
-            for along, height in piece)
-        openings.append(Opening(designator, mouth.grown(OPENING_MARGIN), fills_its_ellipse))
+        # A socket with a round face in a mouth that is not round, a DIN
+        # socket's in its square body, is entered there: its opening is round
+        # and about that face.
+        receptacles = [face for face in round_faces
+                       if mouth.apart_from(face) < 0.0
+                       and min(face.width, face.height) >= ROUND_FACE_SHARE_OF_MOUTH * min(mouth.width, mouth.height)
+                       and max(face.width, face.height) <= ROUND_MOUTH_TOLERANCE * min(face.width, face.height)]
+        if receptacles and not fills_its_ellipse(piece):
+            mouth = max(receptacles, key=lambda face: face.width)
+            is_round = True
+        else:
+            is_round = fills_its_ellipse(piece)
+        if is_round:
+            radius = max(mouth.width, mouth.height) / 2
+            centre_along, centre_height = mouth.centre
+            mouth = Rectangle(centre_along - radius, centre_height - radius,
+                              centre_along + radius, centre_height + radius)
+        openings.append(Opening(designator, mouth.grown(OPENING_MARGIN), is_round))
     return sorted(openings, key=lambda opening: opening.outline.left)
 
 
