@@ -40,6 +40,23 @@ out=build/check
 mkdir -p $out/skidl
 failed=0
 
+# Runs a script that reads the board with KiCad's pcbnew module and prints
+# what it says, indented. pcbnew writes its own chatter to the standard
+# error stream, which goes to a log. Each of these scripts ends with a
+# count, so one that printed nothing did not run, and the log says why.
+run_on_board() {
+    local name
+    name=$(basename "$1" .py)
+    "$@" > $out/$name.txt 2> $out/$name.log
+    local status=$?
+    sed 's/^/    /' $out/$name.txt
+    if [ ! -s $out/$name.txt ]; then
+        echo "    $1 did not run ($out/$name.log):"
+        tail -n 1 $out/$name.log | sed 's/^/        /'
+    fi
+    return $status
+}
+
 # SKiDL writes its log files where it is run.
 if ! (cd $out/skidl && "$python" ../../../circuit/board.py > board.out 2>&1); then
     echo "circuit in text: circuit/board.py failed, see $out/skidl/board.out"
@@ -57,9 +74,7 @@ echo "circuit in text against the board, the net of each pad:"
 [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
 
 echo "circuit in text against the board, the copper:"
-# pcbnew writes its own chatter to the standard error stream.
-scripts/net_pieces.py $out/skidl/board.net $board 2> /dev/null | sed 's/^/    /'
-[ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
+run_on_board scripts/net_pieces.py $out/skidl/board.net $board || failed=1
 
 if git diff --quiet -- docs/pins.md; then
     echo "docs/pins.md: unchanged"
@@ -78,7 +93,6 @@ if [ $has_errors -ne 0 ]; then
 fi
 
 echo "the print against the pads:"
-scripts/silkscreen_clearance.py $board 2> /dev/null | sed 's/^/    /'
-[ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
+run_on_board scripts/silkscreen_clearance.py $board || failed=1
 
 exit $failed
