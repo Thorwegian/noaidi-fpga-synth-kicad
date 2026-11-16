@@ -16,14 +16,17 @@ it finds as pins (R15.1 is pin 1 of R15), one line for each:
   Pins of one net of the netlist that the board's tracks, vias and fills
   (as the board file stores them) do not join. A net's copper is then in
   pieces, and for each piece but the largest the line names the place
-  where it comes nearest to the others: the pin nearest to either side of
-  that gap along the copper, and the gap's width.
+  where it comes nearest to the others: on either side of that gap, the
+  pin nearest to it of those the copper there reaches, and the gap's
+  width.
 
     connected, and should not be: R15.2 (I2C1_SCL) and R15.1 (ESP_3V3)
 
   Copper of two nets of the netlist that touches. KiCad's DRC finds the
-  place (the report is what `kicad-cli pcb drc --format json` writes);
-  the line names the pin nearest to it along the copper of either net.
+  place (the report is what `kicad-cli pcb drc --all-track-errors
+  --format json` writes: a short, crossing tracks, or a clearance that is
+  down to nothing); the line names, for the copper of either net, the pin
+  nearest to it of those it reaches, and a fill by its net.
 
 A pin of the netlist that has no pad on the board is named too. Prints
 the counts last. The exit status is 1 when there is a line of either kind.
@@ -31,7 +34,6 @@ the counts last. The exit status is 1 when there is a line of either kind.
 Runs under the Python that has KiCad's pcbnew module.
 """
 import collections
-import heapq
 import json
 import math
 import re
@@ -42,6 +44,7 @@ import pcbnew
 from netlist_summary import read_netlist
 
 TOUCHING = ("shorting_items", "tracks_crossing")    # the DRC findings that are copper of two nets in contact
+NO_DISTANCE = re.compile(r"actual 0\.0+ mm")        # in a clearance finding's description: the two items touch
 
 
 def unique_id(item):
@@ -85,30 +88,24 @@ def ends(item):
 
 def nearest_approach(piece, others):
     """Where the piece comes nearest to the other pieces of its net, as
-    (distance, item of the piece, item of another piece)."""
-    return min(((math.hypot(mine.x - theirs.x, mine.y - theirs.y), item, other)
+    (distance, item of the piece, its end there, item of another piece,
+    its end there)."""
+    return min(((math.hypot(mine.x - theirs.x, mine.y - theirs.y), item, mine, other, theirs)
                 for item in piece.values() for mine in ends(item)
                 for other_piece in others for other in other_piece.values() for theirs in ends(other)),
                key=lambda approach: approach[0])
 
 
-def nearest_pads(connectivity, item):
-    """The pads of the item's own net that are nearest to it along the
-    copper, by the length of track on the way; the item itself when it is
-    a pad."""
+def nearest_pad(connectivity, item, points):
+    """The pad that the item's copper reaches and that lies nearest to one
+    of the points, in a straight line; the item itself when it is a pad,
+    and None when its copper reaches no pad."""
     if item.GetClass() == "PAD":
-        return [item]
-    seen, reached = {unique_id(item)}, [(0, unique_id(item), item)]
-    while reached:
-        length, _, track = heapq.heappop(reached)
-        pads = [pad for pad in connectivity.GetConnectedPads(track) if pad.GetNetCode() == item.GetNetCode()]
-        if pads:
-            return pads
-        for further in connectivity.GetConnectedTracks(track):
-            if unique_id(further) not in seen:
-                seen.add(unique_id(further))
-                heapq.heappush(reached, (length + further.GetLength(), unique_id(further), further))
-    return []
+        return item
+    pads = [joined.Cast() for joined in connectivity.GetConnectedItems(item) if joined.GetClass() == "PAD"]
+    return min(pads, default=None, key=lambda pad: (
+        min(math.hypot(pad.GetPosition().x - point.x, pad.GetPosition().y - point.y) for point in points),
+        unique_id(pad)))
 
 
 def main(netlist_path, board_path, report_path):
@@ -124,13 +121,11 @@ def main(netlist_path, board_path, report_path):
                 pads_of_pin[pin].append(pad)
                 pin_of[unique_id(pad)] = pin
 
-    def pins_at(item):
-        """The pins nearest to the item along its copper, in reading order."""
-        return sorted({pin_of[unique_id(pad)] for pad in nearest_pads(connectivity, item)},
-                      key=lambda pin: in_reading_order(pin_name(pin)))
-
-    def names(pins):
-        return " ".join(pin_name(pin) for pin in pins)
+    def pin_at(item, points):
+        """The pin whose pad the item's copper reaches nearest to the
+        points, as (designator, pad number), or None."""
+        pad = nearest_pad(connectivity, item, points)
+        return pin_of[unique_id(pad)] if pad else None
 
     # What the netlist connects and the copper does not.
     connected_nets = {name: pins for name, pins in nets.items() if len(pins) > 1}
@@ -142,10 +137,11 @@ def main(netlist_path, board_path, report_path):
         pieces = pieces_of(connectivity, [pad for pin in pins for pad in pads_of_pin.get(pin, [])])
         pieces.sort(key=lambda piece: sum(item.GetClass() == "PAD" for item in piece.values()))
         for piece in pieces[:-1]:
-            gap, item, other = nearest_approach(piece, [rest for rest in pieces if rest is not piece])
-            line = f"not connected: {names(pins_at(item))} and {names(pins_at(other))} ({name})"
+            gap, item, end, other, other_end = nearest_approach(piece, [rest for rest in pieces if rest is not piece])
+            loose = pin_name(pin_at(item, [end]))
+            line = f"not connected: {loose} and {pin_name(pin_at(other, [other_end]))} ({name})"
             if item.GetNetname() != other.GetNetname():
-                line += f": the board has {names(pins_at(item))} on the net {item.GetNetname() or '(none)'}"
+                line += f": the board has {loose} on the net {item.GetNetname() or '(none)'}"
             elif gap == 0:
                 line += ", one above the other on different layers with nothing joining the layers"
             else:
@@ -155,16 +151,28 @@ def main(netlist_path, board_path, report_path):
     # What the copper connects and the netlist does not.
     item_of = {unique_id(item): item for item in list(board.GetTracks()) + list(board.Zones())}
     item_of.update((unique_id(pad), pad) for pads in pads_of_pin.values() for pad in pads)
+
+    def side(item):
+        """One side of a contact, as (what to call it, its net): the pin
+        nearest to the item among those its copper reaches, with its net
+        in the netlist, or a fill by its net."""
+        if item.GetClass() == "ZONE":
+            return f"the fill of {item.GetNetname()}", item.GetNetname()
+        pin = pin_at(item, ends(item))
+        if not pin:
+            return f"copper that reaches no pin ({item.GetNetname()})", item.GetNetname()
+        return f"{pin_name(pin)} ({net_of_pin.get(pin, 'no net')})", net_of_pin.get(pin)
+
     with open(report_path, encoding="utf-8") as file:
-        findings = [finding for finding in json.load(file)["violations"] if finding["type"] in TOUCHING]
+        findings = [finding for finding in json.load(file)["violations"]
+                    if finding["type"] in TOUCHING
+                    or finding["type"] == "clearance" and NO_DISTANCE.search(finding["description"])]
     wrongly_connected = set()
     for finding in findings:
-        sides = [pins_at(item_of[item["uuid"]]) for item in finding["items"] if item["uuid"] in item_of]
-        sides = sorted((pins for pins in sides if pins), key=lambda pins: in_reading_order(names(pins)))
-        nets_of_sides = [net_of_pin.get(pins[0], "no net") for pins in sides]
-        if len(sides) == 2 and nets_of_sides[0] != nets_of_sides[1]:
-            wrongly_connected.add("connected, and should not be: " + " and ".join(
-                f"{names(pins)} ({net})" for pins, net in zip(sides, nets_of_sides)))
+        sides = sorted((side(item_of[item["uuid"]]) for item in finding["items"] if item["uuid"] in item_of),
+                       key=lambda found: in_reading_order(found[0]))
+        if len(sides) == 2 and sides[0][1] != sides[1][1]:
+            wrongly_connected.add(f"connected, and should not be: {sides[0][0]} and {sides[1][0]}")
 
     for line in not_connected + sorted(wrongly_connected, key=in_reading_order):
         print(line)
