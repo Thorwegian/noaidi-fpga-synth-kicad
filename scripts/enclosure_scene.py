@@ -20,9 +20,6 @@ The enclosure is a picture's and decides nothing about the one that will be
 built (docs/requirements.md leaves it undefined). It is a box of six sheets
 around the board's bounding rectangle:
 
-- The four walls are straight and meet at square corners. The base and the
-  lid reach PLATE_OVERHANG beyond them all round, with their corners rounded
-  to that radius.
 - The walls stand off the board's outline by WALL_CLEARANCE and are not moved
   by a part that reaches further: a part at an edge
   (circuit/fixed_positions.toml) gets an opening through its wall, whether it
@@ -76,9 +73,6 @@ WALL_CLEARANCE = 1.5 * MILLIMETRE       # the board's outline to a wall's inner 
 LID_CLEARANCE = 2.0 * MILLIMETRE        # the tallest part to the lid
 UNDERSIDE_CLEARANCE = 1.5 * MILLIMETRE  # the longest solder pin to the base
 JOINT_GAP = 0.05 * MILLIMETRE           # the film of air where two sheets meet
-PLATE_OVERHANG = 2.0 * MILLIMETRE       # the base and the lid beyond the walls, and their corners' radius
-CORNER_SEGMENTS = 16                    # the straight pieces a rounded corner is drawn with
-SAME_POINT = 0.0001 * MILLIMETRE
 POST_RADIUS = 2.5 * MILLIMETRE
 POST_INSET = 5.0 * MILLIMETRE           # a post's axis from the board's corner
 
@@ -97,7 +91,7 @@ ACRYLIC_INDEX_OF_REFRACTION = 1.49
 CUT_EDGE_ROUGHNESS = 0.35
 HAZE_DENSITY = 12.0                     # scattering per metre of path inside the acrylic
 
-LED_FROM_CORNER = 4.0 * MILLIMETRE      # an LED from the outer face of each of the two walls below its corner
+LED_FROM_CORNER = 4.0 * MILLIMETRE      # an LED from each of the two outer faces at its corner
 LED_RADIUS = 0.2 * MILLIMETRE
 LED_POWER_WATT = 0.2
 # One LED in each top corner of the enclosure, by the board's edges that meet
@@ -228,27 +222,6 @@ class Rectangle:
                    self.bottom - other.top, other.bottom - self.top)
 
 
-def rounded_rectangle(rectangle, radius):
-    """The rectangle's outline as a polygon, its corners rounded to the radius.
-    A radius of half a side leaves no straight part of that side: a circle,
-    when it is half of both."""
-    centre_across, centre_up = rectangle.centre
-    half_width, half_height = rectangle.width / 2, rectangle.height / 2
-    radius = min(radius, half_width, half_height)
-    polygon = []
-    for quadrant, (side_across, side_up) in enumerate(((1, 1), (-1, 1), (-1, -1), (1, -1))):
-        corner_across = centre_across + side_across * (half_width - radius)
-        corner_up = centre_up + side_up * (half_height - radius)
-        for step in range(CORNER_SEGMENTS + 1):
-            angle = (quadrant + step / CORNER_SEGMENTS) * pi / 2
-            point = (corner_across + radius * cos(angle), corner_up + radius * sin(angle))
-            if not polygon or max(abs(point[0] - polygon[-1][0]), abs(point[1] - polygon[-1][1])) > SAME_POINT:
-                polygon.append(point)
-    if max(abs(polygon[0][0] - polygon[-1][0]), abs(polygon[0][1] - polygon[-1][1])) <= SAME_POINT:
-        polygon.pop()
-    return polygon
-
-
 @dataclass
 class Opening:
     designator: str
@@ -257,9 +230,20 @@ class Opening:
 
     def profile(self):
         """The opening's outline as a polygon on its wall."""
+        centre_along, centre_height = self.outline.centre
+        half_width, half_height = self.outline.width / 2, self.outline.height / 2
         if self.is_round:
-            return rounded_rectangle(self.outline, self.outline.width / 2)
-        return rounded_rectangle(self.outline, OPENING_CORNER_RADIUS)
+            return [(centre_along + half_width * cos(angle), centre_height + half_height * sin(angle))
+                    for angle in (2 * pi * step / 64 for step in range(64))]
+        radius = min(OPENING_CORNER_RADIUS, half_width, half_height)
+        polygon = []
+        for quadrant, (side_along, side_height) in enumerate(((1, 1), (-1, 1), (-1, -1), (1, -1))):
+            corner_along = centre_along + side_along * (half_width - radius)
+            corner_height = centre_height + side_height * (half_height - radius)
+            for step in range(9):
+                angle = (quadrant + step / 8) * pi / 2
+                polygon.append((corner_along + radius * cos(angle), corner_height + radius * sin(angle)))
+        return polygon
 
 
 def designator_of(node):
@@ -461,22 +445,6 @@ def sheet(name, box, materials, collection):
     return object_from(name, mesh, materials, collection)
 
 
-def plate(name, box, corner_radius, materials, collection):
-    """A sheet of acrylic that lies flat and fills the box but for its four
-    corners, which are rounded: polished above and below, cut on its edge."""
-    mesh = bmesh.new()
-    outline = rounded_rectangle(Rectangle(box.low.x, box.low.y, box.high.x, box.high.y), corner_radius)
-    below = [mesh.verts.new((across, up, box.low.z)) for across, up in outline]
-    above = [mesh.verts.new((across, up, box.high.z)) for across, up in outline]
-    for face in (mesh.faces.new(below), mesh.faces.new(above)):
-        face.material_index = POLISHED
-    for corner in range(len(outline)):
-        following = (corner + 1) % len(outline)
-        edge = mesh.faces.new((below[corner], below[following], above[following], above[corner]))
-        edge.material_index = CUT
-    return object_from(name, mesh, materials, collection)
-
-
 def cutter(name, wall, inner_face, opening, materials, collection):
     """What is cut out of a wall for an opening: its profile, through the sheet and beyond both faces."""
     mesh = bmesh.new()
@@ -535,8 +503,7 @@ def led_die(name, colour):
 
 
 def place_leds(outside, collection):
-    """An LED in the middle of the lid's thickness over each corner of the
-    box the walls make: `outside` is that box."""
+    """An LED in the middle of the lid's thickness at each of its corners."""
     height = outside.high.z - SHEET_THICKNESS / 2
     for (side, end), colour in LED_COLOURS.items():
         position = Vector((
@@ -578,11 +545,10 @@ def build_enclosure(root, collection):
     outside = inside.grown(SHEET_THICKNESS, down=SHEET_THICKNESS, up=SHEET_THICKNESS)
     materials = [acrylic('Acrylic, polished face', 0.0), acrylic('Acrylic, cut edge', CUT_EDGE_ROUGHNESS)]
 
-    plates = outside.grown(PLATE_OVERHANG)
-    plate('Base', Box(plates.low, Vector((plates.high.x, plates.high.y, inside.low.z))),
-          PLATE_OVERHANG, materials, collection)
-    plate('Lid', Box(Vector((plates.low.x, plates.low.y, inside.high.z)), plates.high),
-          PLATE_OVERHANG, materials, collection)
+    sheet('Base', Box(outside.low, Vector((outside.high.x, outside.high.y, inside.low.z))),
+          materials, collection)
+    sheet('Lid', Box(Vector((outside.low.x, outside.low.y, inside.high.z)), outside.high),
+          materials, collection)
     for corner in ((board.low.x + POST_INSET, board.low.y + POST_INSET),
                    (board.low.x + POST_INSET, board.high.y - POST_INSET),
                    (board.high.x - POST_INSET, board.low.y + POST_INSET),
@@ -616,8 +582,8 @@ def build_enclosure(root, collection):
                 opening.designator, 'round' if opening.is_round else 'slot',
                 outline.width / MILLIMETRE, outline.height / MILLIMETRE,
                 (outline.centre[1] - board.high.z) / MILLIMETRE))
-    print('enclosure %.1f x %.1f x %.1f mm outside' % tuple(plates.size / MILLIMETRE))
-    return plates
+    print('enclosure %.1f x %.1f x %.1f mm outside' % tuple(outside.size / MILLIMETRE))
+    return outside
 
 
 def lay_floor(height, collection):
