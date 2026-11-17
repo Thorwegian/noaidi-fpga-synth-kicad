@@ -7,6 +7,7 @@
 
     scripts/route_board.py export <board> <design.dsn>
     scripts/route_board.py import <board> <session.ses>
+    scripts/route_board.py widen <board>
     scripts/route_board.py clear <board>
 
 clear removes every track and via from the board, so that a run starts from
@@ -36,10 +37,14 @@ router's session in their place, fills the board's fills and saves the
 board. A via gets the
 hole its net class gives a via of its diameter: the session names the via,
 and KiCad's import takes the hole from the net's class whichever via was
-used. A track the router made narrower than the board's minimum is widened
-to it. scripts/join_fills.py then joins the pads the fills do not reach.
+used. scripts/join_fills.py then joins the pads the fills do not reach.
 
-scripts/route.sh runs the two around the router. Runs under the system's
+widen runs after those joins, which need room a wider track would take: a
+track the router made narrower than its net class's width is widened to
+that width where the wider copper still clears every other net on its
+layer, and the ones that cannot be are printed with the pad beside them.
+
+scripts/route.sh runs the four around the router. Runs under the system's
 Python, which has KiCad's pcbnew module.
 """
 import re
@@ -112,15 +117,61 @@ def give_vias_their_holes(board):
             track.SetDrill(hole_of_diameter[track.GetWidth(pcbnew.F_Cu)])
 
 
-def widen_to_minimum(board):
-    """The router narrows a track where the going is tight, and by more than
-    the board allows. Returns how many segments were widened."""
-    minimum = board.GetDesignSettings().m_TrackMinWidth
-    narrow = [track for track in board.GetTracks()
-              if track.Type() != pcbnew.PCB_VIA_T and track.GetWidth() < minimum]
-    for track in narrow:
-        track.SetWidth(minimum)
-    return len(narrow)
+def widen_to_class(board):
+    """Widen each track to its net class's width, then put back the width of
+    every widened track that no longer clears its neighbours, until nothing
+    changes: a track widened after its neighbour was checked cannot leave
+    the two too near each other.
+
+    Returns the tracks that are still narrower than their class."""
+    settings = board.GetDesignSettings().m_NetSettings
+    floor = board.GetDesignSettings().m_TrackMinWidth
+    copper = list(board.GetTracks()) + [pad for footprint in board.GetFootprints()
+                                        for pad in footprint.Pads()]
+
+    def target_of(track):
+        return max(floor, settings.GetEffectiveNetClass(track.GetNetname()).GetTrackWidth())
+
+    # A neighbour that is too near does not intersect the track's own box: the
+    # box is grown by the widest clearance any class asks for before the search.
+    reach = int(max(net_class.GetClearance()
+                    for net_class in board.GetAllNetClasses().values()))
+
+    def clashes(track):
+        net_class = settings.GetEffectiveNetClass(track.GetNetname())
+        shape = track.GetEffectiveShape(track.GetLayer())
+        box = track.GetBoundingBox()
+        box.Inflate(reach)
+        for other in copper:
+            if other is track or other.GetNetname() == track.GetNetname():
+                continue
+            if not other.GetBoundingBox().Intersects(box):
+                continue
+            other_layer = track.GetLayer()
+            if other.Type() != pcbnew.PCB_VIA_T:
+                if other.GetLayer() != other_layer:
+                    continue
+                other_layer = other.GetLayer()
+            gap = max(net_class.GetClearance(),
+                      settings.GetEffectiveNetClass(other.GetNetname()).GetClearance())
+            if shape.Collide(other.GetEffectiveShape(other_layer), gap):
+                return True
+        return False
+
+    was = []
+    for track in board.GetTracks():
+        if track.Type() == pcbnew.PCB_VIA_T or track.GetWidth() >= target_of(track):
+            continue
+        was.append((track, track.GetWidth()))
+        track.SetWidth(target_of(track))
+    changed = True
+    while changed:
+        changed = False
+        for track, width in was:
+            if track.GetWidth() > width and clashes(track):
+                track.SetWidth(width)
+                changed = True
+    return [track for track, width in was if track.GetWidth() < target_of(track)]
 
 
 def main(action, board_path, specctra_path=None):
@@ -151,15 +202,27 @@ def main(action, board_path, specctra_path=None):
         if not pcbnew.ImportSpecctraSES(board, specctra_path):
             sys.exit(f"could not read {specctra_path}")
         give_vias_their_holes(board)
-        widened = widen_to_minimum(board)
         pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         # The third argument keeps KiCad from rewriting the project file with the board.
         pcbnew.SaveBoard(board_path, board, True)
         tracks = list(board.GetTracks())
         vias = sum(1 for track in tracks if track.Type() == pcbnew.PCB_VIA_T)
         length = sum(track.GetLength() for track in tracks if track.Type() != pcbnew.PCB_VIA_T)
-        print(f"{len(tracks) - vias} track segments, {vias} vias, {pcbnew.ToMM(length):.0f} mm of track; "
-              f"{widened} segments widened to the minimum track width")
+        print(f"{len(tracks) - vias} track segments, {vias} vias, {pcbnew.ToMM(length):.0f} mm of track")
+    elif action == "widen":
+        narrow = widen_to_class(board)
+        pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+        pcbnew.SaveBoard(board_path, board, True)
+        print(f"{len(narrow)} segments stay narrower than their net class")
+        settings = board.GetDesignSettings().m_NetSettings
+        for track in narrow:
+            middle = track.GetStart() + (track.GetEnd() - track.GetStart()) / 2
+            beside = min((((pad.GetPosition() - middle).EuclideanNorm(), f"{pad.GetParentFootprint().GetReference()} pad {pad.GetNumber()}")
+                          for footprint in board.GetFootprints() for pad in footprint.Pads()), default=None)
+            if beside:
+                print(f"  {track.GetNetname()}: {pcbnew.ToMM(track.GetWidth()):.2f} mm where the class is "
+                      f"{pcbnew.ToMM(settings.GetEffectiveNetClass(track.GetNetname()).GetTrackWidth()):.2f}, "
+                      f"beside {beside[1]}")
     else:
         sys.exit(__doc__)
 

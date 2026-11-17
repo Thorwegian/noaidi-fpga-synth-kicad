@@ -18,7 +18,9 @@
 # fill and, where the pads are near, to the pad beside it (it reads the
 # blocks from the netlist that scripts/check.sh writes), and
 # scripts/join_fills.py ties the fills of one net together and joins the
-# pads that are left. With that copper in place, scripts/place_designators.py
+# pads that are left, and scripts/route_board.py widen takes each track the
+# router laid thinner than its net class out to that width where it still
+# fits. With that copper in place, scripts/place_designators.py
 # puts each part's designator where it can be read. Then prints the counts
 # of KiCad's DRC, which are the verdict; the router's own count of
 # violations is not.
@@ -74,6 +76,7 @@ fi
 scripts/route_board.py import $board $out/board.ses 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 scripts/lay_fill_vias.py $board $netlist 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 scripts/join_fills.py $board $out/drc.json 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+scripts/route_board.py widen $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 scripts/place_designators.py $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 kicad-cli pcb drc --severity-all --format json --output $out/drc.json $board > /dev/null || exit 1
 echo "KiCad's DRC, by type ($out/drc.json):"
