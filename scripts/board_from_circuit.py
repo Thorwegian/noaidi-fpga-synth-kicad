@@ -480,7 +480,9 @@ def build_skeleton(netlist_path, board_path):
                 footprint.Move(pcbnew.VECTOR2I(along[edge] - box[LEFT], 0))
                 along[edge] = box[RIGHT] + (along[edge] - box[LEFT]) + pcbnew.FromMM(10.0)
         else:
-            footprint.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(40.0 + 18.0 * (loose % 8)),
+            # Well clear of the edges, where the fixed parts are, and of each
+            # other: a part with no place of its own must not take one.
+            footprint.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(NOMINAL_MM / 2 + 18.0 * (loose % 8)),
                                                   pcbnew.FromMM(40.0 + 18.0 * (loose // 8))))
             loose += 1
     pcbnew.SaveBoard(board_path, board, True)
@@ -640,7 +642,8 @@ def main(netlist_path, net_classes_path, board_path):
     print(f"{len(stale_tracks)} tracks removed with their nets; "
           f"{len(list(board.GetFootprints()))} parts, {len(nets)} nets, "
           f"{len(class_of_net)} of them in {len(set(class_of_net.values()))} classes besides Default; "
-          f"{len(layers)} copper layers, their fills {'made anew' if new_fills else 'as they were'}")
+          f"{len(layers)} copper layers, their fills {'made anew' if new_fills else 'as they were'}; "
+          f"{len(board.Zones())} zones on the board as it is saved")
 
 
 if __name__ == "__main__":
