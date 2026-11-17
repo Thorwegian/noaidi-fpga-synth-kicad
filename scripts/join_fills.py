@@ -262,6 +262,29 @@ class Joiner:
                 done.append(f"not tied: {what}: no clear place for a via where it lies over the rest on another layer")
         return done, vias
 
+    def into_pour(self, pad, width):
+        """A track from the pad into the fill on the pad's own layer, which is
+        how a pad in a pour is joined when no trace blocked its spokes: no
+        via, and none of the room a via takes from the router."""
+        net, centre, box = pad.GetNetname(), pad.GetPosition(), pad.GetBoundingBox()
+        layer = pad.GetLayer()
+        fills = [zone for zone in self.board.Zones()
+                 if not zone.GetIsRuleArea() and zone.GetNetname() == net and zone.IsOnLayer(layer)]
+        if not fills:
+            return None
+        point = pcbnew.VECTOR2I(0, 0)
+        steps = range(-REACH, REACH + 1, STEP)
+        for dx, dy in sorted(((dx, dy) for dx in steps for dy in steps), key=lambda move: math.hypot(*move)):
+            if to_box(centre.x + dx, centre.y + dy, box) < OWN_PAD_GAP:
+                continue
+            point.x, point.y = centre.x + dx, centre.y + dy
+            if not any(fill.HitTestFilledArea(layer, point) for fill in fills):
+                continue
+            if self.track_clear(pad, point.x, point.y, width):
+                self.add_track(pad, point.x, point.y, width)
+                return f"a track into the pour {pcbnew.ToMM(math.hypot(dx, dy)):.2f} mm away"
+        return None
+
     def to_via(self, pad):
         """Join the pad to a via by a track. Returns what was done, or None
         when no via is within reach."""
@@ -347,7 +370,7 @@ def main(board_path, report_path):
         if (not to_via and not solid and not tied) or attempt == ROUNDS:
             break
         for pad in sorted(to_via, key=name):
-            how = joiner.to_via(pad)
+            how = joiner.into_pour(pad, joiner.track_width(pad)) or joiner.to_via(pad)
             thermal = [other for other in beside[pad.m_Uuid.AsString()]
                        if other.GetLocalZoneConnection() != pcbnew.ZONE_CONNECTION_FULL]
             if how:
