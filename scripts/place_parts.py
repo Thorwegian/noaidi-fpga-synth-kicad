@@ -3,9 +3,9 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-"""size_board.py -- place the parts and decide how big the board has to be: a cluster around each part at an edge, the clusters packed along the edges, the outline drawn to hold them.
+"""place_parts.py -- place the parts and draw the outline that holds them: a cluster around each part at an edge, the clusters packed along the edges.
 
-    scripts/size_board.py <netlist> <board> <room mm> [<widest mm>]
+    scripts/place_parts.py <netlist> <board> <room mm> [<widest mm>]
 
 The netlist is the one circuit/board.py writes (board.net).
 

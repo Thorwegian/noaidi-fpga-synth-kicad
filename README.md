@@ -150,16 +150,16 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `circuit/fixed_positions.toml`: the constraints on where the parts
   sit (a part's edge, its side of another part, the part it moves as
   one with, the pads it sits level with), for
-  `scripts/size_board.py` and `scripts/board_from_circuit.py`.
+  `scripts/place_parts.py` and `scripts/board_from_circuit.py`.
 - `circuit/layers.toml`: the copper layers and the fill of each, for
   `scripts/board_from_circuit.py`.
 - `circuit/antennas.toml`: which nets stay away from the ESP32 module's
   antenna, and how far, for `scripts/board_from_circuit.py`,
-  `scripts/size_board.py` and the rule in
+  `scripts/place_parts.py` and the rule in
   `noaidi-fpga-synth.kicad_dru` that KiCad's DRC checks it by.
-- `scripts/size_board.py`: places the parts and draws the outline,
+- `scripts/place_parts.py`: places the parts and draws the outline,
   from the constraints in `circuit/fixed_positions.toml`
-  (`scripts/size_board.py build/check/skidl/board.net
+  (`scripts/place_parts.py build/check/skidl/board.net
   noaidi-fpga-synth.kicad_pcb 3`, then `scripts/route.sh`). Each part at
   an edge gets its cluster, the parts of its block of the circuit laid
   out around it, and the clusters are packed along the edges into the
