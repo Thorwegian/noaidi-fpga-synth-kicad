@@ -542,7 +542,9 @@ def main(netlist_path, board_path, room, widest=None):
                 LEFT: (outline[LEFT] + to_edge[drawn_at] - box[LEFT], 0), TOP: (0, outline[TOP] + to_edge[drawn_at] - box[TOP]),
                 RIGHT: (outline[RIGHT] - to_edge[drawn_at] - box[RIGHT], 0),
                 BOTTOM: (0, outline[BOTTOM] - to_edge[drawn_at] - box[BOTTOM])}[edge]))
-    members_of = {name: [name] for name in edge_of}
+    # A part the file puts beside another moves as one with it: it has no
+    # block of its own, or the packing moves it twice.
+    members_of = {name: [name] for name in edge_of if "beside" not in fixed[name]}
     for name, rule in fixed.items():
         if "beside" in rule:
             neighbour = footprints[rule["beside"]]
@@ -594,7 +596,15 @@ def main(netlist_path, board_path, room, widest=None):
     print(f"clusters laid out in {time.perf_counter() - started:.1f} s", flush=True)
     draw_outline(outline)
     for name in fixed:
-        footprints[name].SetPosition(home[name])
+        if "beside" not in fixed[name]:
+            footprints[name].SetPosition(home[name])
+    # A part the file puts beside another is where that rule puts it, whatever
+    # place the board gave it: the pitch is the file's, not the drawing's.
+    for name, rule in fixed.items():
+        if "beside" in rule:
+            neighbour = footprints[rule["beside"]]
+            footprints[name].SetOrientationDegrees(neighbour.GetOrientationDegrees())
+            footprints[name].SetPosition(neighbour.GetPosition() + beside_offset(rule, edge_of[rule["beside"]]))
     for part, (offset, turn) in from_hub.items():
         footprints[part].SetOrientationDegrees(turn)
         footprints[part].SetPosition(home[hub[part]] + offset)

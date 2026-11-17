@@ -52,9 +52,9 @@
 # 7.01 mm past one end; the board edge that faces the board's left edge is
 # 1.10 mm from the footprint's origin, so the ports hang over the edge.
 [U1]
-edge = "right"
-faces = "up"
-edge_line_mm = 1.10
+edge = "left"
+faces = "down"
+edge_line_mm = 62.86
 
 # The USB MIDI socket. Hroparts' drawing of the TYPE-C-31-M-12
 # (docs/thirdparty/Hroparts_TYPE-C-31-M-12_drawing.pdf, recommended PCB
@@ -81,8 +81,8 @@ below = "J14"
 # is 27.60 mm from the footprint's origin.
 [U2]
 edge = "right"
-faces = "down"
-edge_line_mm = 11.60
+faces = "left"
+edge_line_mm = 27.60
 below = "U1"
 
 # The DAC module: its audio output socket. The module's own board is the
