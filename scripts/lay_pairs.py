@@ -47,7 +47,10 @@ import cmath
 import math
 import os
 import sys
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:     # KiCad's Python on a Mac is 3.9, where tomli stands in
+    import tomli as tomllib
 
 import pcbnew
 

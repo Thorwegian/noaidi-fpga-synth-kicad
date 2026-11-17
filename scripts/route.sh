@@ -37,6 +37,16 @@
 set -u -o pipefail
 cd "$(dirname "$0")/.."
 
+# KiCad's pcbnew is not in macOS's /usr/bin/python3: the application's Python
+# has it. A Mac checks a checksum with shasum where Linux has sha256sum.
+if [ "$(uname -s)" = Darwin ]; then
+    python="/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3"
+    check_sha256="shasum --algorithm 256 --check --quiet"
+else
+    python=/usr/bin/python3
+    check_sha256="sha256sum --check --quiet"
+fi
+
 board=noaidi-fpga-synth.kicad_pcb
 out=build/route
 jar=build/tools/freerouting-2.5.0.jar
@@ -48,16 +58,16 @@ mkdir -p $out build/tools
 if [ ! -f $jar ]; then
     curl --silent --show-error --location --output $jar $jar_url || exit 1
 fi
-echo "$jar_sha256  $jar" | sha256sum --check --quiet || exit 1
+echo "$jar_sha256  $jar" | $check_sha256 || exit 1
 
 # pcbnew writes its own chatter to the standard error stream.
-scripts/route_board.py clear $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
-scripts/lay_pairs.py $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+"$python" scripts/route_board.py clear $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+"$python" scripts/lay_pairs.py $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 if [ ! -f $netlist ]; then
     echo "$netlist is missing: scripts/check.sh writes it from the circuit"
     exit 1
 fi
-layers_with_tracks=$(scripts/route_board.py export $board $out/board.dsn 2>> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
+layers_with_tracks=$("$python" scripts/route_board.py export $board $out/board.dsn 2>> $out/pcbnew.log) || { cat $out/pcbnew.log; exit 1; }
 
 if ! java -Djava.awt.headless=true -jar $jar -de $out/board.dsn -do $out/board.ses \
         --router.autorouter.max_passes=30 --router.layers.routable=$layers_with_tracks \
@@ -73,11 +83,11 @@ if grep --quiet "Unknown settings property" $out/freerouting.log; then
     exit 1
 fi
 
-scripts/route_board.py import $board $out/board.ses 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
-scripts/lay_fill_vias.py $board $netlist 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
-scripts/join_fills.py $board $out/drc.json 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
-scripts/route_board.py widen $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
-scripts/place_designators.py $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+"$python" scripts/route_board.py import $board $out/board.ses 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+"$python" scripts/lay_fill_vias.py $board $netlist 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+"$python" scripts/join_fills.py $board $out/drc.json 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+"$python" scripts/route_board.py widen $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
+"$python" scripts/place_designators.py $board 2>> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 kicad-cli pcb drc --severity-all --format json --output $out/drc.json $board > /dev/null || exit 1
 echo "KiCad's DRC, by type ($out/drc.json):"
-/usr/bin/python3 scripts/rule_counts.py $out/drc.json | sed 's/^/    /'
+"$python" scripts/rule_counts.py $out/drc.json | sed 's/^/    /'
