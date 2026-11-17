@@ -141,10 +141,9 @@ class Joiner:
         self.board.Add(track)
 
     def track_width(self, pad):
-        """The width of a track that ends in the pad: its net class's, no wider than the pad."""
-        box = pad.GetBoundingBox()
+        """The width of a track that ends in the pad: its net class's."""
         class_width = self.net_settings.GetEffectiveNetClass(pad.GetNetname()).GetTrackWidth()
-        return max(self.minimum_width, min(class_width, box.GetWidth(), box.GetHeight()))
+        return max(self.minimum_width, class_width)
 
     def join_pads(self, pad, other):
         """Lay a track from the pad to another pad of its net on its layer:

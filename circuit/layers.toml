@@ -19,16 +19,6 @@ fill = "GND"
 tracks = true
 
 [[layer]]
-name = "In1.Cu"
-fill = "ESP_5V"
-tracks = false
-
-[[layer]]
-name = "In2.Cu"
-fill = "NANO_5V"
-tracks = false
-
-[[layer]]
 name = "B.Cu"
 fill = "GND"
 tracks = true
