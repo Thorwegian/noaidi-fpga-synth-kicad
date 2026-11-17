@@ -3,9 +3,9 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-"""squeeze_board.py -- place the parts and draw the outline: a cluster around each part at an edge, the clusters packed along the edges.
+"""place_parts.py -- place the parts and draw the outline that holds them: a cluster around each part at an edge, the clusters packed along the edges.
 
-    scripts/squeeze_board.py <netlist> <board> <room mm> [<widest mm>]
+    scripts/place_parts.py <netlist> <board> <room mm> [<widest mm>]
 
 The netlist is the one circuit/board.py writes (board.net).
 
@@ -94,6 +94,7 @@ import collections
 import math
 import os
 import sys
+import time
 try:
     import tomllib
 except ModuleNotFoundError:     # KiCad's Python on a Mac is 3.9, where tomli stands in
@@ -102,13 +103,15 @@ except ModuleNotFoundError:     # KiCad's Python on a Mac is 3.9, where tomli st
 import pcbnew
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from board_from_circuit import (ANTENNAS, BOTTOM, EDGES, FIXED_POSITIONS, LEFT, RIGHT, TOP, NoFreePlace,  # noqa: E402
+from board_from_circuit import (ANTENNAS, BOTTOM, EDGES, FAB, FIXED_POSITIONS, LEFT, RIGHT, TOP, NoFreePlace,  # noqa: E402
+                                turn_to_face,
                                 antenna_clearances, beside_offset, board_outline, closed_to, draw_antenna_clearances,
                                 keep_out, middle, nearer_than, pad_centre, pad_named, read_circuit,
                                 settle_at_its_connections)
 from lay_pairs import lanes  # noqa: E402
 
 STEP = pcbnew.FromMM(2.0)       # of the search for the outline and for the places along the edges
+GROW = 40                       # how many steps beyond the floor the search for the outline tries
 FURTHER = pcbnew.FromMM(60.0)   # how far from its connections a part is looked for a place when there is none near them
 FURTHER_GRID = pcbnew.FromMM(1.0)
 FURTHER_MOVES = sorted(((dx, dy) for dx in range(-FURTHER, FURTHER + 1, FURTHER_GRID)
@@ -301,6 +304,32 @@ class Down(list):
         self.ruled = [(name, box) for name, box in members if name in ruled]
 
 
+def least_extent(blocks, least):
+    """The smallest width and height the blocks can be put down in, whatever
+    the packing: along an edge the blocks there add up with the room between
+    them, and across it the deepest of them has to stand clear of what the
+    opposite edge holds. Below this no outline can hold them, which is what
+    makes it the place to start looking."""
+    along = {LEFT: 0, RIGHT: 0, TOP: 0, BOTTOM: 0}
+    across = {LEFT: 0, RIGHT: 0, TOP: 0, BOTTOM: 0}
+    for edge, members, _ in blocks:
+        boxes = [box for _, box in members]
+        wide = max(box[RIGHT] for box in boxes) - min(box[LEFT] for box in boxes)
+        tall = max(box[BOTTOM] for box in boxes) - min(box[TOP] for box in boxes)
+        if edge in (TOP, BOTTOM):
+            along[edge] += wide + least
+            across[edge] = max(across[edge], tall)
+        else:
+            along[edge] += tall + least
+            across[edge] = max(across[edge], wide)
+    # A part on a side needs its depth from that side only, and two of them
+    # on opposite sides can pass each other along the edge, so the widths of
+    # the two sides are not added: the fitting test is what decides whether
+    # they really stand in each other's way.
+    return (max(along[TOP], along[BOTTOM], across[LEFT] + least, across[RIGHT] + least),
+            max(along[LEFT], along[RIGHT], across[TOP] + least, across[BOTTOM] + least))
+
+
 def smallest_outline(blocks, room, closed, order, links, least, extent, largest):
     """The smallest width and height, by area, in which the blocks can be
     put down along their edges, and how far each then slides: of the ways
@@ -421,19 +450,48 @@ def smallest_outline(blocks, room, closed, order, links, least, extent, largest)
 
     if fits(*largest) is None:
         sys.exit("the parts at the edges do not fit in an outline that size with this much room")
-    low, height = 0, largest[1]             # no room at low, room at height
-    while height - low > STEP:
-        middle = (low + height) // 2
-        low, height = (low, middle) if fits(largest[0], middle) is not None else (middle, height)
-    # A narrower board is never lower: the height only grows as the width shrinks.
-    best, width = (largest[0], height), largest[0] - STEP
-    while width > 0 and height <= largest[1]:
-        if fits(width, height) is None:
-            height += STEP
+    # The blocks along an edge add up, and across it the deepest of them has
+    # to fit with what the opposite edge holds in front of it: no outline
+    # smaller than that can hold them, so the search starts there and takes
+    # the first size, in order of area, that they can be put down in.
+    floor_width, floor_height = least_extent(blocks, least)
+    floor_width, floor_height = min(floor_width, largest[0]), min(floor_height, largest[1])
+    sizes = {(floor_width + across * STEP, floor_height + up * STEP)
+             for across in range(GROW + 1) for up in range(GROW + 1)}
+    best = None
+    for width, height in sorted(sizes, key=lambda size: (size[0] * size[1], size[0], size[1])):
+        if width > largest[0] or height > largest[1]:
             continue
-        if width * height < best[0] * best[1]:
+        if fits(width, height) is not None:
             best = (width, height)
-        width -= STEP
+            break
+    if best is None:
+        sys.exit("the parts at the edges do not fit in an outline that size with this much room")
+
+    def least_height_at(width):
+        """The least height the blocks can be put down in at this width."""
+        if fits(width, largest[1]) is None:
+            return None
+        low, high = floor_height, largest[1]
+        while high - low > STEP:
+            middle = (low + high) // 2
+            low, high = (low, middle) if fits(width, middle) is not None else (middle, high)
+        return high
+
+    # The floor is a bound, not a size: the deepest parts of two opposite
+    # edges need not stand in front of each other, so a narrower board may
+    # still hold them. The narrowest that does is looked for between the
+    # floor and the first size that fitted.
+    low, high = floor_width, best[0]
+    while high - low > STEP:
+        middle = (low + high) // 2
+        height_there = least_height_at(middle)
+        if height_there is None:
+            low = middle
+        else:
+            high = middle
+            if middle * height_there < best[0] * best[1]:
+                best = (middle, height_there)
     return best, with_shortest_links(*best)
 
 
@@ -459,18 +517,34 @@ def main(netlist_path, board_path, room, widest=None):
     edge_of = {name: EDGES[rule["edge"]] for name, rule in fixed.items() if "edge" in rule}
     # A part the board has at another edge than the file is turned to face the file's, at the distance to the edge it has.
     for name, edge in edge_of.items():
-        box = keep_out(footprints[name])
+        footprint = footprints[name]
+        if "faces" in fixed[name]:
+            turn_to_face(footprint, edge, fixed[name]["faces"])
+        box = keep_out(footprint)
         to_edge = {LEFT: box[LEFT] - outline[LEFT], TOP: box[TOP] - outline[TOP],
                    RIGHT: outline[RIGHT] - box[RIGHT], BOTTOM: outline[BOTTOM] - box[BOTTOM]}
         drawn_at = min(to_edge, key=to_edge.get)
-        if drawn_at != edge:
-            footprints[name].SetOrientationDegrees(footprints[name].GetOrientationDegrees() + 90 * ((drawn_at - edge) % 4))
-            box = keep_out(footprints[name])
-            footprints[name].Move(pcbnew.VECTOR2I(*{
+        if "edge_line_mm" in fixed[name]:
+            # The distance the file states is where the part is placed: the
+            # clusters and the outline are worked out around it.
+            inset = pcbnew.FromMM(fixed[name]["edge_line_mm"])
+            origin = footprint.GetPosition()
+            footprint.SetPosition({
+                LEFT: pcbnew.VECTOR2I(outline[LEFT] + inset, origin.y),
+                TOP: pcbnew.VECTOR2I(origin.x, outline[TOP] + inset),
+                RIGHT: pcbnew.VECTOR2I(outline[RIGHT] - inset, origin.y),
+                BOTTOM: pcbnew.VECTOR2I(origin.x, outline[BOTTOM] - inset),
+            }[edge])
+        elif drawn_at != edge:
+            footprint.SetOrientationDegrees(footprint.GetOrientationDegrees() + 90 * ((drawn_at - edge) % 4))
+            box = keep_out(footprint)
+            footprint.Move(pcbnew.VECTOR2I(*{
                 LEFT: (outline[LEFT] + to_edge[drawn_at] - box[LEFT], 0), TOP: (0, outline[TOP] + to_edge[drawn_at] - box[TOP]),
                 RIGHT: (outline[RIGHT] - to_edge[drawn_at] - box[RIGHT], 0),
                 BOTTOM: (0, outline[BOTTOM] - to_edge[drawn_at] - box[BOTTOM])}[edge]))
-    members_of = {name: [name] for name in edge_of}
+    # A part the file puts beside another moves as one with it: it has no
+    # block of its own, or the packing moves it twice.
+    members_of = {name: [name] for name in edge_of if "beside" not in fixed[name]}
     for name, rule in fixed.items():
         if "beside" in rule:
             neighbour = footprints[rule["beside"]]
@@ -490,11 +564,12 @@ def main(netlist_path, board_path, room, widest=None):
     for name in inner:
         if name in hub:
             cluster[hub[name]].append(name)
-    off_the_board = pcbnew.VECTOR2I(outline[LEFT] - 10 * extent[0], outline[TOP])
+    off_the_board = pcbnew.VECTOR2I(outline[LEFT] - extent[0] // 2, outline[TOP])
     home = {name: pcbnew.VECTOR2I(footprints[name].GetPosition()) for name in fixed}
     for name in inner:
         footprints[name].SetPosition(off_the_board)
     from_hub, placed_further = {}, []
+    started = time.perf_counter()
     for first, group in members_of.items():
         for name in fixed:
             footprints[name].SetPosition(home[name] if name in group else off_the_board)
@@ -503,9 +578,13 @@ def main(netlist_path, board_path, room, widest=None):
         wide_open[edge_of[first]] = outline[edge_of[first]]
         draw_outline(wide_open)
         for name in group:
+            began = time.perf_counter()
             without_connection, further = lay_out_cluster(
                 board, name, edge_of[name], [other for other in group if other != name], cluster[name], footprints, parts,
                 nets, fill_nets, room_for_a_via, lambda part: closed_to(footprints[part], clearances, class_of_net))
+            took = time.perf_counter() - began
+            if took > 2.0:
+                print(f"cluster of {name}: {len(cluster[name])} parts, {took:.1f} s", flush=True)
             placed_further += further
             for part in without_connection:
                 cluster[name].remove(part)
@@ -514,9 +593,18 @@ def main(netlist_path, board_path, room, widest=None):
             for part in cluster[name]:
                 from_hub[part] = (footprints[part].GetPosition() - home[name], footprints[part].GetOrientationDegrees())
                 footprints[part].SetPosition(off_the_board)
+    print(f"clusters laid out in {time.perf_counter() - started:.1f} s", flush=True)
     draw_outline(outline)
     for name in fixed:
-        footprints[name].SetPosition(home[name])
+        if "beside" not in fixed[name]:
+            footprints[name].SetPosition(home[name])
+    # A part the file puts beside another is where that rule puts it, whatever
+    # place the board gave it: the pitch is the file's, not the drawing's.
+    for name, rule in fixed.items():
+        if "beside" in rule:
+            neighbour = footprints[rule["beside"]]
+            footprints[name].SetOrientationDegrees(neighbour.GetOrientationDegrees())
+            footprints[name].SetPosition(neighbour.GetPosition() + beside_offset(rule, edge_of[rule["beside"]]))
     for part, (offset, turn) in from_hub.items():
         footprints[part].SetOrientationDegrees(turn)
         footprints[part].SetPosition(home[hub[part]] + offset)
@@ -565,7 +653,16 @@ def main(netlist_path, board_path, room, widest=None):
                                                 + 2 * room for _, members, _ in blocks) // STEP) * STEP
                                          for low, high in ((LEFT, RIGHT), (TOP, BOTTOM)))
     largest = (side_by_side if widest is None else min(side_by_side, pcbnew.FromMM(widest)), one_below_the_other)
+    started = time.perf_counter()
     new_extent, slides = smallest_outline(blocks, room, closed, order, links, room_for_a_via, extent, largest)
+    print(f"packing took {time.perf_counter() - started:.1f} s", flush=True)
+    fab = tomllib.load(open(FAB, "rb"))["board"]
+    long_side, short_side = max(new_extent), min(new_extent)
+    if (pcbnew.ToMM(long_side) > fab["max_long_side_mm"] or pcbnew.ToMM(short_side) > fab["max_short_side_mm"]
+            or pcbnew.ToMM(short_side) < fab["min_side_mm"]):
+        sys.exit(f"the board comes out {pcbnew.ToMM(new_extent[0]):.1f} x {pcbnew.ToMM(new_extent[1]):.1f} mm, "
+                 f"and the fab takes from {fab['min_side_mm']:.0f} mm to "
+                 f"{fab['max_short_side_mm']:.0f} x {fab['max_long_side_mm']:.0f} mm (circuit/fab.toml)")
     for (edge, members, _), slide in zip(blocks, slides):
         dx = slide if edge in (TOP, BOTTOM) else (new_extent[0] - extent[0] if edge == RIGHT else 0)
         dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
