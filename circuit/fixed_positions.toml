@@ -6,7 +6,7 @@
 # them: a part has none of them, a few or many, of different kinds. A part
 # this file does not name has none, and is placed in the cluster of the
 # part at an edge that its block of the circuit has, beside what it
-# connects to. scripts/squeeze_board.py places the parts to these constraints, and
+# connects to. scripts/size_board.py places the parts to these constraints, and
 # scripts/board_from_circuit.py keeps the parts this file names where they
 # are when it brings the board up to the circuit.
 #
@@ -52,7 +52,7 @@
 # 7.01 mm past one end; the board edge that faces the board's left edge is
 # 1.10 mm from the footprint's origin, so the ports hang over the edge.
 [U1]
-edge = "left"
+edge = "right"
 faces = "up"
 edge_line_mm = 1.10
 
@@ -65,14 +65,12 @@ edge_line_mm = 1.10
 # (circuit/antennas.toml).
 [J14]
 edge = "left"
-faces = "down"
 edge_line_mm = 2.66
 below = "U1"
 
 # The power socket, the same part on the same board-edge line.
 [J9]
 edge = "left"
-faces = "down"
 edge_line_mm = 2.66
 below = "J14"
 
@@ -102,10 +100,13 @@ below = "U2"
 # body on the board.
 [J1]
 edge = "top"
-faces = "down"
-edge_line_mm = 6.51
+faces = "up"
+edge_line_mm = 12.41
 
 [J2]
+edge = "top"
+faces = "up"
+edge_line_mm = 12.41
 beside = "J1"
 pitch_mm = 24.0
 side = "right"
