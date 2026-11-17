@@ -18,7 +18,7 @@ import json
 
 from skidl import *
 
-DEFAULT = NetClass("Default", track_width=0.2, clearance=0.2, via_diameter=0.6, via_drill=0.3,
+DEFAULT = NetClass("Default", track_width=0.2, clearance=0.2, via_diameter=0.8, via_drill=0.3,
                    diff_pair_width=0.2, diff_pair_gap=0.25)
 
 # Supply and ground carry every part's current.
@@ -30,7 +30,7 @@ SUPPLY = NetClass("Power", track_width=0.4, clearance=0.2, via_diameter=1.2, via
 # come to about 87 ohm over the inner layer 0.21 mm below them
 # (docs/requirements.md, The layers). 0.3 mm is also the width of the
 # socket's pads, and is kept the whole way so that the two lines stay alike.
-USB_DATA_PAIR = NetClass("USB", track_width=0.3, clearance=0.2, via_diameter=0.6, via_drill=0.3,
+USB_DATA_PAIR = NetClass("USB", track_width=0.3, clearance=0.2, via_diameter=0.8, via_drill=0.3,
                          diff_pair_width=0.3, diff_pair_gap=0.2)
 
 

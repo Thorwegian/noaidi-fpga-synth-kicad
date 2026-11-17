@@ -4,10 +4,22 @@
 # License: CERN-OHL-S v2
 #
 # JLCPCB's limits are the authority on the design rules
-# (https://jlcpcb.com/capabilities/pcb-capabilities). The board setup holds
-# the figures that apply to every object. The rules here hold the limits the
-# fab states for component holes, which are wider than its limits for vias,
-# on every layer and on the inner layers.
+# (https://jlcpcb.com/capabilities/pcb-capabilities, read 17 Nov 2026, for a
+# two-layer 1 oz board), and the board setup holds the ones that apply to
+# every object:
+#
+#   Traces: min track width and spacing 0.10 / 0.10 mm
+#   Drilling: drill diameter 0.15 to 6.3 mm
+#   Drilling: min via hole size and diameter 0.15 / 0.25 mm
+#   Traces: PTH annular ring, absolute minimum 0.18 mm, 0.25 mm recommended
+#   Drilling: via hole to hole 0.2 mm, pad hole to hole 0.45 mm
+#   Traces: via hole to track 0.2 mm, pad to track 0.1 mm
+#   Outline: copper clearance from a routed edge 0.2 mm
+#
+# The board setup asks 0.5 mm of copper to the edge, and its net classes ask
+# 0.2 mm clearance and 0.2 to 0.4 mm tracks, all above the fab's floor. The
+# rules here hold the limits the fab states for component holes, which are
+# wider than its limits for vias, on every layer and on the inner layers.
 
 (rule "annular ring of a component hole"
 	(constraint annular_width (min 0.18mm))
