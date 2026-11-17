@@ -1,0 +1,11 @@
+# What the fab takes, for the board's own size.
+#
+# JLCPCB's capability page, https://jlcpcb.com/capabilities/pcb-capabilities,
+# read 17 November 2026: "Maximum Dimensions ... FR4(2-layer): 670 x 600 mm",
+# and "2-layer FR4 PCBs can reach a maximum size of 1020 x 600 mm", for boards
+# of thickness 0.8 mm and above. "Minimum Dimensions: FR4 3 x 3 mm".
+
+[board]
+max_long_side_mm = 1020.0
+max_short_side_mm = 600.0
+min_side_mm = 3.0

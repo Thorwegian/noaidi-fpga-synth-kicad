@@ -5,11 +5,14 @@
 #
 """board_from_circuit.py -- bring the board up to the circuit in text.
 
-    scripts/board_from_circuit.py <netlist> <net classes> <board>
+    scripts/board_from_circuit.py <netlist> <net classes> <board> [fresh]
 
 Reads the netlist and the net classes that circuit/board.py writes
 (board.net and net_classes.json) and makes the board's parts and nets the
-same as the netlist's, moving as little as possible:
+same as the netlist's, moving as little as possible. With fresh it reads no
+board at all: it builds one from the netlist and the rule files, in a
+nominal rectangle that scripts/place_parts.py then draws the outline
+around.
 
   - a part that is not in the netlist leaves the board;
   - a part whose footprint differs gets the netlist's footprint, the middle
@@ -46,6 +49,7 @@ meets the pads; scripts/route.sh lays it anew.
 
 Runs under the system's Python, which has KiCad's pcbnew module.
 """
+import collections
 import json
 import math
 import os
@@ -65,6 +69,7 @@ KICAD_FOOTPRINT_DIR = os.environ.get("KICAD10_FOOTPRINT_DIR", "/usr/share/kicad/
 FIXED_POSITIONS = os.path.join(PROJECT_DIR, "circuit", "fixed_positions.toml")
 LAYERS = os.path.join(PROJECT_DIR, "circuit", "layers.toml")
 ANTENNAS = os.path.join(PROJECT_DIR, "circuit", "antennas.toml")
+FAB = os.path.join(PROJECT_DIR, "circuit", "fab.toml")
 ANTENNA_CLEARANCE = "Antenna clearance"     # the name the rule in the .kicad_dru knows the areas by
 
 COURTYARD_GAP = pcbnew.FromMM(0.25)     # kept between two parts' courtyards
@@ -72,6 +77,7 @@ GRID = pcbnew.FromMM(0.25)              # the step of the search for a new part'
 REACH = pcbnew.FromMM(20.0)             # how far from its start the search looks
 EDGE_STEP = pcbnew.FromMM(0.05)         # the step of a slide along the board's edge
 QUARTER_TURNS = (0.0, 90.0, 180.0, 270.0)
+NOMINAL_MM = 1200.0                     # the room a fresh board is built in: the longest side any fab takes, both ways round
 LEFT, TOP, RIGHT, BOTTOM = range(4)
 EDGES = {"left": LEFT, "top": TOP, "right": RIGHT, "bottom": BOTTOM}
 
@@ -287,6 +293,19 @@ def board_outline(board):
             max(box.GetRight() for box in boxes), max(box.GetBottom() for box in boxes))
 
 
+def draw_nominal_outline(board):
+    """A rectangle for the board to be built in, before anything is placed:
+    the placing reads no size from it, and draws the board's own outline
+    afterwards."""
+    rectangle = pcbnew.PCB_SHAPE(board)
+    rectangle.SetShape(pcbnew.SHAPE_T_RECTANGLE)
+    rectangle.SetLayer(pcbnew.Edge_Cuts)
+    rectangle.SetWidth(pcbnew.FromMM(0.1))
+    rectangle.SetStart(pcbnew.VECTOR2I(0, 0))
+    rectangle.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(NOMINAL_MM), pcbnew.FromMM(NOMINAL_MM)))
+    board.Add(rectangle)
+
+
 def set_layers(board, layers):
     """Give the board the copper layers of circuit/layers.toml and their
     fills. Returns True when the fills were made anew."""
@@ -369,13 +388,32 @@ def beside_offset(rule, edge):
     return pcbnew.VECTOR2I(step, 0) if edge in (TOP, BOTTOM) else pcbnew.VECTOR2I(0, step)
 
 
-def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=NEARBY, closed=()):
+def near_moves(footprint, reach, rings=3):
+    """The places worth trying for a part, as (dx, dy) from where it is:
+    each that puts one of its pads on one of the pads it connects to, and
+    the ones a step or two around that, out to rings. The square of places
+    NEARBY covers gives the same answer for a part whose pads are wanted on
+    their connections, at many times the cost of looking where they meet."""
+    moves = set()
+    for pad in footprint.Pads():
+        here = pad.GetPosition()
+        for target in reach.get(pad.GetNumber(), ()):
+            across, up = target.x - here.x, target.y - here.y
+            for ring in range(rings + 1):
+                for along in range(-ring, ring + 1):
+                    for other in range(-(ring - abs(along)), ring - abs(along) + 1):
+                        moves.add((across + along * GRID, up + other * GRID))
+    return sorted(moves)
+
+
+def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=None, closed=()):
     """Move the footprint to the free place where its pads are nearest to the
     pads they connect to, turned whichever way brings them nearest. reach
     holds, for each of its pads by number, the places of those pads; gap is
     what the footprint keeps to every other part; moves lists the places
-    tried, as (dx, dy) from the middle of the pads it connects to; closed
-    lists the rectangles the footprint may not enter."""
+    tried, as (dx, dy) from where the footprint is, those near its
+    connections when left out; closed lists the rectangles the footprint may
+    not enter."""
     targets = [target for group in reach.values() for target in group]
     footprint.SetPosition(pcbnew.VECTOR2I(sum(target.x for target in targets) // len(targets),
                                           sum(target.y for target in targets) // len(targets)))
@@ -384,7 +422,68 @@ def settle_at_its_connections(board, footprint, reach, gap=COURTYARD_GAP, moves=
         return sum(min(math.hypot(x - target.x, y - target.y) for target in reach[number])
                    for number, x, y in pads if number in reach)
 
-    settle(board, footprint, distance_to_reach, moves, turns=QUARTER_TURNS, gap=gap, closed=closed)
+    settle(board, footprint, distance_to_reach, near_moves(footprint, reach) if moves is None else moves,
+           turns=QUARTER_TURNS, gap=gap, closed=closed)
+
+
+def build_skeleton(netlist_path, board_path):
+    """A board with every part of the netlist on it and every pad on its net,
+    the parts spread out and the fixed ones on their lines: what a run beside
+    the project file reads, so that the nets come back with the classes the
+    circuit gives them. A board made in this process keeps the classes of a
+    process that never read the project, and a net with no pad on it does not
+    survive the file."""
+    parts, nets, _ = read_circuit(netlist_path)
+    fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
+    net_of_pad = {pad: name for name, pads in nets.items() for pad in pads}
+    board = pcbnew.NewBoard(board_path)
+    draw_nominal_outline(board)
+    for name in nets:
+        board.Add(pcbnew.NETINFO_ITEM(board, name))
+    footprints = {}
+    for designator in sorted(parts):
+        footprint = load_footprint(parts[designator]["footprint"])
+        footprint.SetFPIDAsString(parts[designator]["footprint"])
+        footprint.SetReference(designator)
+        board.Add(footprint)
+        footprints[designator] = footprint
+        for pad in footprint.Pads():
+            name = net_of_pad.get((designator, pad.GetNumber()))
+            if name:
+                pad.SetNet(board.FindNet(name))
+    # A part at an edge on its line, each further along its edge than the one
+    # before, the others in a row each: nothing is where another part's place
+    # has to be found.
+    along = collections.Counter({LEFT: pcbnew.FromMM(10.0), TOP: pcbnew.FromMM(10.0),
+                                 RIGHT: pcbnew.FromMM(10.0), BOTTOM: pcbnew.FromMM(10.0)})
+    loose = 0
+    nominal = pcbnew.FromMM(NOMINAL_MM)
+    for designator in sorted(footprints):
+        footprint = footprints[designator]
+        rule = fixed.get(designator, {})
+        if "edge" in rule and "edge_line_mm" in rule:
+            edge = EDGES[rule["edge"]]
+            if "faces" in rule:
+                turn_to_face(footprint, edge, rule["faces"])
+            inset = pcbnew.FromMM(rule["edge_line_mm"])
+            footprint.SetPosition({
+                LEFT: pcbnew.VECTOR2I(inset, along[edge]),
+                TOP: pcbnew.VECTOR2I(along[edge], inset),
+                RIGHT: pcbnew.VECTOR2I(nominal - inset, along[edge]),
+                BOTTOM: pcbnew.VECTOR2I(along[edge], nominal - inset),
+            }[edge])
+            box = keep_out(footprint)
+            if edge in (LEFT, RIGHT):
+                footprint.Move(pcbnew.VECTOR2I(0, along[edge] - box[TOP]))
+                along[edge] = box[BOTTOM] + (along[edge] - box[TOP]) + pcbnew.FromMM(10.0)
+            else:
+                footprint.Move(pcbnew.VECTOR2I(along[edge] - box[LEFT], 0))
+                along[edge] = box[RIGHT] + (along[edge] - box[LEFT]) + pcbnew.FromMM(10.0)
+        else:
+            footprint.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(40.0 + 18.0 * (loose % 8)),
+                                                  pcbnew.FromMM(40.0 + 18.0 * (loose // 8))))
+            loose += 1
+    pcbnew.SaveBoard(board_path, board, True)
 
 
 def main(netlist_path, net_classes_path, board_path):
@@ -545,9 +644,19 @@ def main(netlist_path, net_classes_path, board_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) not in (4, 5):
         sys.exit(__doc__)
+    netlist, classes, board_file = sys.argv[1:4]
+    if len(sys.argv) == 5:
+        # fresh: the board comes from the circuit and the rule files. The
+        # skeleton is written here and read by a run of this script in a new
+        # process, which is what brings the nets back with their classes.
+        _, _, class_of_net = read_circuit(netlist)
+        write_net_classes(os.path.splitext(board_file)[0] + ".kicad_pro",
+                          json.load(open(classes, encoding="utf-8")), class_of_net)
+        build_skeleton(netlist, board_file)
+        os.execv(sys.executable, [sys.executable, os.path.abspath(__file__), netlist, classes, board_file])
     try:
-        main(*sys.argv[1:])
+        main(netlist, classes, board_file)
     except NoFreePlace as part:
         sys.exit(f"no free place for {part}")

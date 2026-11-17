@@ -65,12 +65,14 @@ edge_line_mm = 1.10
 # (circuit/antennas.toml).
 [J14]
 edge = "left"
+faces = "down"
 edge_line_mm = 2.66
 below = "U1"
 
 # The power socket, the same part on the same board-edge line.
 [J9]
 edge = "left"
+faces = "down"
 edge_line_mm = 2.66
 below = "J14"
 
@@ -80,7 +82,7 @@ below = "J14"
 [U2]
 edge = "right"
 faces = "down"
-edge_line_mm = 27.60
+edge_line_mm = 11.60
 below = "U1"
 
 # The DAC module: its audio output socket. The module's own board is the
