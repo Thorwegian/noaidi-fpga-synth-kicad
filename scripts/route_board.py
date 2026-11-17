@@ -202,35 +202,6 @@ def widen_to_class(board):
     return [track for track, width in was if track.GetWidth() < target_of(track)]
 
 
-def plane_points(text):
-    """The board's boundary in a Specctra design, as the points a plane over
-    the board covers, taken from the boundary the exporter drew in."""
-    match = re.search(r"\(boundary\s*\(path pcb 0\s+([^)]+)\)", text, re.S)
-    if not match:
-        return None
-    numbers = [float(number) for number in match.group(1).split()]
-    return [(numbers[i], numbers[i + 1]) for i in range(0, len(numbers) - 1, 2)]
-
-
-def declare_the_planes(specctra_path, fill_nets):
-    """Give the router the pours as planes, one for each layer a fill covers,
-    so that it knows the copper is there and connects those pads to it while
-    it routes instead of leaving them for us to join afterwards."""
-    text = open(specctra_path, encoding="utf-8").read()
-    points = plane_points(text)
-    if not points:
-        sys.exit(f"no boundary in {specctra_path} to lay a plane over")
-    layers = re.findall(r"\(layer (\S+)\s*\n\s*\(type signal\)", text)
-    drawn = " ".join("(xy %g %g)" % point for point in points)
-    planes = "".join(
-        f'    (plane "{net}"\n      (polygon\n        (layer {layer})\n        (width 0)\n'
-        f'        (pts {drawn})\n      )\n    )\n'
-        for net in sorted(fill_nets) for layer in layers)
-    text = text.replace("\n    (boundary", "\n" + planes + "    (boundary", 1)
-    open(specctra_path, "w", encoding="utf-8").write(text)
-    print(f"planes declared: {', '.join(sorted(fill_nets))} on {', '.join(layers)}")
-
-
 def main(action, board_path, specctra_path=None):
     board = pcbnew.LoadBoard(board_path)
     if action == "clear":
