@@ -12,12 +12,16 @@
 #
 # At an edge:
 #   edge          the board's edge the part's opening is at: left, top, right,
-#                 bottom. squeeze_board.py turns a part the board has at
-#                 another edge to face this one, and slides the part along
-#                 the edge to where it fits.
-#   edge_line_mm  from the footprint's origin to the maker's board-edge line.
-#                 A part without it is placed by eye, so that its plug can
-#                 be inserted, and keeps the distance to the edge it is drawn at.
+#                 bottom. The part is turned to face this edge before it is
+#                 placed anywhere.
+#   faces         the side of the part a person plugs into, as its footprint
+#                 is drawn: left, right, up or down. With it the part is
+#                 turned so that side points at the edge above; without it
+#                 the part keeps the turn it was drawn with.
+#   edge_line_mm  from the footprint's origin to the maker's board-edge line,
+#                 along the side that faces the edge. A part without it is
+#                 placed by eye, so that its plug can be inserted, and keeps
+#                 the distance to the edge it is drawn at.
 #
 # Against another part this file names, as the board is drawn, seen from
 # its front:
@@ -43,9 +47,14 @@
 # two USB sockets at the left edge and, at the right edge, the Tang Nano
 # with the DAC module below it; the S/PDIF socket at the bottom.
 
-# The ESP32 module: its USB sockets and buttons.
+# The ESP32 module: its USB sockets and buttons. Its own board is the
+# rectangle its footprint draws, 25.86 by 63.90 mm, with the two USB ports
+# 7.01 mm past one end; the board edge that faces the board's left edge is
+# 1.10 mm from the footprint's origin, so the ports hang over the edge.
 [U1]
 edge = "left"
+faces = "up"
+edge_line_mm = 1.10
 
 # The USB MIDI socket. Hroparts' drawing of the TYPE-C-31-M-12
 # (docs/thirdparty/Hroparts_TYPE-C-31-M-12_drawing.pdf, recommended PCB
@@ -56,37 +65,54 @@ edge = "left"
 # (circuit/antennas.toml).
 [J14]
 edge = "left"
+faces = "down"
 edge_line_mm = 2.66
 below = "U1"
 
 # The power socket, the same part on the same board-edge line.
 [J9]
 edge = "left"
+faces = "down"
 edge_line_mm = 2.66
 below = "J14"
 
-# The Tang Nano 20K: its USB socket and buttons.
+# The Tang Nano 20K: its USB socket and buttons. The module's own board is
+# the rectangle its footprint draws on the silkscreen; its edge at that end
+# is 27.60 mm from the footprint's origin.
 [U2]
 edge = "right"
+faces = "down"
+edge_line_mm = 27.60
 below = "U1"
 
-# The DAC module: its audio output socket.
+# The DAC module: its audio output socket. The module's own board is the
+# rectangle its footprint draws; its edge at that end is 15.30 mm from the
+# footprint's origin.
 [U5]
 edge = "right"
+faces = "right"
+edge_line_mm = 15.30
 below = "U2"
 
 # The MIDI sockets: MIDI 1 on the left and MIDI 2 on its right, as a
 # person facing the top edge sees them. The socket's outline is 23.0 mm wide
 # (the footprint's silkscreen); 24 mm leaves 1 mm between two of them, the
-# room of a via.
+# room of a via. The body's front face, the moulded face the plug enters, is
+# 6.51 mm from the footprint's origin, and sits on the board's edge with the
+# body on the board.
 [J1]
 edge = "top"
+faces = "down"
+edge_line_mm = 6.51
 
 [J2]
 beside = "J1"
 pitch_mm = 24.0
 side = "right"
 
-# The S/PDIF socket.
+# The S/PDIF socket. The body's face where the barrel starts, the part of it
+# that goes over the edge, is 4.01 mm from the footprint's origin.
 [J3]
 edge = "bottom"
+faces = "up"
+edge_line_mm = 4.01

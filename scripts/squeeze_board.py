@@ -103,6 +103,7 @@ import pcbnew
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from board_from_circuit import (ANTENNAS, BOTTOM, EDGES, FIXED_POSITIONS, LEFT, RIGHT, TOP, NoFreePlace,  # noqa: E402
+                                turn_to_face,
                                 antenna_clearances, beside_offset, board_outline, closed_to, draw_antenna_clearances,
                                 keep_out, middle, nearer_than, pad_centre, pad_named, read_circuit,
                                 settle_at_its_connections)
@@ -459,14 +460,28 @@ def main(netlist_path, board_path, room, widest=None):
     edge_of = {name: EDGES[rule["edge"]] for name, rule in fixed.items() if "edge" in rule}
     # A part the board has at another edge than the file is turned to face the file's, at the distance to the edge it has.
     for name, edge in edge_of.items():
-        box = keep_out(footprints[name])
+        footprint = footprints[name]
+        if "faces" in fixed[name]:
+            turn_to_face(footprint, edge, fixed[name]["faces"])
+        box = keep_out(footprint)
         to_edge = {LEFT: box[LEFT] - outline[LEFT], TOP: box[TOP] - outline[TOP],
                    RIGHT: outline[RIGHT] - box[RIGHT], BOTTOM: outline[BOTTOM] - box[BOTTOM]}
         drawn_at = min(to_edge, key=to_edge.get)
-        if drawn_at != edge:
-            footprints[name].SetOrientationDegrees(footprints[name].GetOrientationDegrees() + 90 * ((drawn_at - edge) % 4))
-            box = keep_out(footprints[name])
-            footprints[name].Move(pcbnew.VECTOR2I(*{
+        if "edge_line_mm" in fixed[name]:
+            # The distance the file states is where the part is placed: the
+            # clusters and the outline are worked out around it.
+            inset = pcbnew.FromMM(fixed[name]["edge_line_mm"])
+            origin = footprint.GetPosition()
+            footprint.SetPosition({
+                LEFT: pcbnew.VECTOR2I(outline[LEFT] + inset, origin.y),
+                TOP: pcbnew.VECTOR2I(origin.x, outline[TOP] + inset),
+                RIGHT: pcbnew.VECTOR2I(outline[RIGHT] - inset, origin.y),
+                BOTTOM: pcbnew.VECTOR2I(origin.x, outline[BOTTOM] - inset),
+            }[edge])
+        elif drawn_at != edge:
+            footprint.SetOrientationDegrees(footprint.GetOrientationDegrees() + 90 * ((drawn_at - edge) % 4))
+            box = keep_out(footprint)
+            footprint.Move(pcbnew.VECTOR2I(*{
                 LEFT: (outline[LEFT] + to_edge[drawn_at] - box[LEFT], 0), TOP: (0, outline[TOP] + to_edge[drawn_at] - box[TOP]),
                 RIGHT: (outline[RIGHT] - to_edge[drawn_at] - box[RIGHT], 0),
                 BOTTOM: (0, outline[BOTTOM] - to_edge[drawn_at] - box[BOTTOM])}[edge]))

@@ -75,6 +75,29 @@ QUARTER_TURNS = (0.0, 90.0, 180.0, 270.0)
 LEFT, TOP, RIGHT, BOTTOM = range(4)
 EDGES = {"left": LEFT, "top": TOP, "right": RIGHT, "bottom": BOTTOM}
 
+# The side of a part a person plugs into, as its footprint is drawn, and the
+# direction of the board's edges. The turn comes first: a part is turned to
+# the edge the fixed positions give it before it is placed anywhere, since
+# the edge it happens to be drawn near on the board says nothing about which
+# way its opening points.
+FACING = {"left": (-1, 0), "right": (1, 0), "up": (0, -1), "down": (0, 1)}
+TOWARD_EDGE = {LEFT: (-1, 0), RIGHT: (1, 0), TOP: (0, -1), BOTTOM: (0, 1)}
+
+
+def turn_to_face(footprint, edge, faces):
+    """Turn a footprint so that the side it is plugged into faces the board
+    edge it is at, through a quarter turn at most from where it is drawn."""
+    x, y = FACING[faces]
+    want = TOWARD_EDGE[edge]
+    for quarter in range(4):
+        angle = math.radians(quarter * 90)
+        turned = (round(x * math.cos(angle) + y * math.sin(angle)),
+                  round(-x * math.sin(angle) + y * math.cos(angle)))
+        if turned == want:
+            footprint.SetOrientationDegrees(quarter * 90)
+            return
+    raise ValueError(f"{footprint.GetReference()} faces {faces}, which no quarter turn puts at {edge}")
+
 
 class NoFreePlace(Exception):
     """A part has no free place among the moves it was given. Its text is the part's designator."""
@@ -450,6 +473,8 @@ def main(netlist_path, net_classes_path, board_path):
     open_edge_of = {}
     for designator, rule in fixed.items():
         footprint = board.FindFootprintByReference(designator)
+        if "edge" in rule and "faces" in rule:
+            turn_to_face(footprint, EDGES[rule["edge"]], rule["faces"])
         start = footprint.GetPosition()
         slides = range(-2 * REACH, 2 * REACH + 1, EDGE_STEP)
         if "edge" in rule:
