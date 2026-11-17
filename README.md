@@ -29,9 +29,8 @@ two off-the-shelf modules and the few parts around them:
 - Pin headers for the second SPI bus, two I2C buses, UART0, I2S and
   S/PDIF, and 29 test points.
 
-Two layers, 78.00 × 157.11 mm, both filled with ground. The modules, the DIN and RCA sockets,
-the pin headers and the test points are through-hole; the other parts
-are surface-mount.
+The modules, the DIN and RCA sockets, the pin headers and the test points
+are through-hole; the other parts are surface-mount.
 
 The board is made from the circuit in text by script: see The circuit
 in text, below.
