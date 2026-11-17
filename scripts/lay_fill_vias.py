@@ -9,8 +9,8 @@
 
 The netlist is the one circuit/board.py writes (board.net).
 
-A surface-mount pad on the net of a fill that is on another layer than the
-pad needs a via beside it. The router is given such a pad without a net
+A surface-mount pad whose own layer has no fill of its net needs a via
+beside it. The router is given such a pad without a net
 (scripts/route_board.py) and lays its tracks past it, so the via goes down
 where the router has left room: this script runs after scripts/route.sh has
 read the router's result back.
@@ -57,7 +57,7 @@ def main(board_path, netlist_path):
     fill_layers = {}
     for fill in board.Zones():
         if not fill.GetIsRuleArea():
-            fill_layers.setdefault(fill.GetNetname(), set()).add(fill.GetLayerSet().Seq()[0])
+            fill_layers.setdefault(fill.GetNetname(), set()).update(fill.GetLayerSet().Seq())
     for track in list(board.GetTracks()):
         if track.IsLocked() and track.GetNetname() in fill_layers:
             board.Delete(track)
@@ -77,7 +77,9 @@ def main(board_path, netlist_path):
         return math.hypot(pad.GetPosition().x - other.GetPosition().x, pad.GetPosition().y - other.GetPosition().y)
 
     pads = [pad for pad in joiner.pads
-            if not pad.HasHole() and fill_layers.get(pad.GetNetname(), set()) - {pad.GetPrincipalLayer()}]
+            if not pad.HasHole() and pad.GetNetname() in fill_layers]
+    needing_a_via = [pad for pad in pads
+                     if pad.GetPrincipalLayer() not in fill_layers[pad.GetNetname()]]
     between = set()
     for pad in sorted(pads, key=name):
         beside = sorted((apart(pad, other), name(other), other) for other in joiner.pads
@@ -92,7 +94,7 @@ def main(board_path, netlist_path):
             print(f"track: {name(pad)} to {name(beside[0][2])}, {pcbnew.ToMM(beside[0][0]):.1f} mm away")
             between.add(frozenset((place(pad), place(beside[0][2]))))
     shared, joined = 0, set()
-    for pad in sorted(pads, key=name):
+    for pad in sorted(needing_a_via, key=name):
         # A socket has pads of one net that lie on top of each other: one track joins them all.
         if place(pad) in joined:
             continue
@@ -109,7 +111,8 @@ def main(board_path, netlist_path):
             vias += track.Type() == pcbnew.PCB_VIA_T
     # The third argument keeps KiCad from rewriting the project file with the board.
     pcbnew.SaveBoard(board_path, board, True)
-    print(f"{len(pads)} surface-mount pads on the nets of fills: {vias} vias laid for them, {shared} of the pads on a via of another; "
+    print(f"{len(pads)} surface-mount pads on the nets of fills, {len(needing_a_via)} of them without a fill on their own layer: "
+          f"{vias} vias laid, {shared} of the pads on a via of another; "
           f"{len(between)} tracks from a pad to the pad beside it")
 
 

@@ -7,15 +7,18 @@
 
     scripts/route_board.py export <board> <design.dsn>
     scripts/route_board.py import <board> <session.ses>
+    scripts/route_board.py clear <board>
+
+clear removes every track and via from the board, so that a run starts from
+its pads and the copper the run before laid does not carry into it.
 
 export writes the board for the router as a Specctra design. The board file
 is not changed; what the router is given differs from it in four ways:
 
   - no tracks and vias but the locked ones, which the router is told to
     leave where they are (scripts/lay_pairs.py lays the differential pairs
-    and scripts/lay_fill_vias.py the vias of the surface-mount pads on the
-    fills' nets, and both lock what they lay), each straight stretch a wire
-    of its own: the router lays all of the other tracks;
+    and locks them), each straight stretch a wire of its own: the router
+    lays all of the other tracks;
   - no fills, and the pads of the fills' nets without a net: the router
     lays the signals only and keeps its distance from those pads. Given a
     fill as a plane it leaves connections open, signals among them, and
@@ -120,9 +123,15 @@ def widen_to_minimum(board):
     return len(narrow)
 
 
-def main(action, board_path, specctra_path):
+def main(action, board_path, specctra_path=None):
     board = pcbnew.LoadBoard(board_path)
-    if action == "export":
+    if action == "clear":
+        for track in list(board.GetTracks()):
+            board.Delete(track)
+        # The third argument keeps KiCad from rewriting the project file with the board.
+        pcbnew.SaveBoard(board_path, board, True)
+        print("every track and via removed")
+    elif action == "export":
         remove_tracks(board)
         fill_nets = {fill.GetNetname() for fill in board.Zones() if not fill.GetIsRuleArea()}
         for fill in list(board.Zones()):
@@ -156,6 +165,6 @@ def main(action, board_path, specctra_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) < 3:
         sys.exit(__doc__)
     main(*sys.argv[1:])

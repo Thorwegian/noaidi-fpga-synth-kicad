@@ -7,10 +7,11 @@
 #
 #     scripts/route.sh
 #
-# Lays the differential pairs along the paths circuit/pair_paths.toml states
-# (scripts/lay_pairs.py). It removes every other track and via from the
-# board and has Freerouting lay the signals anew around those, to the net
-# classes' widths and clearances, on the layers that take tracks:
+# Removes every track and via from the board, so that a run starts from its
+# pads (scripts/route_board.py clear), and lays the differential pairs along
+# the paths circuit/pair_paths.toml states (scripts/lay_pairs.py). It has
+# Freerouting lay the signals around them, to the net classes' widths and
+# clearances, on the layers that take tracks:
 # scripts/route_board.py writes the board for the router and reads its
 # result back. Then, in the room the router leaves, scripts/lay_fill_vias.py
 # joins each surface-mount pad on the net of a fill on another layer to its
@@ -48,6 +49,7 @@ fi
 echo "$jar_sha256  $jar" | sha256sum --check --quiet || exit 1
 
 # pcbnew writes its own chatter to the standard error stream.
+scripts/route_board.py clear $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 scripts/lay_pairs.py $board 2> $out/pcbnew.log || { cat $out/pcbnew.log; exit 1; }
 if [ ! -f $netlist ]; then
     echo "$netlist is missing: scripts/check.sh writes it from the circuit"
