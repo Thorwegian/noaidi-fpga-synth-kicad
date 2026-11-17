@@ -28,6 +28,13 @@ is not changed; what the router is given differs from it in four ways:
   - an outline drawn in by the board's copper-to-edge clearance, which a
     Specctra design has no rule for.
 
+The structure rule states the tightest width and clearance of the net
+classes, where KiCad writes the default class's two figures; a net's class
+carries its own. The vias the router may use are the classes' ones, and it
+has no rule for an annular ring, so a via padded to the fab's ring is the
+only way that limit reaches it. The fab's floors are the limits KiCad's DRC
+holds the routed board to.
+
 export prints, for the router's option --router.layers.routable, which of
 the copper layers take tracks, from the front to the back: true for a layer
 of the type signal, false for one of the type power.
@@ -92,6 +99,27 @@ def one_wire_per_stretch(specctra_path):
     with open(specctra_path, "w", encoding="utf-8") as file:
         file.writelines(lines[:first] + sorted(stretches) + sorted(vias)
                         + [line for line in lines[first:] if not WIRE.match(line) and not VIA.match(line)])
+
+
+def state_the_design_floors(specctra_path, board):
+    """Write the tightest width and clearance of the board's net classes into
+    the design's structure rule, which is the one place the format has for a
+    figure that applies to every object. KiCad writes the default class's two
+    figures there; the tightest of all of them is the floor the router is to
+    work to, and the fab's own floors are what KiCad's DRC checks the result
+    against, not what the router is asked to route at."""
+    classes = list(board.GetAllNetClasses().values())
+    width = round(min(net_class.GetTrackWidth() for net_class in classes) / 1000)
+    clearance = round(min(net_class.GetClearance() for net_class in classes) / 1000)
+    with open(specctra_path, encoding="utf-8") as file:
+        text = file.read()
+    start = text.find("(structure")
+    end = text.find("(placement")
+    block = text[start:end]
+    block = re.sub(r"\(width \d+\)", f"(width {width})", block, count=1)
+    block = re.sub(r"\(clearance \d+\)(?!\s*\(type)", f"(clearance {clearance})", block, count=1)
+    with open(specctra_path, "w", encoding="utf-8") as file:
+        file.write(text[:start] + block + text[end:])
 
 
 def draw_outline_in(board):
@@ -194,6 +222,7 @@ def main(action, board_path, specctra_path=None):
         draw_outline_in(board)
         if not pcbnew.ExportSpecctraDSN(board, specctra_path):
             sys.exit(f"could not write {specctra_path}")
+        state_the_design_floors(specctra_path, board)
         one_wire_per_stretch(specctra_path)
         print(",".join("true" if board.GetLayerType(layer) == pcbnew.LT_SIGNAL else "false"
                        for layer in board.GetEnabledLayers().CuStack()))
