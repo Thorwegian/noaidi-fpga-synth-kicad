@@ -239,7 +239,6 @@ def lay_out_cluster(board, hub, wall, beside_it, members, footprints, parts, net
         walls.append((box[LEFT], box[TOP] - FAR, box[RIGHT], box[BOTTOM] + FAR) if across
                      else (box[LEFT] - FAR, box[TOP], box[RIGHT] + FAR, box[BOTTOM]))
     waiting = sorted(members, key=lambda name: (-size(footprints[name]), name))
-    RANDOM.shuffle(waiting)
     placed, placed_further = [], []
     for name, reach in in_order(waiting, footprints, parts, nets, {hub}, fill_nets):
         started_part = time.perf_counter()
@@ -615,7 +614,6 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
     room_for_a_via = default_class.GetViaDiameter() + 2 * default_class.GetClearance()
     room = pcbnew.FromMM(room)
     inner = sorted(set(footprints) - set(fixed), key=lambda name: (-size(footprints[name]), name))
-    RANDOM.shuffle(inner)
 
     # The parts that move as one: a part with an edge, and those the file puts beside it.
     edge_of = {name: EDGES[rule["edge"]] for name, rule in fixed.items() if "edge" in rule}
@@ -768,7 +766,6 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
     blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members], near.get(first))
                      for first, members in members_of.items()),
                     key=lambda block: -sum((box[RIGHT] - box[LEFT]) * (box[BOTTOM] - box[TOP]) for _, box in block[1]))
-    RANDOM.shuffle(blocks)
     # The outline is as wide and as tall as it takes, and no wider than the width given: the clusters
     # side by side is the widest it gets, one below the other the tallest. Neither is taken from the
     # board that is read, so that a board made from a narrow one is the one made from a wide one.
