@@ -138,7 +138,14 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   The circuit in text, below.
 - `scripts/netlist_summary.py`: compares netlists and the board by
   connectivity.
-- `scripts/check.sh`: checks that the board is the circuit in text,
+- `circuit/kicad_netlist.py`: writes the netlist, `board.net`, in the
+  form KiCad's File > Import > Netlist takes without proposing a change
+  to the board.
+- `scripts/netlist_import.py`: lists what that dialog would propose for
+  a netlist and a board, from KiCad's own rules; the dialog is the
+  verdict.
+- `scripts/check.sh`: checks that the board is the circuit in text, by
+  its connections and by what KiCad's Import Netlist would propose,
   counts the findings of KiCad's DRC with `scripts/rule_counts.py`, and
   measures the print against the pads with
   `scripts/silkscreen_clearance.py`.

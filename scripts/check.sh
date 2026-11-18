@@ -8,13 +8,18 @@
 #     scripts/check.sh
 #
 # Runs circuit/board.py (SKiDL's rule check, the netlist, docs/pins.md)
-# and compares the netlist with the board. Then counts the findings of
-# KiCad's DRC by type into build/check/counts.txt, for comparing with
-# the same file from main, and measures the board's print against its
-# pads, which KiCad's DRC does not (scripts/silkscreen_clearance.py).
+# and compares the netlist with the board: by its connections, and by what
+# KiCad's File > Import > Netlist would propose to change on the board
+# (scripts/netlist_import.py; its warnings for pads without a net are in
+# the file it writes, and counted in the last line printed). Then counts
+# the findings of KiCad's DRC by type into build/check/counts.txt, for
+# comparing with the same file from main, and measures the board's print
+# against its pads, which KiCad's DRC does not
+# (scripts/silkscreen_clearance.py).
 #
 # Exit code 0 when the rule check is clean, the board agrees with the
-# circuit and no print is nearer a pad than JLCPCB prints it.
+# circuit, KiCad would propose no change and no print is nearer a pad than
+# JLCPCB prints it.
 #
 # Needs kicad-cli (KiCad 10), the Python environment of
 # scripts/requirements.txt in the main checkout's .venv/, and the system's
@@ -47,6 +52,10 @@ fi
 echo "circuit in text against the board:"
 "$python" scripts/netlist_summary.py $out/skidl/board.net $board | sed 's/^/    /'
 [ "${PIPESTATUS[0]}" -eq 0 ] || failed=1
+
+echo "what KiCad's Import Netlist would propose for the board ($out/netlist_import.txt):"
+"$python" scripts/netlist_import.py $out/skidl/board.net $board > $out/netlist_import.txt || failed=1
+grep -v "^No net found for component" $out/netlist_import.txt | sed 's/^/    /'
 
 if git diff --quiet -- docs/pins.md; then
     echo "docs/pins.md: unchanged"
