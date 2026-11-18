@@ -26,6 +26,8 @@
 
 - A picture an agent looks at to reach a conclusion (a render, a crop of a schematic or a data sheet, a photo) is sent to the chat with the conclusion.
 
+- A turn that changes the placement or the routing of the board ends with a picture of the board **as routed**, when all three hold: a picture of the board has been asked for in that thread, the turn moved a part or laid or removed a track, and the work is on the generator that places the parts or routes them. The traces are part of the evidence: a board without them cannot be judged by eye, so the board is routed first (`scripts/route.sh`, on the Mac) and the picture is made from that. A turn that changes a script without moving a part or a track is not one, and a board picture is not sent unasked.
+
 ## Files
 
 - The root folder holds the KiCad project, the README, this file and the licence, nothing else. Scripts go in `scripts/`, documents in `docs/`, vendor documents in `docs/thirdparty/`, the circuit in text in `circuit/`.
