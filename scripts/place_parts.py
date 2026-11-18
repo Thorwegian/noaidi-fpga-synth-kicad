@@ -91,6 +91,7 @@ route.sh and KiCad's DRC to say.
 Runs under the system's Python, which has KiCad's pcbnew module.
 """
 import collections
+import itertools
 import json
 import math
 import os
@@ -721,6 +722,113 @@ def main(netlist_path, board_path, room, widest=None):
         dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
         for name, _ in members:
             footprints[name].Move(pcbnew.VECTOR2I(dx, dy))
+
+    # The clusters are on the board now, so the interior is laid out a second
+    # time, and this time it knows where its nets leave by: a pad whose partner
+    # stands in another cluster is aimed at the point on this cluster's own
+    # boundary nearest that partner, not at a pad across the board. A part that
+    # feeds something outside therefore turns that way and stands on that side
+    # of its box. The box does not move, so the size the packing found stands.
+    for hub_name, members in cluster.items():
+        if hub_name not in footprints:
+            continue
+        group = [hub_name] + [name for name in members if name in footprints]
+        boxes = [keep_out(footprints[name]) for name in group]
+        if not boxes:
+            continue
+        box = (min(one[LEFT] for one in boxes), min(one[TOP] for one in boxes),
+               max(one[RIGHT] for one in boxes), max(one[BOTTOM] for one in boxes))
+        inside = set(group)
+        outside = [keep_out(footprint) for footprint in footprints.values()
+                   if footprint.GetReference() not in inside]
+        for name in sorted((one for one in members if one in footprints), key=lambda one: (-size(footprints[one]), one)):
+            targets = collections.defaultdict(list)
+            for pad in footprints[name].Pads():
+                net = pad.GetNetname()
+                if not net:
+                    continue
+                for partner, number in nets.get(net, ()):
+                    if partner == name or partner not in footprints:
+                        continue
+                    there = pad_named(board, "%s.%s" % (partner, number)).GetPosition()
+                    if partner in inside:
+                        targets[pad.GetNumber()].append(there)
+                    else:
+                        targets[pad.GetNumber()].append(pcbnew.VECTOR2I(
+                            min(max(there.x, box[LEFT]), box[RIGHT]),
+                            min(max(there.y, box[TOP]), box[BOTTOM])))
+            if not targets:
+                continue
+            # Where it stood, in case it cannot be put back inside its box: a
+            # part is never pushed in past its neighbours to make it fit.
+            kept = (footprints[name].GetPosition(), footprints[name].GetOrientationDegrees())
+            try:
+                settle_at_its_connections(board, footprints[name], targets, gap=room_for_a_via, closed=outside)
+            except NoFreePlace:
+                footprints[name].SetPosition(kept[0])
+                footprints[name].SetOrientationDegrees(kept[1])
+                continue
+            here = keep_out(footprints[name])
+            if (here[LEFT] < box[LEFT] or here[RIGHT] > box[RIGHT]
+                    or here[TOP] < box[TOP] or here[BOTTOM] > box[BOTTOM]):
+                footprints[name].SetPosition(kept[0])
+                footprints[name].SetOrientationDegrees(kept[1])
+    print("the interior of each cluster laid out a second time, towards its exits", flush=True)
+
+    # Two parts of one cluster that are the same size cannot swap places one at
+    # a time: the place each wants is the one the other is standing in, so a
+    # pass that moves one at a time always finds it taken and gives up (U6 and
+    # U7, which are the same part). So they are tried as a pair: exchange where
+    # each stands, and keep the exchange when both are still clear of every
+    # other part and the cluster's connections are shorter for it.
+    def connections_of(names):
+        """How long the connections between these parts and the rest are."""
+        total = 0.0
+        for name in names:
+            for pad in footprints[name].Pads():
+                net = pad.GetNetname()
+                if not net:
+                    continue
+                here = pad.GetPosition()
+                best = None
+                for partner, number in nets.get(net, ()):
+                    if partner == name or partner not in footprints:
+                        continue
+                    there = pad_named(board, "%s.%s" % (partner, number)).GetPosition()
+                    apart = math.hypot(there.x - here.x, there.y - here.y)
+                    best = apart if best is None else min(best, apart)
+                if best is not None:
+                    total += best
+        return total
+
+    def clear_of_others(name):
+        mine = keep_out(footprints[name])
+        return not any(nearer_than(mine, keep_out(other), room_for_a_via)
+                       for other in footprints.values() if other.GetReference() != name)
+
+    exchanged = 0
+    for hub_name, members in cluster.items():
+        group = [name for name in members if name in footprints]
+        for first, second in itertools.combinations(sorted(group), 2):
+            if size(footprints[first]) != size(footprints[second]):
+                continue
+            before = connections_of([first, second])
+            one = (footprints[first].GetPosition(), footprints[first].GetOrientationDegrees())
+            other = (footprints[second].GetPosition(), footprints[second].GetOrientationDegrees())
+            footprints[first].SetPosition(other[0])
+            footprints[first].SetOrientationDegrees(other[1])
+            footprints[second].SetPosition(one[0])
+            footprints[second].SetOrientationDegrees(one[1])
+            if clear_of_others(first) and clear_of_others(second) and connections_of([first, second]) < before:
+                exchanged += 1
+                continue
+            footprints[first].SetPosition(one[0])
+            footprints[first].SetOrientationDegrees(one[1])
+            footprints[second].SetPosition(other[0])
+            footprints[second].SetOrientationDegrees(other[1])
+    print("%d pairs of parts in a cluster changed places" % exchanged, flush=True)
+
+
     between = collections.defaultdict(list)
     for a, where_a, b, where_b in links:
         between[a, b].append(distance_between(within(keep_out(footprints[a]), where_a), within(keep_out(footprints[b]), where_b)))
