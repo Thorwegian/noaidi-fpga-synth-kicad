@@ -268,8 +268,8 @@ part's own name.
 
 | Designator | Name in the code | Value |
 |---|---|---|
-| C1 | `usb/power_socket/esp_5v_supply/input_capacitor` | 1u |
-| C2 | `usb/power_socket/nano_5v_supply/input_capacitor` | 1u |
+| C1 | `usb/power_socket/nano_5v_supply/input_capacitor` | 1u |
+| C2 | `usb/power_socket/esp_5v_supply/input_capacitor` | 1u |
 | C3 | `esp32/midi1_input/bypass` | 100n |
 | C4 | `esp32/midi2_input/bypass` | 100n |
 | D1 | `esp32/midi1_input/clamp` | 1N4148W |

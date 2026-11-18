@@ -46,9 +46,9 @@ with SubCircuit("usb", tag="usb"):
     power_socket = usb_c_socket("USB_POWER", GND, socket_ref="J9", cc1_pulldown_ref="R13",
                                 cc2_pulldown_ref="R14", supply=EXT_5V,
                                 supply_test_point_ref="TP8",
-                                rails=((ESP_5V, dict(diode_ref="U6", capacitor_ref="C1", tag="esp_5v_supply")),
-                                       (NANO_5V, dict(diode_ref="U7", capacitor_ref="C2",
-                                                      gnd_test_point_ref="TP18", tag="nano_5v_supply"))),
+                                rails=((ESP_5V, dict(diode_ref="U6", capacitor_ref="C2",
+                                                     gnd_test_point_ref="TP18", tag="esp_5v_supply")),
+                                       (NANO_5V, dict(diode_ref="U7", capacitor_ref="C1", tag="nano_5v_supply"))),
                                 tag="power_socket")
     power_socket["D+", "D-"] += NC
 

@@ -923,7 +923,7 @@
 		(at 16.0508 127.695 -90)
 		(descr "SOT, 6 Pin (https://home.jeita.or.jp/tsc/std-pdf/ED-7500A.pdf#page=170, JEDEC MO-203, variant AB, https://www.jedec.org/document_search?search_api_views_fulltext=MO-203)")
 		(tags "SOT TO_SOT_SMD SC-88 SOT-363 SC-70-6 US6 UMT6 S-Mini6 TSSOP6")
-		(property "Reference" "U6"
+		(property "Reference" "U7"
 			(at 2.530258 -0.008572 0)
 			(layer "F.SilkS")
 			(uuid "944490f1-e826-449d-9730-d009a09c5882")
@@ -1229,7 +1229,7 @@
 			(size 1.025 0.35)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "ESP_5V")
+			(net "NANO_5V")
 			(uuid "e75d9ce3-350a-4b1c-9d3b-c36bcf287320")
 		)
 		(pad "4" smd roundrect
@@ -1252,7 +1252,7 @@
 			(size 1.025 0.35)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "ESP_5V")
+			(net "NANO_5V")
 			(uuid "a56c8eea-f3ab-4ec8-a466-9f66d2c9a0b0")
 		)
 		(embedded_fonts no)
@@ -9625,7 +9625,7 @@
 		(at 15.0291 115.9675 90)
 		(descr "SOT, 6 Pin (https://home.jeita.or.jp/tsc/std-pdf/ED-7500A.pdf#page=170, JEDEC MO-203, variant AB, https://www.jedec.org/document_search?search_api_views_fulltext=MO-203)")
 		(tags "SOT TO_SOT_SMD SC-88 SOT-363 SC-70-6 US6 UMT6 S-Mini6 TSSOP6")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at -0.130258 2.484286 0)
 			(layer "F.SilkS")
 			(uuid "43075ddc-3422-4236-89f9-d5cbb3e5264d")
@@ -9931,7 +9931,7 @@
 			(size 1.025 0.35)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "NANO_5V")
+			(net "ESP_5V")
 			(uuid "80d6f1ab-4ffc-442f-8506-7408e1266fc1")
 		)
 		(pad "4" smd roundrect
@@ -9954,7 +9954,7 @@
 			(size 1.025 0.35)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "NANO_5V")
+			(net "ESP_5V")
 			(uuid "ddb526d3-80aa-48a9-9b16-2b5b146135f9")
 		)
 		(embedded_fonts no)
