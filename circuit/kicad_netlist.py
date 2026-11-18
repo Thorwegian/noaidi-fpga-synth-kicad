@@ -24,7 +24,13 @@ no pin types: KiCad copies those onto the pads without listing it. SKiDL's
 own generate_netlist() writes all three, and a tag and a source line as
 fields of every part.
 
-A pin on the no-connect net has no line, as in SKiDL's own netlist.
+A pin the circuit leaves unconnected, or marks as not connected, is written
+as a net of its own named unconnected-(<ref>-Pad<pin>), which is what
+eeschema writes for a pin that ends up alone in its net. KiCad's importer
+warns about every numbered pad on copper that the netlist says nothing
+about, so the netlist says something about these. A pad with no pin in the
+circuit at all keeps that warning: the two DIN jacks' footprints have
+MNT1 and MNT2, which the symbol Connector:DIN-5_180degree does not.
 """
 from skidl import *
 
@@ -55,10 +61,12 @@ def write(path):
     lines.append("  (nets")
     for net in circuit.get_nets():
         net.netclasses = "Default"
-    for code, net in enumerate(sorted(circuit.get_nets(), key=lambda net: str(net.name)), 1):
-        classes = ",".join(reversed(net.netclasses.by_priority()))
-        lines += ["    (net", f'      (code "{code}")', f"      (name {quoted(net.name)})", f"      (class {quoted(classes)})"]
-        lines += [f"      (node (ref {quoted(pin.part.ref)}) (pin {quoted(pin.num)}))" for pin in sorted(net.pins, key=str)]
+    nets = [(str(net.name), ",".join(reversed(net.netclasses.by_priority())), list(net.pins))
+            for net in circuit.get_nets()]
+    nets += [(f"unconnected-({pin.part.ref}-Pad{pin.num})", "Default", [pin]) for pin in circuit.NC.pins]
+    for code, (name, classes, pins) in enumerate(sorted(nets, key=lambda net: net[0]), 1):
+        lines += ["    (net", f'      (code "{code}")', f"      (name {quoted(name)})", f"      (class {quoted(classes)})"]
+        lines += [f"      (node (ref {quoted(pin.part.ref)}) (pin {quoted(pin.num)}))" for pin in sorted(pins, key=str)]
         lines[-1] += ")"
     lines[-1] += "))"
     with open(path, "w", encoding="utf-8") as file:
