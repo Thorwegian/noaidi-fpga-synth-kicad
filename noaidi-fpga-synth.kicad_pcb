@@ -11969,7 +11969,7 @@
 				)
 			)
 		)
-		(property "Value" "DIN-5_180degree"
+		(property "Value" "Lumberg_0105_05"
 			(at -7.5 2.5 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -12362,7 +12362,7 @@
 				)
 			)
 		)
-		(property "Value" "DIN-5_180degree"
+		(property "Value" "Lumberg_0105_05"
 			(at -7.5 2.5 0)
 			(unlocked yes)
 			(layer "F.Fab")
