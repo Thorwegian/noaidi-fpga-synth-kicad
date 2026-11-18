@@ -24,7 +24,7 @@ MODULES = (
 
 
 def natural(text):
-    return [int(t) if t.isdigit() else t for t in re.findall(r"\d+|\D+", str(text))]
+    return [(0, int(t)) if t.isdigit() else (1, t) for t in re.findall(r"\d+|\D+", str(text))]
 
 
 def in_use(pin):
