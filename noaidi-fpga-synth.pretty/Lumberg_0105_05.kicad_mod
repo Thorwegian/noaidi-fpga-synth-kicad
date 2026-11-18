@@ -257,7 +257,7 @@
 		(remove_unused_layers no)
 		(uuid "8669c733-2425-48d8-b3f6-be829a34a3b7")
 	)
-	(pad "MNT1" thru_hole circle
+	(pad "SH" thru_hole circle
 		(at -5 -9.9)
 		(size 2.0066 2.0066)
 		(drill 1.4986)
@@ -265,7 +265,7 @@
 		(remove_unused_layers no)
 		(uuid "224ff415-5843-4acf-b77f-294dbe1504f5")
 	)
-	(pad "MNT2" thru_hole circle
+	(pad "SH" thru_hole circle
 		(at -10 -9.9)
 		(size 2.0066 2.0066)
 		(drill 1.4986)
