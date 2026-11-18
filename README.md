@@ -136,58 +136,6 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   the nets that cross sheets in `global_nets.py`, the parts used on more
   than one sheet in `parts.py`, and `board.py` for the whole board. See
   The circuit in text, below.
-- `scripts/netlist_summary.py`: compares netlists and the board by
-  connectivity.
-- `scripts/check.sh`: checks that the board is the circuit in text,
-  counts the findings of KiCad's DRC with `scripts/rule_counts.py`, and
-  measures the print against the pads with
-  `scripts/silkscreen_clearance.py`.
-- `scripts/board_from_circuit.py`: brings the board up to the circuit
-  in text: removes, swaps and adds footprints, sets every pad's net and
-  writes the net classes into the KiCad project.
-- `circuit/net_classes.py`: the net classes, each with its track
-  width, clearance and via.
-- `circuit/fixed_positions.toml`: the constraints on where the parts
-  sit (a part's edge, its side of another part, the part it moves as
-  one with, the pads it sits level with), for
-  `scripts/place_parts.py` and `scripts/board_from_circuit.py`.
-- `circuit/layers.toml`: the copper layers and the fill of each, for
-  `scripts/board_from_circuit.py`.
-- `circuit/antennas.toml`: which nets stay away from the ESP32 module's
-  antenna, and how far, for `scripts/board_from_circuit.py`,
-  `scripts/place_parts.py` and the rule in
-  `noaidi-fpga-synth.kicad_dru` that KiCad's DRC checks it by.
-- `scripts/place_parts.py`: places the parts and draws the outline,
-  from the constraints in `circuit/fixed_positions.toml`
-  (`scripts/place_parts.py build/check/skidl/board.net
-  noaidi-fpga-synth.kicad_pcb 3`, then `scripts/route.sh`). Each part at
-  an edge gets its cluster, the parts of its block of the circuit laid
-  out around it, and the clusters are packed along the edges into the
-  smallest outline: one number says how many millimetres are kept
-  between two clusters, and a second, if given, how wide the board may
-  be.
-- `scripts/route.sh`: lays the board's signals anew with Freerouting and
-  prints what KiCad's DRC finds; `scripts/route_board.py` writes the
-  board for the router and reads its result back.
-- `circuit/pair_paths.toml`: the pads and the layer of each differential
-  pair, and its path where it has to go around something, and
-  `scripts/lay_pairs.py`, which lays the pair's two tracks side by side
-  for the router to work around.
-- `scripts/lay_fill_vias.py`: gives each surface-mount pad on the net
-  of a fill on another layer its via and the track to it, and a track
-  to the pad of its net beside it on another part of its block of the
-  circuit (a bypass capacitor to the pins it serves), before the router
-  runs, for the router to work around.
-- `scripts/join_fills.py`: ties the fills of one net together with
-  vias, joins the pads the fills do not reach, and ties back a piece of
-  a fill that tracks have cut off from the rest of its net.
-- `scripts/place_designators.py`: puts each part's designator at the
-  free place nearest its part, where no part covers it and no pad, hole
-  or other print cuts it.
-- `scripts/silkscreen_clearance.py`: measures every print on the
-  silkscreen against every pad's solder mask opening and lists the ones
-  nearer than JLCPCB's 0.15 mm, which KiCad's DRC does not report;
-  `scripts/check.sh` runs it.
 - `scripts/layout_pictures.py`: pictures of the board's copper and print to judge
   a layout by: the whole board, its quarters, tiles small enough for an
   agent to see every track, each layer with its fill, and the fills
@@ -261,11 +209,7 @@ circuit is designed. It holds the parts chosen for fabrication: 0805
 resistors and capacitors, H11L1 optocouplers, two surface-mount USB-C
 sockets (one for power, one for the ESP32's USB data), no ferrite
 bead, and one S/PDIF coaxial output (J3, the 96 kHz stream; the 48 kHz
-stream is on its header only). The board is made from it:
-`scripts/board_from_circuit.py` sets its parts, nets and net classes and
-`scripts/route.sh` lays its copper, and `scripts/check.sh` says whether
-the board agrees with it. Parts have a descriptive name in the code and
-a regular designator on the board.
+stream is on its header only).
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: [CERN-OHL-S v2](LICENSE.txt)
