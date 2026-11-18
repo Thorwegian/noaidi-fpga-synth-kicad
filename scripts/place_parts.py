@@ -94,6 +94,7 @@ import collections
 import itertools
 import json
 import math
+import random
 import os
 import sys
 import time
@@ -238,8 +239,10 @@ def lay_out_cluster(board, hub, wall, beside_it, members, footprints, parts, net
         walls.append((box[LEFT], box[TOP] - FAR, box[RIGHT], box[BOTTOM] + FAR) if across
                      else (box[LEFT] - FAR, box[TOP], box[RIGHT] + FAR, box[BOTTOM]))
     waiting = sorted(members, key=lambda name: (-size(footprints[name]), name))
+    RANDOM.shuffle(waiting)
     placed, placed_further = [], []
     for name, reach in in_order(waiting, footprints, parts, nets, {hub}, fill_nets):
+        started_part = time.perf_counter()
         places = {number: [place for _, place in targets] for number, targets in reach.items()}
         closed = closed_to_part(name) + walls
         try:
@@ -251,6 +254,9 @@ def lay_out_cluster(board, hub, wall, beside_it, members, footprints, parts, net
                 sys.exit(f"no free place for {name} in the cluster of {hub}")
             placed_further.append(name)
         placed.append(name)
+        print(f"    {name:5} placed in {time.perf_counter() - started_part:5.1f} s"
+              + ("  (no place near its connections; looked further out)" if name in placed_further else ""),
+              flush=True)
     return [name for name in waiting if name not in placed], placed_further
 
 
@@ -407,23 +413,33 @@ def smallest_outline(blocks, room, closed, order, links, least, extent, largest)
         return [(slide, members_there) for slide in candidates
                 for members_there in [moved(block, slide, width, height)] if inside(members_there, width, height)]
 
-    def put_down(places):
+    def put_down(places, looked):
         """places holds, for each block still to be put down, the places
         along its edge that clear the blocks that are down. Returns how far
-        each of those blocks slides, or None when they cannot all be put down."""
+        each of those blocks slides, or None when they cannot all be put down,
+        or raises OutOfBudget rather than look for ever."""
+        looked[0] += 1
+        if looked[0] > SEARCH_NODES:
+            raise OutOfBudget
         if not places:
             return []
         for slide, members in places[0]:
             left = [[(other_slide, others) for other_slide, others in candidates if apart(members, others)]
                     for candidates in places[1:]]
             if all(left):
-                rest = put_down(left)
+                rest = put_down(left, looked)
                 if rest is not None:
                     return [slide] + rest
         return None
 
+    gave_up = [0]
+
     def fits(width, height):
-        return put_down([slides(block, width, height) for block in blocks])
+        try:
+            return put_down([slides(block, width, height) for block in blocks], [0])
+        except OutOfBudget:
+            gave_up[0] = max(gave_up[0], SEARCH_NODES)
+            return None
 
     def links_to(down, members):
         """How long the links from these parts to the parts that are down are, taken together."""
@@ -431,10 +447,16 @@ def smallest_outline(blocks, room, closed, order, links, least, extent, largest)
                    for name, box in members for where, other, other_where in links_of[name] if other in down)
 
     def with_shortest_links(width, height):
-        """How far each block slides in the way of putting them down in which the links are shortest."""
+        """How far each block slides in the way of putting them down in which the
+        links are shortest, or None when there are more arrangements to look at
+        than SEARCH_NODES allows."""
         best = [math.inf, None]
+        looked = [0]
 
         def put_down_all(places, down, slid, length):
+            looked[0] += 1
+            if looked[0] > SEARCH_NODES:
+                return
             if not places:
                 best[:] = [length, slid]
                 return
@@ -448,9 +470,17 @@ def smallest_outline(blocks, room, closed, order, links, least, extent, largest)
                     put_down_all(left, {**down, **dict(members)}, slid + [slide], length + added)
 
         put_down_all([slides(block, width, height) for block in blocks], {}, [], 0)
+        if looked[0] > SEARCH_NODES:
+            print(f"    {looked[0]} arrangements looked at at {pcbnew.ToMM(width):.1f} x "
+                  f"{pcbnew.ToMM(height):.1f} mm: that is the budget, taking the first that fits", flush=True)
+            return None
         return best[1]
 
     if fits(*largest) is None:
+        if gave_up[0]:
+            sys.exit(f"the packing gave up after {SEARCH_NODES} arrangements at "
+                     f"{pcbnew.ToMM(largest[0]):.0f} x {pcbnew.ToMM(largest[1]):.0f} mm: "
+                     "the blocks at the edges need a wider search than this")
         sys.exit("the parts at the edges do not fit in an outline that size with this much room")
     # The blocks along an edge add up, and across it the deepest of them has
     # to fit with what the opposite edge holds in front of it: no outline
@@ -494,9 +524,20 @@ def smallest_outline(blocks, room, closed, order, links, least, extent, largest)
             high = middle
             if middle * height_there < best[0] * best[1]:
                 best = (middle, height_there)
-    return best, with_shortest_links(*best)
+    chosen = with_shortest_links(*best)
+    if chosen is None:
+        # The search for the shortest links ran out of its budget: take the first
+        # fit, which is the arrangement fits() finds.
+        chosen = fits(best[0], best[1])
+    return best, chosen
 
 
+class OutOfBudget(Exception):
+    """The packing looked at as many arrangements as it is allowed to."""
+
+
+SEARCH_NODES = 200000   # arrangements the packing looks at before taking the first that fits
+RANDOM = random.Random(0)    # seeded from the command line; see "The seed" in the placement spec
 FRAME_GAP_MM = 5.0     # kept between the parts at an edge, and at the corners
 
 
@@ -549,10 +590,18 @@ def start_from_the_circuit(netlist_path, board_path, parts, nets, class_of_net, 
 
     set_layers(board, tomllib.load(open(LAYERS, "rb"))["layer"])
     draw_antenna_clearances(board, antenna_clearances(board, antennas))
+    # Where each part starts and which way it faces is randomised: both should
+    # make no difference to where it ends up, and a seed that changes the answer
+    # names a part whose place is not decided by the circuit.
+    for footprint in footprints.values():
+        footprint.SetOrientationDegrees(RANDOM.choice((0.0, 90.0, 180.0, 270.0)))
+        footprint.SetPosition(pcbnew.VECTOR2I(RANDOM.randint(0, int(width)), RANDOM.randint(0, int(height))))
     return board, footprints
 
 
-def main(netlist_path, board_path, room, widest=None):
+def main(netlist_path, board_path, room, widest=None, seed=0):
+    RANDOM.seed(seed)
+    print(f"seed {seed}", flush=True)
     parts, nets, class_of_net = read_circuit(netlist_path)
     fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
     antennas = tomllib.load(open(ANTENNAS, "rb"))["antenna"]
@@ -566,6 +615,7 @@ def main(netlist_path, board_path, room, widest=None):
     room_for_a_via = default_class.GetViaDiameter() + 2 * default_class.GetClearance()
     room = pcbnew.FromMM(room)
     inner = sorted(set(footprints) - set(fixed), key=lambda name: (-size(footprints[name]), name))
+    RANDOM.shuffle(inner)
 
     # The parts that move as one: a part with an edge, and those the file puts beside it.
     edge_of = {name: EDGES[rule["edge"]] for name, rule in fixed.items() if "edge" in rule}
@@ -696,10 +746,29 @@ def main(netlist_path, board_path, room, widest=None):
         closed[part].append(((area[LEFT] - box[LEFT], area[TOP] - box[TOP], area[RIGHT] - box[LEFT], area[BOTTOM] - box[TOP]),
                              {name for name in hub if closed_to(footprints[name], [(part, area, kept_out)], class_of_net)}))
 
+    # The packing works out where each block goes along its edge from the block's
+    # own coordinates. Those are put back to a fixed origin first, so that where
+    # the cluster layout left the parts — or where they started — cannot reach
+    # the search. The distance across to the edge is the file's and stays as it
+    # is.
+    for hub_name, members in cluster.items():
+        if hub_name not in footprints:
+            continue
+        edge = edge_of[hub_name]
+        group = [hub_name] + [name for name in members if name in footprints]
+        boxes = [keep_out(footprints[name]) for name in group]
+        if edge in (TOP, BOTTOM):
+            shift = pcbnew.VECTOR2I(int(-min(box[LEFT] for box in boxes)), 0)
+        else:
+            shift = pcbnew.VECTOR2I(0, int(-min(box[TOP] for box in boxes)))
+        for name in group:
+            footprints[name].Move(shift)
+
     # The largest first: it has the fewest places.
     blocks = sorted(((edge_of[first], [(name, from_corner(keep_out(footprints[name]))) for name in members], near.get(first))
                      for first, members in members_of.items()),
                     key=lambda block: -sum((box[RIGHT] - box[LEFT]) * (box[BOTTOM] - box[TOP]) for _, box in block[1]))
+    RANDOM.shuffle(blocks)
     # The outline is as wide and as tall as it takes, and no wider than the width given: the clusters
     # side by side is the widest it gets, one below the other the tallest. Neither is taken from the
     # board that is read, so that a board made from a narrow one is the one made from a wide one.
@@ -730,6 +799,8 @@ def main(netlist_path, board_path, room, widest=None):
     # feeds something outside therefore turns that way and stands on that side
     # of its box. The box does not move, so the size the packing found stands.
     for hub_name, members in cluster.items():
+        second_started = time.perf_counter()
+        print(f"  cluster of {hub_name}: aiming its parts at their exits", flush=True)
         if hub_name not in footprints:
             continue
         group = [hub_name] + [name for name in members if name in footprints]
@@ -774,6 +845,7 @@ def main(netlist_path, board_path, room, widest=None):
                 footprints[name].SetPosition(kept[0])
                 footprints[name].SetOrientationDegrees(kept[1])
     print("the interior of each cluster laid out a second time, towards its exits", flush=True)
+
 
     # Two parts of one cluster that are the same size cannot swap places one at
     # a time: the place each wants is the one the other is standing in, so a
@@ -934,6 +1006,13 @@ def main(netlist_path, board_path, room, widest=None):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) not in (4, 5):
+    arguments = sys.argv[1:]
+    seed = 0
+    if "--seed" in arguments:
+        at = arguments.index("--seed")
+        seed = int(arguments[at + 1])
+        del arguments[at:at + 2]
+    if len(arguments) not in (3, 4):
         sys.exit(__doc__)
-    main(sys.argv[1], sys.argv[2], *(float(number) for number in sys.argv[3:]))
+    main(arguments[0], arguments[1], float(arguments[2]),
+         float(arguments[3]) if len(arguments) > 3 else None, seed)
