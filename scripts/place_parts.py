@@ -91,6 +91,7 @@ route.sh and KiCad's DRC to say.
 Runs under the system's Python, which has KiCad's pcbnew module.
 """
 import collections
+import json
 import math
 import os
 import sys
@@ -103,11 +104,11 @@ except ModuleNotFoundError:     # KiCad's Python on a Mac is 3.9, where tomli st
 import pcbnew
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from board_from_circuit import (ANTENNAS, BOTTOM, EDGES, FAB, FIXED_POSITIONS, LEFT, RIGHT, TOP, NoFreePlace,  # noqa: E402
-                                turn_to_face,
+from board_from_circuit import (ANTENNAS, BOTTOM, EDGES, FAB, FIXED_POSITIONS, LAYERS, LEFT, RIGHT, TOP,  # noqa: E402
+                                NoFreePlace, turn_to_face,
                                 antenna_clearances, beside_offset, board_outline, closed_to, draw_antenna_clearances,
-                                keep_out, middle, nearer_than, pad_centre, pad_named, read_circuit,
-                                settle_at_its_connections)
+                                keep_out, load_footprint, middle, nearer_than, pad_centre, pad_named, read_circuit,
+                                set_layers, settle_at_its_connections, write_net_classes)
 from lay_pairs import lanes  # noqa: E402
 
 STEP = pcbnew.FromMM(2.0)       # of the search for the outline and for the places along the edges
@@ -495,17 +496,69 @@ def smallest_outline(blocks, room, closed, order, links, least, extent, largest)
     return best, with_shortest_links(*best)
 
 
+FRAME_GAP_MM = 5.0     # kept between the parts at an edge, and at the corners
+
+
+def start_from_the_circuit(netlist_path, board_path, parts, nets, class_of_net, fixed, antennas):
+    """The board a run starts from, made here and never read: every part of the
+    circuit with every pad on its net, the copper layers of circuit/layers.toml
+    filled, and a frame as long on each side as the parts standing on it. A
+    board read from a file would let a run inherit a placement, a size or an
+    angle from whatever was on disk; this one has nothing to inherit."""
+    board = pcbnew.NewBoard(board_path)
+    write_net_classes(os.path.splitext(board_path)[0] + ".kicad_pro",
+                      json.load(open(os.path.join(os.path.dirname(netlist_path), "net_classes.json"),
+                                     encoding="utf-8")),
+                      class_of_net)
+    for name in nets:
+        board.Add(pcbnew.NETINFO_ITEM(board, name))
+    net_of_pad = {pad: name for name, pads in nets.items() for pad in pads}
+    footprints = {}
+    for designator in sorted(parts):
+        footprint = load_footprint(parts[designator]["footprint"])
+        footprint.SetFPIDAsString(parts[designator]["footprint"])
+        footprint.SetReference(designator)
+        board.Add(footprint)
+        footprints[designator] = footprint
+        for pad in footprint.Pads():
+            name = net_of_pad.get((designator, pad.GetNumber()))
+            if name:
+                pad.SetNet(board.FindNet(name))
+    # The frame comes first: the fills and the antenna keep-outs are drawn
+    # inside it. It is as long on each side as what stands on that side.
+    reach = {LEFT: 0, RIGHT: 0, TOP: 0, BOTTOM: 0}
+    for name, rule in fixed.items():
+        if name not in footprints or "edge" not in rule:
+            continue
+        edge = EDGES[rule["edge"]]
+        if "faces" in rule:
+            turn_to_face(footprints[name], edge, rule["faces"])
+        box = keep_out(footprints[name])
+        reach[edge] += (box[RIGHT] - box[LEFT]) if edge in (TOP, BOTTOM) else (box[BOTTOM] - box[TOP])
+        reach[edge] += pcbnew.FromMM(2 * FRAME_GAP_MM)
+    width = max(reach[TOP], reach[BOTTOM], pcbnew.FromMM(20.0))
+    height = max(reach[LEFT], reach[RIGHT], pcbnew.FromMM(20.0))
+    rectangle = pcbnew.PCB_SHAPE(board)
+    rectangle.SetShape(pcbnew.SHAPE_T_RECTANGLE)
+    rectangle.SetLayer(pcbnew.Edge_Cuts)
+    rectangle.SetWidth(pcbnew.FromMM(0.1))
+    rectangle.SetStart(pcbnew.VECTOR2I(0, 0))
+    rectangle.SetEnd(pcbnew.VECTOR2I(int(width), int(height)))
+    board.Add(rectangle)
+
+    set_layers(board, tomllib.load(open(LAYERS, "rb"))["layer"])
+    draw_antenna_clearances(board, antenna_clearances(board, antennas))
+    return board, footprints
+
+
 def main(netlist_path, board_path, room, widest=None):
     parts, nets, class_of_net = read_circuit(netlist_path)
-    board = pcbnew.LoadBoard(board_path)
-    outline_drawings = [drawing for drawing in board.GetDrawings() if drawing.GetLayer() == pcbnew.Edge_Cuts]
-    if len(outline_drawings) != 1 or outline_drawings[0].GetShape() != pcbnew.SHAPE_T_RECTANGLE:
-        sys.exit("only an outline that is one rectangle is handled")
-    outline = board_outline(board)
-    extent = (outline[RIGHT] - outline[LEFT], outline[BOTTOM] - outline[TOP])
     fixed = tomllib.load(open(FIXED_POSITIONS, "rb"))
     antennas = tomllib.load(open(ANTENNAS, "rb"))["antenna"]
-    footprints = {footprint.GetReference(): footprint for footprint in board.GetFootprints()}
+    board, footprints = start_from_the_circuit(netlist_path, board_path, parts, nets, class_of_net, fixed, antennas)
+    outline_drawings = [drawing for drawing in board.GetDrawings() if drawing.GetLayer() == pcbnew.Edge_Cuts]
+    outline = board_outline(board)
+    extent = (outline[RIGHT] - outline[LEFT], outline[BOTTOM] - outline[TOP])
     fills = [zone for zone in board.Zones() if not zone.GetIsRuleArea()]
     fill_nets = {fill.GetNetname() for fill in fills}
     default_class = board.GetDesignSettings().m_NetSettings.GetDefaultNetclass()

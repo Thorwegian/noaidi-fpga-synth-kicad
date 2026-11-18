@@ -356,19 +356,27 @@ def settle(board, footprint, cost, moves, turns=None, open_edge=None, gap=COURTY
     others = [keep_out(other) for other in board.GetFootprints()
               if other.GetReference() != footprint.GetReference()]
     start = footprint.GetPosition()
+    # A tie is broken by the place itself, not by the order the candidates came
+    # in: the first is the place nearest the top left corner of the board, and
+    # the angle nearest the one the footprint is drawn at. Otherwise the same
+    # part in the same surroundings would land somewhere else when it was moved
+    # here from a different place.
     best = None
     for turn in turns or (footprint.GetOrientationDegrees(),):
+        facing = abs((turn + 180) % 360 - 180)
         footprint.SetOrientationDegrees(turn)
         box = keep_out(footprint)
         pads = [(pad.GetNumber(), pad.GetPosition().x, pad.GetPosition().y) for pad in footprint.Pads()]
         for dx, dy in moves:
             price = cost(dx, dy, [(number, x + dx, y + dy) for number, x, y in pads])
-            if best and price >= best[0]:
+            if best is not None and price > best[0][0]:
                 continue
             moved = (box[LEFT] + dx, box[TOP] + dy, box[RIGHT] + dx, box[BOTTOM] + dy)
             if (on_board(moved, outline, open_edge) and not any(nearer_than(moved, other, gap) for other in others)
                     and not any(nearer_than(moved, area, 0) for area in closed)):
-                best = (price, turn, dx, dy)
+                key = (price, facing, moved[TOP], moved[LEFT])
+                if best is None or key < best[0]:
+                    best = (key, turn, dx, dy)
     if not best:
         raise NoFreePlace(footprint.GetReference())
     footprint.SetOrientationDegrees(best[1])
