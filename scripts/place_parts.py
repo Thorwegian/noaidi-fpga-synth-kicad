@@ -219,6 +219,21 @@ def hubs_of(inner, footprints, parts, nets, fill_nets, fixed):
     return hub
 
 
+def how_many_overlap(footprints, names=None):
+    """The pairs of parts whose boxes overlap, as (a, b), for the stage report."""
+    boxes = []
+    for name in (names if names is not None else footprints):
+        if name not in footprints:
+            continue
+        box = footprints[name].GetBoundingBox(False, False)
+        boxes.append((name, box.GetLeft(), box.GetTop(), box.GetRight(), box.GetBottom()))
+    pairs = []
+    for at, (name_a, la, ta, ra, ba) in enumerate(boxes):
+        for name_b, lb, tb, rb, bb in boxes[at + 1:]:
+            if min(ra, rb) - max(la, lb) > pcbnew.FromMM(0.5) and min(ba, bb) - max(ta, tb) > pcbnew.FromMM(0.5):
+                pairs.append((name_a, name_b))
+    return pairs
+
 def lay_out_cluster(board, hub, wall, beside_it, members, footprints, parts, nets, fill_nets, gap, closed_to_part):
     """Place the parts of a cluster around its hub, which is where it is:
     the largest first, each at the free place where its pads are nearest to
@@ -696,6 +711,7 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
                 from_hub[part] = (footprints[part].GetPosition() - home[name], footprints[part].GetOrientationDegrees())
                 footprints[part].SetPosition(off_the_board)
     print(f"clusters laid out in {time.perf_counter() - started:.1f} s", flush=True)
+    print(f"overlaps after the first pass: %d %s" % (len(how_many_overlap(footprints, list(from_hub))), how_many_overlap(footprints, list(from_hub))[:6]), flush=True)
     draw_outline(outline)
     for name in fixed:
         if "beside" not in fixed[name]:
@@ -753,7 +769,10 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
         if hub_name not in footprints:
             continue
         edge = edge_of[hub_name]
-        group = [hub_name] + [name for name in members if name in footprints]
+        # Every part of the block moves together, the ones the file puts beside
+        # the hub included: a part left behind here keeps its own distance to the
+        # hub, and the block is packed as if it were somewhere else.
+        group = list(members_of.get(hub_name, [hub_name])) + [name for name in members if name in footprints]
         boxes = [keep_out(footprints[name]) for name in group]
         if edge in (TOP, BOTTOM):
             shift = pcbnew.VECTOR2I(int(-min(box[LEFT] for box in boxes)), 0)
@@ -788,6 +807,8 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
         dy = slide if edge in (LEFT, RIGHT) else (new_extent[1] - extent[1] if edge == BOTTOM else 0)
         for name, _ in members:
             footprints[name].Move(pcbnew.VECTOR2I(dx, dy))
+    print("overlaps after the packing: %d %s" % (len(how_many_overlap(footprints, list(from_hub))),
+                                               how_many_overlap(footprints, list(from_hub))[:6]), flush=True)
 
     # The clusters are on the board now, so the interior is laid out a second
     # time, and this time it knows where its nets leave by: a pad whose partner
@@ -842,6 +863,7 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
                 footprints[name].SetPosition(kept[0])
                 footprints[name].SetOrientationDegrees(kept[1])
     print("the interior of each cluster laid out a second time, towards its exits", flush=True)
+    print(f"overlaps after the second pass: %d" % len(how_many_overlap(footprints)), flush=True)
 
 
     # Two parts of one cluster that are the same size cannot swap places one at
@@ -896,6 +918,7 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
             footprints[second].SetPosition(other[0])
             footprints[second].SetOrientationDegrees(other[1])
     print("%d pairs of parts in a cluster changed places" % exchanged, flush=True)
+    print(f"overlaps after the exchange: %d" % len(how_many_overlap(footprints)), flush=True)
 
     # An exchange carries the other part's angle with its place, which is not
     # the same as the angle that suits the place. So each part is turned where
@@ -972,6 +995,7 @@ def main(netlist_path, board_path, room, widest=None, seed=0):
     furthest = max((furthest_connection(footprints[name], reach), name) for name in inner
                    for reach in [connections(name, footprints, parts, nets, set(footprints) - {name}, fill_nets)])
     # The third argument keeps KiCad from rewriting the project file with the board.
+    print("overlaps at the end: %d %s" % (len(how_many_overlap(footprints)), how_many_overlap(footprints)[:8]), flush=True)
     pcbnew.SaveBoard(board_path, board, True)
 
     def square_cm(width, height):
