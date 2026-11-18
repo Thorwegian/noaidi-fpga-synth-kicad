@@ -828,6 +828,32 @@ def main(netlist_path, board_path, room, widest=None):
             footprints[second].SetOrientationDegrees(other[1])
     print("%d pairs of parts in a cluster changed places" % exchanged, flush=True)
 
+    # An exchange carries the other part's angle with its place, which is not
+    # the same as the angle that suits the place. So each part is turned where
+    # it stands, over the four quarter turns, and keeps the angle whose own
+    # connections are shortest; a turn that would put it into a neighbour is
+    # not taken. Ties go to the angle nearest the one the footprint is drawn
+    # at, which is 0.
+    turned = 0
+    for hub_name, members in cluster.items():
+        for name in sorted((one for one in members if one in footprints), key=lambda one: (-size(footprints[one]), one)):
+            best = (connections_of([name]), abs((footprints[name].GetOrientationDegrees() + 180) % 360 - 180),
+                    footprints[name].GetOrientationDegrees())
+            now = footprints[name].GetOrientationDegrees()
+            for quarter in (0.0, 90.0, 180.0, 270.0):
+                footprints[name].SetOrientationDegrees(quarter)
+                if not clear_of_others(name):
+                    continue
+                facing = abs((quarter + 180) % 360 - 180)
+                here = (connections_of([name]), facing, quarter)
+                if here < best:
+                    best = here
+            footprints[name].SetOrientationDegrees(best[2])
+            if best[2] != now:
+                turned += 1
+    print("%d parts turned to the angle their connections ask for" % turned, flush=True)
+
+
 
     between = collections.defaultdict(list)
     for a, where_a, b, where_b in links:
