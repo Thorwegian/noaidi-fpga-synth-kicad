@@ -25,8 +25,6 @@ own generate_netlist() writes all three, and a tag and a source line as
 fields of every part.
 
 A pin on the no-connect net has no line, as in SKiDL's own netlist.
-scripts/netlist_import.py lists what the dialog would for a netlist and a
-board.
 """
 from skidl import *
 
