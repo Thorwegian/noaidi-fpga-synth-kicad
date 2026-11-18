@@ -13,12 +13,12 @@ from global_nets import (ESP_3V3, ESP_5V, ESP_UART0_RX, ESP_UART0_TX, ESP_UART1_
                          SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK)
 
+from parts import test_point
+
 TEST_POINTS = (("TP10", ESP_3V3), ("TP19", GND))
 
-test_point = Part("Connector", "TestPoint", dest=TEMPLATE,
-                  footprint="TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm")
 for ref, net in TEST_POINTS:
-    net += test_point(ref=ref, tag=ref.lower())[1]
+    test_point(net, ref)
 
 if __name__ == "__main__":
     generate_netlist(file_="test_points.net")

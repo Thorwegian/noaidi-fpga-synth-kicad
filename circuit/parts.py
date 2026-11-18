@@ -30,8 +30,14 @@ test_point_template = Part("Connector", "TestPoint", dest=TEMPLATE,
 
 
 def test_point(net, ref):
-    """A test point on the net, in the block of the circuit it is called in."""
-    net += test_point_template(ref=ref, tag=ref.lower())[1]
+    """A test point on the net, in the block of the circuit it is called in.
+
+    A test point is a bare pad: there is no part to buy for it and none to
+    place, and KiCad's footprint for it says so with the two attributes."""
+    point = test_point_template(ref=ref, tag=ref.lower())
+    point.exclude_from_bom = True
+    point.exclude_from_pos_files = True
+    net += point[1]
 
 
 def jlcpcb_part(part, lcsc_number):
