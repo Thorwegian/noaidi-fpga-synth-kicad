@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "Socket for the Adafruit PCM510x I2S DAC breakout (30.48 x 20.32 mm): two rows of 0.1\" female pin headers (8 + 6) at the breakout's JP2/JP1 positions, breakout outline on F.Fab and F.CrtYd, its four 2.5 mm mounting holes as NPTH. Generated from adafruit/Adafruit-PCM510x-I2S-DAC-PCB (Eagle 9.6.2).")
+	(descr "Socket for the Adafruit PCM510x I2S DAC breakout (30.48 x 20.32 mm): two rows of 0.1\" female pin headers (8 + 6) at the breakout's JP2/JP1 positions, breakout outline on F.Fab and F.CrtYd. The breakout's own four mounting holes (2.5 mm drill in a 3.2 mm plated pad) are marked by 3.2 mm circles on F.Fab. The footprint drills no holes in the base board. Generated from adafruit/Adafruit-PCM510x-I2S-DAC-PCB (Eagle 9.6.2).")
 	(tags "adafruit pcm5102 pcm510x i2s dac breakout socket header 2.54")
 	(property "Reference" "U"
 		(at 0 -11.6 0)
