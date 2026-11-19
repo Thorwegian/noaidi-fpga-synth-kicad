@@ -1,6 +1,6 @@
 # Noaidi FPGA Synth: the board
 
-![A 3D render of the board in a clear acrylic enclosure on a dark surface, lit from inside in magenta, amber and cyan](https://thj.no/synth/images/enclosure-left-bottom-low.jpg)
+![A 3D render of the board in a clear acrylic enclosure on a dark surface, lit from inside in magenta, amber and cyan](docs/images/enclosure-left-bottom-low.jpg)
 
 The KiCad project for the Noaidi synthesizer's circuit board, in
 progress. The gateware and firmware that run on it live in
@@ -9,7 +9,7 @@ and the synth itself is presented at [thj.no/synth](https://thj.no/synth/).
 
 ## What is on it
 
-<a href="https://thj.no/synth/images/pcb-parts-d882432.jpg"><img src="https://thj.no/synth/images/pcb-parts-d882432.jpg" width="476" height="929" alt="The board seen from above, its parts numbered 1 to 8"></a>
+<a href="docs/images/pcb-parts.jpg"><img src="docs/images/pcb-parts.jpg" width="476" height="929" alt="The board seen from above, its parts numbered 1 to 8"></a>
 
 The board is a carrier for three off-the-shelf modules and the few parts
 around them, numbered as in the picture:
@@ -40,17 +40,17 @@ in text, below.
 
 ## Layout
 
-![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso-d882432.jpg)
+![A 3D render of the board from above at an angle](docs/images/pcb-iso.jpg)
 
-![The top of the board, rendered in 3D](https://thj.no/synth/images/pcb-top-d882432.jpg)
+![The top of the board, rendered in 3D](docs/images/pcb-top.jpg)
 
 Front copper and silkscreen:
 
-![Front copper and silkscreen](https://thj.no/synth/images/pcb-front-d882432.svg)
+![Front copper and silkscreen](docs/images/pcb-front.svg)
 
 Back copper, mirrored:
 
-![Back copper, mirrored](https://thj.no/synth/images/pcb-back-d882432.svg)
+![Back copper, mirrored](docs/images/pcb-back.svg)
 
 The three modules are rendered from 3D models of them, each standing in
 a socket of two rows of female pin headers: the Tang Nano 20K from
@@ -121,7 +121,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   name in KiCad's library `Connector_USB` (the same licence), naming a
   3D model that the repository holds: KiCad's names one that KiCad does
   not ship.
-- `scripts/render.sh`: regenerates the board's images on this page into `build/` with
+- `scripts/render.sh`: makes the board's images on this page, into
+  `build/` (the page shows the copies in `docs/images/`), with
   `kicad-cli` (KiCad 10), and with them the view at an angle from the
   other side, the sockets at the board's top edge facing the camera
   (`build/pcb-iso-rear.jpg`); `scripts/crop.py` trims each 3D render to

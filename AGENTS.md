@@ -58,9 +58,9 @@
 
 - Vendor documents are fetched from the link in the symbol's Datasheet field. A part that enters the design brings its data sheet in the same pull request.
 
-- Generated files are not committed: they go under `build/`, which is ignored. The one exception is `docs/pins.md`.
+- Generated files are not committed: they go under `build/`, which is ignored. The exceptions are `docs/pins.md` and the README's pictures.
 
-- The README's pictures are hosted on the website, never committed.
+- The README's pictures live in `docs/images/`.
 
 - KiCad files that were edited as text have not been opened in the KiCad GUI, and the pull request says so.
 
