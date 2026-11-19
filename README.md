@@ -9,7 +9,7 @@ and the synth itself is presented at [thj.no/synth](https://thj.no/synth/).
 
 ## What is on it
 
-<a href="https://thj.no/synth/images/pcb-parts.jpg"><img src="https://thj.no/synth/images/pcb-parts.jpg" width="476" height="929" alt="The board seen from above, its parts numbered 1 to 8"></a>
+<a href="https://thj.no/synth/images/pcb-parts-d882432.jpg"><img src="https://thj.no/synth/images/pcb-parts-d882432.jpg" width="476" height="929" alt="The board seen from above, its parts numbered 1 to 8"></a>
 
 The board is a carrier for three off-the-shelf modules and the few parts
 around them, numbered as in the picture:
@@ -40,17 +40,17 @@ in text, below.
 
 ## Layout
 
-![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso.jpg)
+![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso-d882432.jpg)
 
-![The top of the board, rendered in 3D](https://thj.no/synth/images/pcb-top.jpg)
+![The top of the board, rendered in 3D](https://thj.no/synth/images/pcb-top-d882432.jpg)
 
 Front copper and silkscreen:
 
-![Front copper and silkscreen](https://thj.no/synth/images/pcb-front.svg)
+![Front copper and silkscreen](https://thj.no/synth/images/pcb-front-d882432.svg)
 
 Back copper, mirrored:
 
-![Back copper, mirrored](https://thj.no/synth/images/pcb-back.svg)
+![Back copper, mirrored](https://thj.no/synth/images/pcb-back-d882432.svg)
 
 The three modules are rendered from 3D models of them, each standing in
 a socket of two rows of female pin headers: the Tang Nano 20K from
