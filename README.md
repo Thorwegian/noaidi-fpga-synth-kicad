@@ -42,8 +42,6 @@ in text, below.
 
 ![A 3D render of the board from above at an angle](docs/images/pcb-iso.jpg)
 
-![The top of the board, rendered in 3D](docs/images/pcb-top.jpg)
-
 Front copper and silkscreen:
 
 ![Front copper and silkscreen](docs/images/pcb-front.svg)
