@@ -25,7 +25,12 @@ def midi_input(name, uart_rx, supply, gnd, socket_ref, series_ref, clamp_ref, op
     UART receive pin. The H11L1's output is an open collector that pulls low
     while the LED is lit. Its pins have no names in the symbol: 1 is the LED's
     anode, 2 its cathode, 4 the output, 5 ground and 6 the supply; 3 is not
-    connected inside the part."""
+    connected inside the part.
+
+    The socket's shielding contact is not connected: the MIDI specification
+    (CA-033) allows no DC path from it to the receiver's ground on a MIDI In
+    jack, so that a cable whose shield reaches the plug's barrel cannot join
+    the sender's ground to this board's around the optocoupler."""
     socket = Part(PROJECT, "Lumberg_0105_05", ref=socket_ref, tag="socket",
                   footprint=f"{PROJECT}:Lumberg_0105_05")
     series = resistor(ref=series_ref, value="220", tag="series")
@@ -45,8 +50,8 @@ def midi_input(name, uart_rx, supply, gnd, socket_ref, series_ref, clamp_ref, op
     led_cathode += socket[5], clamp["A"], opto[2]
     uart_rx += opto[4], pullup[2]
     supply += opto[6], pullup[1], bypass[1]
-    gnd += opto[5], bypass[2], socket["SH"]
-    socket[1, 2, 3] += NC
+    gnd += opto[5], bypass[2]
+    socket[1, 2, 3, "SH"] += NC
     opto[3] += NC
     test_point(uart_rx, test_point_ref)
 
