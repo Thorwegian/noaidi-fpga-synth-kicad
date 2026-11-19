@@ -3,7 +3,7 @@
 # License: CERN-OHL-S v2
 #
 # render.sh -- the README's board images, into build/ at the repository's root.
-# Needs kicad-cli from KiCad 10 and Pillow (crop.py).
+# Needs kicad-cli from KiCad 10 and Pillow (crop.py, parts_picture.py).
 set -e
 cd "$(dirname "$0")/.."
 B=build
@@ -32,6 +32,7 @@ view pcb-iso-rear --side top --rotate "-40,0,200" --perspective --width 2000 --h
 # At zoom 1 kicad-cli scales the board's longer side to the frame's height, so
 # a square frame below zoom 1 holds an outline of any proportion.
 view pcb-top --side top --width 2000 --height 2000 --zoom 0.85
+scripts/parts_picture.py $B/pcb-top.jpg $B/pcb-parts.jpg
 kicad-cli pcb export svg --layers F.Cu,F.SilkS,F.Mask,Edge.Cuts --page-size-mode 2 \
     --exclude-drawing-sheet --mode-single -o $B/pcb-front.svg $PCB
 kicad-cli pcb export svg --layers B.Cu,B.SilkS,Edge.Cuts --mirror --page-size-mode 2 \

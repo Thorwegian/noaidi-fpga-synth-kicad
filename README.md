@@ -1,6 +1,6 @@
 # Noaidi FPGA Synth: the board
 
-![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso.jpg)
+![A 3D render of the board in a clear acrylic enclosure on a dark surface, lit from inside in magenta, amber and cyan](docs/images/enclosure-left-bottom-low.jpg)
 
 The KiCad project for the Noaidi synthesizer's circuit board, in
 progress. The gateware and firmware that run on it live in
@@ -9,25 +9,27 @@ and the synth itself is presented at [thj.no/synth](https://thj.no/synth/).
 
 ## What is on it
 
-![The prototype: a Tang Nano 20K and an ESP32-C3 Super Mini on perfboard, two DIN MIDI inputs through optocouplers, audio out on optical](https://thj.no/synth/images/prototype-board.jpg)
+<a href="docs/images/pcb-parts.jpg"><img src="docs/images/pcb-parts.jpg" width="476" height="929" alt="The board seen from above, its parts numbered 1 to 8"></a>
 
-The perfboard prototype the board is based on. The board is a carrier for
-two off-the-shelf modules and the few parts around them:
+The board is a carrier for three off-the-shelf modules and the few parts
+around them, numbered as in the picture:
 
-- **Tang Nano 20K** (U2) on headers: the sound engine.
-- **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, presets and the
-  console. The prototype runs an ESP32-C3 Super Mini; the board moves to
-  the S3 (the firmware port is tracked in the synth repository,
-  `docs/esp32s3_hw678.md`).
-- **Two DIN MIDI inputs** (J1, J2) through H11L1 optocouplers (U3, U4):
-  one for the keyboard, one for the dev host.
-- **Audio out**: an Adafruit PCM510x I2S DAC module (U5) for analog, an
-  RCA socket (J3) for S/PDIF.
-- **Two USB-C sockets**: J9 for power, into each module's 5 V rail
-  through an LM66100 ideal diode (U6, U7), and J14 for the ESP32's USB
-  data pair, below the module's USB pins.
-- Pin headers for the second SPI bus, two I2C buses, UART0, I2S and
-  S/PDIF, and 29 test points.
+1. **Two DIN MIDI inputs** (J1, J2) through H11L1 optocouplers (U3, U4),
+   the six-legged part below each socket: one for the keyboard, one for
+   the dev host.
+2. **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, presets and the
+   console. The picture shows Espressif's board; the boards in hand are
+   copies with the same pin layout (`docs/esp32s3_hw678.md`).
+3. **Tang Nano 20K** (U2) on headers: the sound engine.
+4. **Adafruit PCM510x I2S DAC module** (U5): analog audio out, on its
+   own 3.5 mm jack and on a pin header.
+5. **RCA socket** (J3): S/PDIF out.
+6. **USB-C socket for power** (J9), into each module's 5 V rail through
+   an LM66100 ideal diode (U6, U7).
+7. **USB-C socket for data** (J14): the ESP32's USB data pair, below the
+   module's USB pins.
+8. **Pin headers** for the second SPI bus, two I2C buses, UART0, I2S and
+   S/PDIF, and 29 test points.
 
 Two layers, 130.85 × 121.25 mm, both filled with ground. The modules, the DIN and RCA sockets,
 the pin headers and the test points are through-hole; the other parts
@@ -38,15 +40,15 @@ in text, below.
 
 ## Layout
 
-![The top of the board, rendered in 3D](https://thj.no/synth/images/pcb-top.jpg)
+![A 3D render of the board from above at an angle](docs/images/pcb-iso.jpg)
 
 Front copper and silkscreen:
 
-![Front copper and silkscreen](https://thj.no/synth/images/pcb-front.svg)
+![Front copper and silkscreen](docs/images/pcb-front.svg)
 
 Back copper, mirrored:
 
-![Back copper, mirrored](https://thj.no/synth/images/pcb-back.svg)
+![Back copper, mirrored](docs/images/pcb-back.svg)
 
 The three modules are rendered from 3D models of them, each standing in
 a socket of two rows of female pin headers: the Tang Nano 20K from
@@ -117,18 +119,21 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   name in KiCad's library `Connector_USB` (the same licence), naming a
   3D model that the repository holds: KiCad's names one that KiCad does
   not ship.
-- `scripts/render.sh`: regenerates the images above into `build/` with
+- `scripts/render.sh`: makes the board's images on this page, into
+  `build/` (the page shows the copies in `docs/images/`), with
   `kicad-cli` (KiCad 10), and with them the view at an angle from the
   other side, the sockets at the board's top edge facing the camera
   (`build/pcb-iso-rear.jpg`); `scripts/crop.py` trims each 3D render to
   the board and the parts on it, what reaches beyond the board's edge
-  included
+  included, and `scripts/parts_picture.py` numbers the parts in the view
+  from above (`build/pcb-parts.jpg`)
 - `scripts/render_enclosure.sh`: renders the board in a clear acrylic
   enclosure, lit in the dark by LEDs inside the acrylic, into
   `build/enclosure-<shot>.png`, one picture for each of its shots, with
   `kicad-cli` and Blender; `scripts/enclosure_scene.py` builds the scene
   around the board's 3D model, with an opening in the wall for each part
   at an edge, lists the shots and says how the light is modelled. The
+  picture at the top of this page is its shot `left-bottom-low`. The
   enclosure is the picture's and decides nothing about the one that will
   be built.
 - `circuit/`: the circuit described in Python with SKiDL, one file
@@ -205,7 +210,7 @@ at the root, which is not committed:
 - `skidl`: circuits described in Python. It is not in Ubuntu's packages.
   It finds KiCad's symbol libraries through the environment variable
   `KICAD10_SYMBOL_DIR` (`/usr/share/kicad/symbols` on Ubuntu).
-- `pillow`: for `scripts/crop.py`.
+- `pillow`: for `scripts/crop.py` and `scripts/parts_picture.py`.
 
 ## The circuit in text
 
