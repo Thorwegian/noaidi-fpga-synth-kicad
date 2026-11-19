@@ -1,66 +1,82 @@
 # Rules
 
-- Git policies: Agents have GitHub accounts. `gh` access tokens and SSH keys are set up in their home directories. Agents pay attention to what is going on at GitHub as they work: new comments and notifications on the issues and pull requests they are working on. Agents *always* liveblog their progress directly to the comments sections of the GitHub issues and pull requests they are working on. Issue relations live in GitHub's fields, never in prose, and the relation is the parent: an issue belongs to the family whose goal it serves, and two issues that belong together share a parent rather than referring to each other. Before opening an issue the agent looks for its family among the open parents (`gh issue list --state open --label meta`, then a search on the topic, `gh issue list --state open --search "<words>"`), and an agent-opened issue has, at creation, its labels and its parent (`gh api -X POST repos/<r>/issues/<parent>/sub_issues -F sub_issue_id=<id>`, the id from `gh api repos/<r>/issues/<n> --jq .id`). Only when no open issue is its parent does the agent open the parent first (labelled `meta`, the family's home: a body stating the goal and the rule, never a list of its children). The one other relation is the dependency, for an issue that cannot be worked before another lands (`gh api -X POST repos/<r>/issues/<n>/dependencies/blocked_by -F issue_id=<id>`); it states the order of work, not kinship. The field is the only place a relation lives: `gh issue view` prints `parent:`, `sub-issues:`, `blocked-by:` and `blocking:` in every issue's header, so "see #n", "sibling of #n", "parent: #n" or "blocked by #n" written in a body or a comment is noise when it agrees with the field and a lie once the issue is re-parented. The body may say why the issue belongs to its family when the titles do not make it plain; that is a sentence about the design, not a link. A PR's relation to its issue is `Fixes #n` in the PR body. When an agent pull request is approved, the agent must remove the branch it created for it.
-
-- Pull requests are drafts against `main`, opened as soon as the change exists; what was run and what it gave lands on them as comments. The base is never another pull request's branch: a pull request merged into a side branch does not reach `main` (#14, the circuit in text, went that way and needed #17 to carry it across). Work that needs an unmerged pull request branches from its head, is still opened against `main`, and says in its body that it contains the other's commits until that one is merged. Agents never commit to `main`, mark a pull request ready or merge one. Before pushing to a pull request's branch again, check its state: it may have been merged meanwhile.
-
-- An issue states a problem, not a symptom. A problem found while working on another issue gets its own issue at once.
+- Git policies:
+  - Agents have GitHub accounts. `gh` access tokens and SSH keys are set up in their home directories.
+  - Agents read GitHub through GraphQL queries in preference to REST calls.
+  - On the issues and pull requests they are working on, agents watch for new comments and notifications and *always* liveblog their progress in the comments.
+  - Issues form a tree, read as a Makefile: a sub-issue is a prerequisite of its parent, and the issue to work on has no open sub-issues.
+  - Sub-issues of one parent are independent of each other.
+  - `blocked_by` is only for a prerequisite that several issues share.
+  - GitHub allows one parent and eight levels.
+  - An issue has its labels and its parent at creation; a parent with no work of its own is labelled `meta`.
+  - Issue relations live in GitHub's fields, never in prose.
+  - An issue states a problem, not a symptom. A problem found while working on another issue gets its own issue at once.
+  - A PR's relation to its issue is `Fixes #n` in the PR body.
+  - Pull requests are drafts against `main`, opened as soon as the change exists; what was run and what it gave lands on them as comments.
+  - A pull request's base is *never* another pull request's branch.
+  - Agents *never* commit to `main`, mark a pull request ready or merge one.
+  - Before pushing to a pull request's branch again, the agent checks its state: it may have been merged meanwhile.
+  - When an agent pull request is approved, the agent must remove the branch it created for it.
 
 - Time-consuming tasks (3D renders, anything that runs for more than a minute) are run in the background.
 
+- Every session's work, a one-line docs PR included, happens in its own worktree, *never* in a shared one. The checkouts rest on `main` and are only ever pulled.
+
+- Thor's edits arrive on `main`: pull before reading the design.
+
+- 3D renders are made on the Mac. Every job on the Mac is started with `nice -n 20`. Before a render on its GPU the agent reads the Mac's memory (`vm_stat`), and starts none while another program holds several GB.
+
 ## Decisions and evidence
 
-- The specification comes first. `docs/requirements.md` says what the board has to do, and a requirement that changes, changes there before the design does. A decision is recorded in the requirements or in its issue's body. It becomes a change to the design when Thor asks for the change.
+- The specification comes first. `docs/requirements.md` says what the board has to do, and a requirement that changes, changes there before the design does.
 
-- The design's intent is read before it is asked about: from the netlist, the parts, and the modules' own schematics in `docs/thirdparty/`. A question goes to Thor only for what those do not answer.
+- A decision is recorded in the requirements or in its issue's body. It becomes a change to the design when Thor asks for the change.
 
-- A finding that Thor questions is discussed in the chat first. Documents and issues are rewritten once the answer is agreed, and with what was agreed.
+- The design's intent is read before it is asked about: from the netlist, the parts, and the modules' own schematics in `docs/thirdparty/`.
+
+- A finding that Thor questions is discussed in the chat first. Documents and issues are rewritten once the answer is agreed.
 
 - A finding states where it is (file, sheet, designator, pin), the evidence taken from the files that day, the arithmetic in full, and whether it has any electrical effect. A value that is within its specification is called acceptable in the first sentence.
 
 - A figure is measured, taken from a named document (file, section or table, page), or labelled as a bound or a guess. Catalogue stock and prices, and the fab's limits, are fetched the day they are quoted.
 
-- Sources are not equal, and a claim says which kind it rests on. A part's data sheet is the authority on its limits and ratings; its test circuit states the conditions those limits are measured under and is not an application circuit. The maker's application notes and the standard for a bus (the MIDI specification, USB) are the authority on how a part or a bus is used. The published schematic of a product that a reputable vendor ships in volume is evidence of what works in practice. Hobby write-ups and forum posts are anecdote: they say where to look, and settle nothing. A fab's or a distributor's blog is vendor copy and is labelled as such. When sources disagree, the stronger one wins. A proposal that goes against what the manufacturers recommend says why, and "it is already drawn" is not a reason.
+- Sources are not equal, and a claim says which kind it rests on:
+  - A part's data sheet is the authority on its limits and ratings. Its test circuit is not an application circuit.
+  - The maker's application notes and the standard for a bus (the MIDI specification, USB) are the authority on how a part or a bus is used.
+  - The published schematic of a product that a reputable vendor ships in volume is evidence of what works in practice.
+  - Hobby write-ups and forum posts are anecdote.
+  - A fab's or a distributor's blog is vendor copy and is labelled as such.
+  - When sources disagree, the stronger one wins. A proposal that goes against what the manufacturers recommend says why, and "it is already drawn" is not a reason.
 
-- Dimensions are *never* taken from a photo. They come from the vendor's drawing, the data sheet, the footprint, or a measurement made with the part in hand. Photos are for reading labels and markings.
+- Dimensions are *never* taken from a photo.
 
 - A picture an agent looks at to reach a conclusion (a render, a crop of a schematic or a data sheet, a photo) is sent to the chat with the conclusion.
-
-- A turn that changes the placement or the routing of the board ends with a picture of the board **as routed**, when all three hold: a picture of the board has been asked for in that thread, the turn moved a part or laid or removed a track, and the work is on the generator that places the parts or routes them. The traces are part of the evidence: a board without them cannot be judged by eye, so the board is routed first (`scripts/route.sh`, on the Mac) and the picture is made from that. A turn that changes a script without moving a part or a track is not one, and a board picture is not sent unasked.
 
 ## Files
 
 - The root folder holds the KiCad project, the README, this file and the licence, nothing else. Scripts go in `scripts/`, documents in `docs/`, vendor documents in `docs/thirdparty/`, the circuit in text in `circuit/`.
 
-- Vendor documents are fetched from the link in the symbol's Datasheet field, so that each is the document its symbol names. A part that enters the design brings its data sheet in the same pull request.
+- Vendor documents are fetched from the link in the symbol's Datasheet field. A part that enters the design brings its data sheet in the same pull request.
 
-- Generated files are not committed: netlists, renders and logs go under `build/`, which is ignored. The one exception is `docs/pins.md`. The README's pictures are hosted on the website and regenerated by `scripts/render.sh`.
+- Generated files are not committed: they go under `build/`, which is ignored. The one exception is `docs/pins.md`.
 
-- The KiCad project holds the board and has no schematic: the circuit is in `circuit/`, and the board is never updated from a schematic in the KiCad GUI. The project's own symbols are in `noaidi-fpga-synth.kicad_sym`, which the circuit in text reads.
+- The README's pictures are hosted on the website, never committed.
 
 - KiCad files that were edited as text have not been opened in the KiCad GUI, and the pull request says so.
 
-## The circuit
+## The circuit and the board
 
-- The circuit in text (`circuit/`) leads. It holds the circuit with the parts chosen for fabrication, and the board follows it by script: `scripts/board_from_circuit.py` sets the board's parts, nets and net classes, and `scripts/route.sh` lays the copper and puts the designators where they can be read (`scripts/place_designators.py`). A net's class is stated in `circuit/net_classes.py`, a fixed position in `circuit/fixed_positions.toml`, the copper layers with the fill of each in `circuit/layers.toml`, the path of a differential pair in `circuit/pair_paths.toml`, and what stays away from an antenna in `circuit/antennas.toml`. No track is laid on the net of a fill by the router: the fill joins its pads. A surface-mount pad whose own layer has no fill of its net gets its via, and, where a pad of its net is near, its track to that pad, in the room the router leaves (`scripts/lay_fill_vias.py`); `scripts/join_fills.py` joins the pads that are left after it and ties back a piece of a fill that the router's tracks have cut off from the rest of its net; and `scripts/route_board.py widen` puts a track the router laid narrower than its net class's width back to that width where the copper still fits. The net class table in the KiCad project file is not edited by hand. A change to the circuit is made in `circuit/`, and is done when the board has been brought up to it and routed, `scripts/check.sh` exits 0, and the regenerated `docs/pins.md` is committed with it. A change to a footprint the board uses is done when `scripts/route.sh` has been run on the board and its result is committed with it: the router is given each part's outline and name. The counts the script prints for KiCad's DRC are the same as on `main`, type for type, or the pull request explains the difference.
+- The board is edited in KiCad, and the circuit in text (`circuit/`) is held against it: the netlist that `circuit/board.py` writes is right when KiCad's File > Import > Netlist, set to "Link footprints using reference designators", proposes no change to the board. KiCad is the authority on that.
 
-- The netlist that `circuit/board.py` writes (`board.net`, by `circuit/kicad_netlist.py`) is right when KiCad's File > Import > Netlist, set to "Link footprints using reference designators", proposes no change to the board. KiCad is the authority on that. The netlist states what the board's footprints hold and nothing they do not: no link to a symbol, no sheet name and no pin types, since KiCad would write each of those into the board, and no field a footprint lacks. A warning "No net found for component ... pad ..." is KiCad's for a numbered pad on copper that the netlist says nothing about, so a pin the circuit leaves unconnected is written as a one-pin net named `unconnected-(<ref>-Pad<pin>)`, which is how eeschema names a pin that ends up alone. The warning that remains is for a pad the circuit has no pin for at all: the two DIN jacks' footprints have MNT1 and MNT2, which the symbol `Connector:DIN-5_180degree` does not.
+- The KiCad project has no schematic, and the board is never updated from one in the KiCad GUI.
 
-- The KiCad project file is the authority on the design rules. `noaidi-fpga-synth.kicad_pro` holds the fab's figures that apply to every object (minimum clearance, track width, via diameter and hole, annular width, hole to hole, and copper to the edge), and `noaidi-fpga-synth.kicad_dru` holds the fab's limits for component holes and the rules for a differential pair, each stated with the row of https://jlcpcb.com/capabilities/pcb-capabilities it comes from and the date it was read. Code and scripts read them off the board, from `GetDesignSettings()`, `m_NetSettings` and `GetAllNetClasses()`, and carry no copy of their own: a clearance, a width, a via size or an annular ring written into a script is a defect. A rule is changed by changing the project file, and KiCad's DRC is what says the board still meets it. `scripts/route_board.py export` writes the tightest width and clearance of the net classes into the Specctra design's structure rule, so no object is routed to a figure tighter than the design allows; the fab's floors are what KiCad's DRC holds the result to, and the one limit that format cannot carry is the annular ring, which reaches the router only as the vias the classes ask for.
+- The KiCad project file is the authority on the design rules. Scripts read them off the board and carry no copy of their own: a clearance, a width, a via size or an annular ring written into a script is a defect.
 
-- Agents place and route the board. Thor states where the parts a person interacts with sit: the connectors at the board's edge, lights, buttons. Every other position, and the copper, is the agent's to decide, from the fab's limits, the parts' data sheets and the makers' application notes. A layout is judged by KiCad's DRC and `scripts/check.sh`, never by a router's own report, and then by looking at the copper, which shows what the DRC has no rule for. `scripts/layout_pictures.py` makes the pictures: the agent looks at every tile of the board before it reports the layout, and the layout reaches Thor as the whole-board picture and its quarters, with its counts (track segments, vias, track length, DRC findings by type, missing connections) beside those of the layout it replaces. The autoroute runs on the Mac mini with the renders and the placements, not on thj.no (Thor, Nov 2026).
+- JLCPCB's published limits are the authority behind the design rules, and a layout never undercuts one. Where the fab's minimum is the edge of its process the layout stays above it.
 
-- The parts are placed by `scripts/place_parts.py`, to the rules of `docs/requirements.md` (Where the parts sit) and `circuit/fixed_positions.toml`: a part at an edge stays at its edge, and every other part sits in the cluster of the part at an edge that its block of the circuit has, beside what it connects to there. Which cluster a part is in is stated in the circuit: a part is created in the `SubCircuit` of what it belongs to, a test point in that of what it probes (`test_point` in `circuit/parts.py`), and a part at the circuit's top level is in none and is placed last. An arrangement is stated as constraints in `circuit/fixed_positions.toml`, the way a layout manager for a user interface takes them, and a part has none of them, a few or many: `edge` puts it at an edge of the board, `edge_line_mm` at its maker's distance from that edge, `below`, `above`, `left_of` and `right_of` on that side of another part the file names, `beside` with `pitch_mm` and `side` makes it move as one with another, and `near` puts it level with pads of another. The file's header says what each means. To change where parts sit, change their constraints and run `scripts/place_parts.py build/check/skidl/board.net noaidi-fpga-synth.kicad_pcb <room mm>` and then `scripts/route.sh`; no part is given coordinates or moved by hand, and the same constraints and room give the same placement. The room is the millimetres kept between two clusters at different edges, for the tracks that run between them. State the fewest constraints that say what is wanted: what the file leaves open the script works out, the outline and every distance included, and an arrangement Thor has chosen is stated in full so that a run reproduces it. Where the constraints cannot all be met, the run ends saying that the parts at the edges do not fit, without saying which constraint is in the way. A cluster is laid out around its large part before the board has a size, the larger parts first, and has its walls before any part of it is placed: the board's edge its large part is at, and the room in front of a part that moves as one with that part. The clusters are then packed along the edges, two with many connections between them as neighbours, and the outline follows from them; a layout is not made tidier by ordering the small parts, and is made worse by moving the large ones about from one try to the next. What a part covers is the rectangle around its courtyard, its drawn outline and its footprint's rule areas, so that nothing is placed under a module or where a fill is kept out; a placed part keeps room for a via to every other part. A placement is judged by routing it: it is a result when KiCad's DRC has 0 errors and 0 missing connections on it. The verdict is not a threshold in how tight the board is, since a tighter board can pass where a looser one fails: a setting counts as reached when the settings on either side of it pass too. When a routed placement has missing connections, they are split by net before a cause is named: on a fill's net they point at the room for vias, on a signal's at the router.
+- A pull request that changes the board gives the counts of KiCad's DRC beside those of `main`, type for type, and explains a difference.
 
-- A differential pair is laid as a pair, ahead of the autorouter, which lays one net at a time and leaves a pair's two lines as unrelated tracks. Its pads and its layer are stated in `circuit/pair_paths.toml`, `scripts/lay_pairs.py` lays the two tracks at the width and gap of the nets' class and locks them, and the router lays the other tracks around them. A pair whose two rows of pads lie in line or at a right angle needs no path: the script takes it straight out of the one and into the other, with one corner between in the second case, wherever the parts are placed, and `scripts/place_parts.py` keeps its lane free of parts. A path is stated in the file only for a pair that has to go around something, and is worked out from both ends before it is written: two tracks on one layer cannot change sides, so the pads the pair leaves from decide which line is on which side where it arrives. A socket that has each line on two pads offers both orders; the pads whose order suits the far end are the ones the pair leaves from, and the second pads get branches. A pair stays on one layer from pad to pad, over a layer whose copper is whole under it. The rules for a pair in `noaidi-fpga-synth.kicad_dru` (the length that does not run side by side, the difference between the two lengths) are its check, with the picture of its whole run.
-
-- A pad on a fill's net is joined ahead of the autorouter too (`scripts/lay_fill_vias.py`): to its fill by a via beside it, and by a track to the pad of its net beside it on another part of its block of the circuit, so that a bypass capacitor reaches the pins it serves on the front and not only through the fills. The rule goes by net, block and distance and names no kind of part; a part is placed with its pad on a fill's net towards the pin of that net in its own block (`scripts/place_parts.py`), which is what puts the two pads side by side. A track that finds no clear way is named in the run's output and is a finding about the placement.
-
-- An antenna is a constraint, stated before the layout. Its maker's document says where it wants to be (a module's, as a rule, at the board's edge and pointing off the board) and what it wants kept away from it. Where a fixed position rules the first out, `docs/requirements.md` says so, and what makes up for it. The second is in `circuit/antennas.toml`: the net classes that stay away and the distance, with the document they rest on. `scripts/board_from_circuit.py` puts no part of those classes nearer, and the rule "kept away from an antenna" in `noaidi-fpga-synth.kicad_dru` reports a pad, a track or a via of them that is. A net the maker names is in a net class the file can name. No copper is filled under an antenna, on any layer.
-
-- SKiDL's SVG and the KiCad schematic it generates are not used for this board: neither draws it legibly. Agents use Mermaid.js for diagrams and Matplotlib for graphs.
-
-- A part has a descriptive name in the code (`cc1_pulldown`) and a regular designator on the board (`R13`). The descriptive name is also the part's `tag`. A new part takes the next free number; existing designators are not renumbered, and a gap stays a gap.
+- A part has a descriptive name in the code (`cc1_pulldown`), which is also its `tag`, and a regular designator on the board (`R13`). A new part takes the next free number; existing designators are not renumbered, and a gap stays a gap.
 
 - A net that crosses sheets is defined once, in `circuit/global_nets.py`, and imported. Every net a person may want to probe has a name. A circuit that appears twice is written once, as a function that takes its nets as arguments.
 
@@ -70,19 +86,21 @@
 
 - A change to what a module's pin does is a change for the gateware or the firmware as well: its issue in Thorwegian/noaidi-fpga-synth is opened in the same turn.
 
-- Apply principles of universal design to what a person touches: connectors of one kind carry their signals in one order (both I2C headers read ground, clock, data), and what is printed on the board agrees with the documents.
+- Apply principles of universal design to what a person touches: connectors of one kind carry their signals in one order, and what is printed on the board agrees with the documents.
+
+- Agents use Mermaid.js for diagrams and Matplotlib for graphs. SKiDL's SVG and the KiCad schematic it generates are not used.
 
 ## Parts and the fab
 
-- JLCPCB fabricates the board and places the surface-mount parts. The modules, the DIN and RCA sockets and the pin headers are through-hole and soldered by hand (`docs/requirements.md`, How it is made).
+- JLCPCB fabricates the board and places the surface-mount parts. The modules, the DIN and RCA sockets and the pin headers are through-hole and soldered by hand.
 
-- JLCPCB's published limits are the authority on the design rules, and a layout never undercuts one. The figures that apply to every object are in the board setup (`noaidi-fpga-synth.kicad_pro`); the fab's limits for component holes, which are wider than its limits for vias, are rules in `noaidi-fpga-synth.kicad_dru`. Where the fab's minimum is the edge of its process the layout stays above it: a track and its spacing are 0.2 mm, twice the fab's minimum, 0.4 mm on the supply nets and 0.3 mm on the USB data pair (`circuit/net_classes.py`), and a track narrows to 0.15 mm only where it has to pass between pins.
+- Chip parts are 0805 on KiCad's hand-solder footprints (the ones named `..._HandSolder`), and come from JLCPCB's basic library where it has the value.
 
-- Chip parts are 0805 on KiCad's hand-solder footprints (the ones named `..._HandSolder`), so that a board can be repaired by hand, and come from JLCPCB's basic library where it has the value. A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
+- A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
 
 - Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files with `scripts/fab_files.py`; Thor uploads them and orders.
 
-- What an order costs is estimated with `scripts/cost_estimate.py`, not by hand. The price of the bare boards and of each shipping method is read from JLCPCB's quote page (https://cart.jlcpcb.com/quote) with the values the script prints typed in: the page gives them without a sign-in, and nothing is put in a cart. The estimate is posted on its issue as one comment, and is made anew when the layer count, the board's size, the quantity or a placed part changes.
+- What an order costs is estimated with `scripts/cost_estimate.py`, not by hand. The estimate is posted on its issue as one comment, and is made anew when the layer count, the board's size, the quantity or a placed part changes.
 
 ## Code and documents
 
@@ -90,7 +108,7 @@
 
 - Variable names *must* be descriptive and use industry standard textbook terminology.
 
-- Always look for dead code, duplicates, similar code in two places that could live in one and inconsistent code patterns, and bring these to the attention of the user.
+- Agents *always* look for and fix dead code, code that lives in two places and could live in one, and inconsistent code patterns.
 
 - Agents *must* update comments and docs so they match the design before *every* commit. A document changes in the same pull request as the number or the rule it states.
 
@@ -105,19 +123,43 @@ Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: CERN-OHL-S v2
 ```
 
-# Division of labour
-
-Thor decides, solders the through-hole parts and places the order. JLCPCB fabricates and places the surface-mount parts. Agents work headless: the circuit in text, placement and routing, the checks, candidates for parts, the documents.
-
-The top agent is Claude Fable, with DeepSeek V4 Flash as the fallback. Subagents run on DeepSeek V4 Flash.
-
-A subagent's output is delivered to the lead agent, never to a commit or a PR. The lead agent verifies before acting on it.
-
 # Finding your feet
 
-- **The words:** the *base board* is this board, which sits at the bottom of the enclosure; the *front panel board* is the later one it will power and talk to. A *module* is a bought board that sits on headers: the Tang Nano 20K, the ESP32-S3 board, the DAC. The *lab jig* is the lab's set of connections to the board for the automated tests, among them the modules' USB ports and the LED into the optical capture. The *circuit in text* is `circuit/`, and a *sheet* is one of its four files (`usb`, `esp32`, `tang_nano_20k`, `test_points`); the *board* is `noaidi-fpga-synth.kicad_pcb`, which the scripts make from the circuit in text. A *designator* is a part's name on the board (`R13`). The synth repository's `docs/glossary.md` defines the project's other terms.
-- **The board:** `README.md` (what is on it, the files, the build tools); `docs/requirements.md` is what the board has to do and is the reference the design is checked against; `docs/pins.md` (which pin of which module carries what, the connectors, the test points, each part's name in the code); `docs/esp32s3_hw678.md` (the ESP32-S3 boards in hand, which stand in for Espressif's ESP32-S3-DevKitC-1: same pins, same footprint); `docs/thirdparty/` (the vendors' drawings, schematics and data sheets).
-- **The work:** the goal is issue #5, labelled `meta`: get the board fabricated at JLCPCB, so development moves onto it. Its sub-issues are the open work. Closed issue #1 is an earlier agent's review of the schematic; its claims are not the agreed state.
-- **For those who know the gateware:** the circuit in text is the RTL and `global_nets.py` its package; a block written as a function is a module with ports; the netlist comparison is the equivalence check; the fixed positions (edge connectors, outline, mounting holes) are the constraints file; a SPICE bench is a simulation bench; layout is place and route, and DRC is its timing report; `docs/pins.md` is the debug symbols.
-- **The tools:** `kicad-cli` (KiCad 10), `pdftoppm` (poppler-utils), `blender` (4, with Cycles, for the picture of the board in an enclosure) and `java` (25, for the autorouter) come from the system's packages, and so does the Python that has KiCad's `pcbnew` module and Pillow (`/usr/bin/python3`), which the scripts that read the board file run under; the other Python tools (SKiDL among them) live in a virtual environment built from `scripts/requirements.txt`. `scripts/check.sh` is the one command to run after a change; its exit code is 0 when the circuit in text passes its rule check, the board agrees with it and no print on the board is nearer a pad than JLCPCB's 0.15 mm (KiCad's DRC does not measure that distance; `scripts/silkscreen_clearance.py` does). The README lists the scripts, and each says in its heading what it does and needs. Everything generated lands under `build/`.
-- **Two machines:** the cloud box (thj.no) holds this repository and runs everything headless but the 3D renders: `kicad-cli`, the circuit in text, placement and routing, the checks. It has no KiCad GUI and no board. Thor's edits arrive on `main`, so pull before reading the design. The main checkout rests on `main` and is only ever pulled. Every session's work, a one-line docs pull request included, happens in its own worktree (`git worktree add ~/wt/wt-<issue> -b <branch> main`), which holds its own `build/`. The Python environment is built once, in the main checkout's `.venv/`, and serves every worktree: `source ~/noaidi-fpga-synth-kicad/.venv/bin/activate`. The session that made a worktree removes it when its pull request merges. The Mac (`ssh -p 23456 hermes@home.thj.no`, an M2 Pro with ten processor cores and a GPU) makes the 3D renders, `kicad-cli`'s and Blender's: the two passes of a view of `scripts/render.sh` take 11.4 s there against 52.5 s on the cloud box's two cores, and the board in its enclosure at 1920 × 1080 and 256 samples takes 78 s on the GPU (measured Nov 2026). It is also the machine Thor works at, so every job there is started with `nice -n 20`, which leaves the machine to him while it runs and costs nothing when he is away. The agent's account there has no administrator rights; its home is `/Volumes/Media/Hermes`, with a clone of this repository in `~/noaidi-fpga-synth-kicad`, and `kicad-cli` (KiCad 10) and `blender` (5) come from Homebrew, which is Thor's to run. The render scripts render on the machine they are started on, and the enclosure scene on the processor (#114), so a render for the Mac is started in its clone over SSH and the picture fetched from the clone's `build/`; #114 holds the script that puts the enclosure scene on the GPU, and the look Thor chose for that picture: 256 samples, with three quarters of the denoised picture mixed into the picture as sampled. Before a render on the GPU the Mac's memory is read (`vm_stat`): Cycles sizes its work to the memory it takes for free, and with several GB held by another program the render fails and Thor's screen hangs meanwhile.
+## The words
+
+- The *base board* is this board, which sits at the bottom of the enclosure. The *front panel board* is the later one it will power and talk to.
+- A *module* is a bought board that sits on headers: the Tang Nano 20K, the ESP32-S3 board, the DAC.
+- The *lab jig* is the lab's set of connections to the board for the automated tests.
+- The *circuit in text* is `circuit/`, and a *sheet* is one of its four files (`usb`, `esp32`, `tang_nano_20k`, `test_points`).
+- The *board* is `noaidi-fpga-synth.kicad_pcb`.
+- A *designator* is a part's name on the board (`R13`).
+- The synth repository's `docs/glossary.md` defines the project's other terms.
+- For those who know the gateware: the circuit in text is the RTL and `global_nets.py` its package; a block written as a function is a module with ports; the netlist comparison is the equivalence check; a SPICE bench is a simulation bench; layout is place and route, and DRC is its timing report; `docs/pins.md` is the debug symbols.
+
+## The board
+
+- `README.md`: what is on it, the files, the build tools.
+- `docs/requirements.md`: what the board has to do, and the reference the design is checked against.
+- `docs/pins.md`: which pin of which module carries what, the connectors, the test points, each part's name in the code.
+- `docs/esp32s3_hw678.md`: the ESP32-S3 boards in hand, which stand in for Espressif's ESP32-S3-DevKitC-1.
+- `docs/thirdparty/`: the vendors' drawings, schematics and data sheets.
+- `noaidi-fpga-synth.kicad_pcb`: the board. Thor lays it out by hand in KiCad.
+- `noaidi-fpga-synth.kicad_pro` and `noaidi-fpga-synth.kicad_dru`: the design rules. The second names the row of JLCPCB's capability page each figure comes from.
+- `noaidi-fpga-synth.kicad_sym` and `noaidi-fpga-synth.pretty/`: the project's own symbols and footprints.
+- The goal is issue #5: get the board fabricated at JLCPCB, so development moves onto it.
+
+## The tools
+
+- `README.md` lists the scripts and the build tools. Each script says in its heading what it does and needs.
+- `scripts/netlist_import.py` holds the circuit in text against the board, without running KiCad.
+- The scripts that read the board file run under the system's Python (`/usr/bin/python3`), which has KiCad's `pcbnew` module. The other Python tools live in the main checkout's `.venv/`, which serves every worktree.
+- Everything generated lands under `build/`.
+
+## Two machines
+
+- The cloud box (thj.no): this repository, where the agent lives. No KiCad GUI, no board.
+- The Mac (`ssh -p 23456 hermes@home.thj.no`): an M2 Pro with a GPU, and the machine Thor works at.
+  - The agent's account there has no administrator rights. Its home is `/Volumes/Media/Hermes`, with a clone of this repository in `~/noaidi-fpga-synth-kicad`.
+  - `kicad-cli` and `blender` come from Homebrew, which is Thor's to run.
+  - The render scripts render on the machine they are started on, so a render is started in the Mac's clone over SSH and the picture fetched from its `build/` (#114).
+- Worktrees live under `~/wt` on the cloud box: `git worktree add ~/wt/wt-<issue> -b <branch> main`. A worktree holds its own `build/`.
