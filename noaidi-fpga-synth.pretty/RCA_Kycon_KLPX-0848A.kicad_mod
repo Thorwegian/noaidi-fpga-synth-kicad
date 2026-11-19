@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "Kycon KLPX-0848A-2-x card-edge RCA, SamacSys geometry via DigiKey ECAD, pads made plated (were np_thru_hole). Pitch 4.5 mm.")
+	(descr "Kycon KLPX-0848A-2-x card-edge RCA, SamacSys geometry via DigiKey ECAD, pads made plated (were np_thru_hole). Pitch 4.5 mm. Pad 2's slot is 2.413 mm long where Kycon's drawing has 2.20: JLCPCB asks for a plated slot at least twice as long as it is wide.")
 	(tags "KLPX-0848A-2-B ")
 	(property "Reference" "REF**"
 		(at 0 -1.5 0)
@@ -227,8 +227,8 @@
 	)
 	(pad "2" thru_hole oval
 		(at 0 0)
-		(size 2.7178 1.7018)
-		(drill oval 2.2098 1.1938)
+		(size 2.921 1.7018)
+		(drill oval 2.413 1.1938)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(uuid "135723fd-a191-4ec7-a5f6-08cefbaabff3")
