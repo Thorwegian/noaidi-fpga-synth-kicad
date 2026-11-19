@@ -1,6 +1,6 @@
 # Noaidi FPGA Synth: the board
 
-![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso.jpg)
+![A 3D render of the board in a clear acrylic enclosure on a dark surface, lit from inside in magenta, amber and cyan](https://thj.no/synth/images/enclosure-left-bottom-low.jpg)
 
 The KiCad project for the Noaidi synthesizer's circuit board, in
 progress. The gateware and firmware that run on it live in
@@ -37,6 +37,8 @@ The board is made from the circuit in text by script: see The circuit
 in text, below.
 
 ## Layout
+
+![A 3D render of the board from above at an angle](https://thj.no/synth/images/pcb-iso.jpg)
 
 ![The top of the board, rendered in 3D](https://thj.no/synth/images/pcb-top.jpg)
 
@@ -117,7 +119,7 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   name in KiCad's library `Connector_USB` (the same licence), naming a
   3D model that the repository holds: KiCad's names one that KiCad does
   not ship.
-- `scripts/render.sh`: regenerates the images above into `build/` with
+- `scripts/render.sh`: regenerates the Layout section's images into `build/` with
   `kicad-cli` (KiCad 10), and with them the view at an angle from the
   other side, the sockets at the board's top edge facing the camera
   (`build/pcb-iso-rear.jpg`); `scripts/crop.py` trims each 3D render to
@@ -129,6 +131,7 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   `kicad-cli` and Blender; `scripts/enclosure_scene.py` builds the scene
   around the board's 3D model, with an opening in the wall for each part
   at an edge, lists the shots and says how the light is modelled. The
+  picture at the top of this page is its shot `left-bottom-low`. The
   enclosure is the picture's and decides nothing about the one that will
   be built.
 - `circuit/`: the circuit described in Python with SKiDL, one file
