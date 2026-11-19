@@ -618,9 +618,9 @@
   "pcbnew": {
     "last_paths": {
       "idf": "",
-      "netlist": "../../../../../Downloads/board (1).net",
+      "netlist": "build/skidl/board.net",
       "plot": "",
-      "specctra_dsn": "",
+      "specctra_dsn": "noaidi-fpga-synth.dsn",
       "step": "",
       "vrml": ""
     },

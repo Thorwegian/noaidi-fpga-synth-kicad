@@ -5662,7 +5662,7 @@
 		(descr "THT pad as test Point, diameter 3.0mm, hole diameter 1.5mm")
 		(tags "test point THT pad")
 		(property "Reference" "TP20"
-			(at 0.153573 -2.969742 0)
+			(at 0.1023 3.0656 0)
 			(layer "F.SilkS")
 			(uuid "dc656d9b-7e11-40fc-9bac-69a6ff335dea")
 			(effects
