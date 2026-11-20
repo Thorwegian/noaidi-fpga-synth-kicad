@@ -119,8 +119,8 @@ with SubCircuit("esp32", tag="esp32"):
 
     uart0_header = pin_header(3, ref="J12", tag="uart0_header")
     GND += uart0_header[1]
-    ESP_UART0_TX += esp["GPIO15"], uart0_header[2]
-    ESP_UART0_RX += esp["GPIO16"], uart0_header[3]
+    ESP_UART0_TX += esp["GPIO43"], uart0_header[2]
+    ESP_UART0_RX += esp["GPIO44"], uart0_header[3]
     test_point(ESP_UART0_RX, "TP28")
     test_point(ESP_UART0_TX, "TP29")
 

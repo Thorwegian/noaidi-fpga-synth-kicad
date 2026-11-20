@@ -18,8 +18,6 @@ An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO num
 | 5 | `GPIO5/ADC1_CH4` | `I2C0_SCL` | J8.2, R11, TP25 |
 | 6 | `GPIO6/ADC1_CH5` | `SPI3_CS_N` | J10.2, TP20 |
 | 7 | `GPIO7/ADC1_CH6` | `SPI3_MOSI` | J10.4, TP22 |
-| 8 | `GPIO15/ADC2_CH4/32K_P` | `ESP_UART0_TX` | J12.2, TP29 |
-| 9 | `GPIO16/ADC2_CH5/32K_N` | `ESP_UART0_RX` | J12.3, TP28 |
 | 10 | `GPIO17/ADC2_CH6` | `I2C1_SDA` | J11.3, R16, TP27 |
 | 11 | `GPIO18/ADC2_CH7` | `ESP_UART1_RX` | R3, TP16, U3.4 |
 | 12 | `GPIO8/ADC1_CH7` | `SPI3_SCLK` | J10.3, TP21 |
@@ -36,9 +34,11 @@ An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO num
 | 25 | `GPIO19/USB_D-` | `USB_D-` | J14.A7, J14.B7 |
 | 26 | `GPIO20/USB_D+` | `USB_D+` | J14.A6, J14.B6 |
 | 41 | `GPIO1/ADC1_CH0` | `ESP_UART2_RX` | R4, TP30, U4.4 |
+| 42 | `GPIO44/U0RXD` | `ESP_UART0_RX` | J12.3, TP28 |
+| 43 | `GPIO43/U0TXD` | `ESP_UART0_TX` | J12.2, TP29 |
 | 44 | `GND` | `GND` | supply net, 39 other pins |
 
-Not connected: 3 (`CHIP_PU`), 13 (`GPIO3/ADC1_CH2`), 14 (`GPIO46`), 27 (`GPIO21`), 28 (`GPIO47`), 29 (`GPIO48`), 30 (`GPIO45`), 31 (`GPIO0`), 32 (`GPIO35`), 33 (`GPIO36`), 34 (`GPIO37`), 35 (`GPIO38`), 36 (`GPIO39/MTCK`), 37 (`GPIO40/MTDO`), 38 (`GPIO41/MTDI`), 39 (`GPIO42/MTMS`), 40 (`GPIO2/ADC1_CH1`), 42 (`GPIO44/U0RXD`), 43 (`GPIO43/U0TXD`).
+Not connected: 3 (`CHIP_PU`), 8 (`GPIO15/ADC2_CH4/32K_P`), 9 (`GPIO16/ADC2_CH5/32K_N`), 13 (`GPIO3/ADC1_CH2`), 14 (`GPIO46`), 27 (`GPIO21`), 28 (`GPIO47`), 29 (`GPIO48`), 30 (`GPIO45`), 31 (`GPIO0`), 32 (`GPIO35`), 33 (`GPIO36`), 34 (`GPIO37`), 35 (`GPIO38`), 36 (`GPIO39/MTCK`), 37 (`GPIO40/MTDO`), 38 (`GPIO41/MTDI`), 39 (`GPIO42/MTMS`), 40 (`GPIO2/ADC1_CH1`).
 
 ### U2, the Tang Nano 20K
 
@@ -180,8 +180,8 @@ Not connected: A6 (`D+`), A7 (`D-`), A8 (`SBU1`), B6 (`D+`), B7 (`D-`), B8 (`SBU
 | Pin | Name | Net | Also on the net |
 |---|---|---|---|
 | 1 | `Pin_1` | `GND` | supply net, 42 other pins |
-| 2 | `Pin_2` | `ESP_UART0_TX` | TP29, U1.8 (GPIO15) |
-| 3 | `Pin_3` | `ESP_UART0_RX` | TP28, U1.9 (GPIO16) |
+| 2 | `Pin_2` | `ESP_UART0_TX` | TP29, U1.43 (GPIO43) |
+| 3 | `Pin_3` | `ESP_UART0_RX` | TP28, U1.42 (GPIO44) |
 
 ### J13, `tang_nano_20k/analog_out`
 
