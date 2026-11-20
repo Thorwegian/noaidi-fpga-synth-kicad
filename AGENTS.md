@@ -4,11 +4,8 @@
   - Agents have GitHub accounts. `gh` access tokens and SSH keys are set up in their home directories.
   - Agents read GitHub through GraphQL queries in preference to REST calls.
   - On the issues and pull requests they are working on, agents watch for new comments and notifications and *always* liveblog their progress in the comments.
-  - When checking GitHub, propose issues to quick fix, rerank, reparent, consolidate, update or close.
   - Issues form a tree, read as a Makefile: a sub-issue is a prerequisite of its parent, and the issue to work on has no open sub-issues.
   - Sub-issues of one parent are independent of each other.
-  - A new sub-issue is ranked among its siblings by how critical it is, the most critical first.
-  - An issue ranks by how much, and how often, it annoys a keyboard player. A bug that can cause systemic faults ranks above a mild annoyance; what the typical keyboard player's audio gear already does ranks low.
   - `blocked_by` is only for a prerequisite that several issues share.
   - GitHub allows one parent and eight levels.
   - An issue has its labels and its parent at creation; a parent with no work of its own is labelled `meta`.
@@ -21,6 +18,11 @@
   - Agents *never* commit to `main`, mark a pull request ready or merge one.
   - Before pushing to a pull request's branch again, the agent checks its state: it may have been merged meanwhile.
   - When an agent pull request is approved, the agent must remove the branch it created for it.
+
+- Triaging:
+  - When checking GitHub, propose issues to quick fix, rerank, reparent, consolidate, update or close.
+  - An issue ranks by how much, and how often, it annoys a keyboard player. A bug that can cause systemic faults ranks above a mild annoyance; what the typical keyboard player's audio gear already does ranks low.
+  - A new sub-issue is ranked among its siblings by how critical it is, the most critical first.
 
 - Time-consuming tasks (3D renders, anything that runs for more than a minute) are run in the background.
 
