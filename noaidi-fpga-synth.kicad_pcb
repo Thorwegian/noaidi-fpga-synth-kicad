@@ -465,7 +465,7 @@
 			(size 1.2 1.4)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.208333)
-			(net "ESP_UART1_RX")
+			(net "MIDI1_RX")
 			(uuid "05f7565f-ae55-496f-babf-692c1a75a996")
 		)
 		(embedded_fonts no)
@@ -2516,7 +2516,7 @@
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART1_RX")
+			(net "MIDI1_RX")
 			(uuid "1ec5b9af-9084-489b-8b9d-36a37942c817")
 		)
 		(pad "12" thru_hole oval
@@ -2786,7 +2786,7 @@
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART2_RX")
+			(net "MIDI2_RX")
 			(uuid "56ba18ff-e32f-458a-bce2-08f142306c8c")
 		)
 		(pad "42" thru_hole oval
@@ -3341,7 +3341,7 @@
 			(size 1.2 1.4)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.208333)
-			(net "ESP_UART2_RX")
+			(net "MIDI2_RX")
 			(uuid "b974105a-124d-4efa-98fe-d5e400192bea")
 		)
 		(embedded_fonts no)
@@ -8922,7 +8922,7 @@
 			(drill 1.5)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART1_RX")
+			(net "MIDI1_RX")
 			(uuid "56f7b174-02e2-46e3-8c2e-06cff218c0ec")
 		)
 		(embedded_fonts no)
@@ -11921,7 +11921,7 @@
 			(size 2 1.78)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.140449)
-			(net "ESP_UART1_RX")
+			(net "MIDI1_RX")
 			(uuid "635bc766-94d7-4781-a962-7255c0af6ade")
 		)
 		(pad "5" smd roundrect
@@ -12834,7 +12834,7 @@
 			(drill 1.5)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART2_RX")
+			(net "MIDI2_RX")
 			(uuid "524ca75e-bd94-430d-a3ed-8a67e75fa721")
 		)
 		(embedded_fonts no)
@@ -13984,7 +13984,7 @@
 			(size 2 1.78)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.140449)
-			(net "ESP_UART2_RX")
+			(net "MIDI2_RX")
 			(uuid "e35225e1-0d4c-4a34-a21e-b917cfc162d6")
 		)
 		(pad "5" smd roundrect
@@ -14304,7 +14304,7 @@
 		(end 151.012 67.1343)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "07d1580e-f3e9-424f-ba53-34ee7fe20a9b")
 	)
 	(segment
@@ -14312,7 +14312,7 @@
 		(end 151.012 53.1094)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "8a917905-c017-4896-a79c-9667b97886b1")
 	)
 	(segment
@@ -14320,7 +14320,7 @@
 		(end 155.9939 60.3594)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "b984f8d7-9803-4da5-92cc-393fd863a785")
 	)
 	(segment
@@ -14328,7 +14328,7 @@
 		(end 153.262 60.3594)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "c37d0ddb-bb33-41f8-9d86-4d34b77f212d")
 	)
 	(via
@@ -14336,7 +14336,7 @@
 		(size 0.8)
 		(drill 0.3)
 		(layers "F.Cu" "B.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "2a20f415-eb48-44cf-abb4-50369465c5c2")
 	)
 	(segment
@@ -14344,7 +14344,7 @@
 		(end 136.6677 78.5327)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "3ff9076d-fe73-4386-86a9-39b4146517bb")
 	)
 	(segment
@@ -14352,7 +14352,7 @@
 		(end 151.012 67.1343)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "50a0c77b-964e-4ffd-8d2c-28aec25925c1")
 	)
 	(segment
@@ -14360,7 +14360,7 @@
 		(end 133.1077 82.0927)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "654dce74-2386-43d8-981d-d9bc0ea9e0a2")
 	)
 	(segment
@@ -14368,7 +14368,7 @@
 		(end 136.6677 77.4206)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "a578a2b2-54c8-4c6e-b1e5-850adf2b0bf2")
 	)
 	(segment
@@ -14376,7 +14376,7 @@
 		(end 142.9164 75.2299)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "d695aaa0-a02a-4c7f-bf7a-028116686725")
 	)
 	(segment
@@ -14384,7 +14384,7 @@
 		(end 138.8584 75.2299)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART1_RX")
+		(net "MIDI1_RX")
 		(uuid "f9e3ce05-29d7-4901-8b86-b1f0d50c0afe")
 	)
 	(segment
@@ -16808,7 +16808,7 @@
 		(end 124.2439 58.1094)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "4948ca32-ddf1-4252-ba04-6cd1c5815287")
 	)
 	(segment
@@ -16816,7 +16816,7 @@
 		(end 124.2439 53.1094)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "4cf956a7-d8a6-4f7b-bbf5-6193262f058f")
 	)
 	(segment
@@ -16824,7 +16824,7 @@
 		(end 127.012 53.1094)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "7af109f4-b5df-4c4b-b259-e68b859f72c9")
 	)
 	(segment
@@ -16832,7 +16832,7 @@
 		(end 152.1128 83.8445)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "4b08e2f8-b8ba-47ce-b375-48fed2749259")
 	)
 	(segment
@@ -16840,7 +16840,7 @@
 		(end 155.8601 70.9131)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "5ba9696c-3cfe-49ed-9084-a93eccbca47d")
 	)
 	(segment
@@ -16848,7 +16848,7 @@
 		(end 122.012 53.4534)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "62548709-1581-4696-bb1f-9b45401218b6")
 	)
 	(segment
@@ -16856,7 +16856,7 @@
 		(end 155.8601 79.204)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "6d641884-3080-4942-a599-b9586ccfcc60")
 	)
 	(segment
@@ -16864,7 +16864,7 @@
 		(end 147.987 63.04)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "b93d708b-c4e8-4d59-a1dc-b2819ec4e5ea")
 	)
 	(segment
@@ -16872,7 +16872,7 @@
 		(end 122.012 53.1094)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "c958abda-2076-4064-932a-c7a04e8a30c4")
 	)
 	(segment
@@ -16880,7 +16880,7 @@
 		(end 152.1128 82.9513)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "c9756b70-abf8-49d3-9841-6f1223622de7")
 	)
 	(segment
@@ -16888,7 +16888,7 @@
 		(end 150.8877 85.0696)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "ebb353c3-bdef-4673-9cc8-2d808dd0413e")
 	)
 	(segment
@@ -16896,7 +16896,7 @@
 		(end 131.5986 63.04)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART2_RX")
+		(net "MIDI2_RX")
 		(uuid "f5a3a536-4a1b-4073-a0b3-89b3dd52ba29")
 	)
 	(segment

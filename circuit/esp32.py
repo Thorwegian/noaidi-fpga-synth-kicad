@@ -11,9 +11,9 @@ The module's pins are named by GPIO number; the symbol's longer names
 """
 from skidl import *
 
-from global_nets import (ESP_3V3, ESP_5V, ESP_UART1_RX, ESP_UART2_RX, GND, I2C0_SCL,
-                         I2C0_SDA, I2C1_SCL, I2C1_SDA, PANEL_UART_RX, PANEL_UART_TX,
-                         SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
+from global_nets import (ESP_3V3, ESP_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
+                         MIDI1_RX, MIDI2_RX, PANEL_UART_RX, PANEL_UART_TX, SPI2_CS_N,
+                         SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS)
 from parts import PROJECT, capacitor, jlcpcb_part, pin_header, resistor, test_point
 
@@ -124,12 +124,12 @@ with SubCircuit("esp32", tag="esp32"):
     test_point(PANEL_UART_RX, "TP28")
     test_point(PANEL_UART_TX, "TP29")
 
-    ESP_UART1_RX += esp["GPIO18"]
-    ESP_UART2_RX += esp["GPIO1"]
-    midi_input("MIDI1", ESP_UART1_RX, ESP_3V3, GND, socket_ref="J1", series_ref="R1",
+    MIDI1_RX += esp["GPIO18"]
+    MIDI2_RX += esp["GPIO1"]
+    midi_input("MIDI1", MIDI1_RX, ESP_3V3, GND, socket_ref="J1", series_ref="R1",
                clamp_ref="D1", opto_ref="U3", pullup_ref="R3", bypass_ref="C3",
                test_point_ref="TP16", tag="midi1_input")
-    midi_input("MIDI2", ESP_UART2_RX, ESP_3V3, GND, socket_ref="J2", series_ref="R2",
+    midi_input("MIDI2", MIDI2_RX, ESP_3V3, GND, socket_ref="J2", series_ref="R2",
                clamp_ref="D2", opto_ref="U4", pullup_ref="R4", bypass_ref="C4",
                test_point_ref="TP30", tag="midi2_input")
 
