@@ -51,7 +51,7 @@ with an ARM processor to drive the user interface.
    the ESP32's own USB data pair, through a USB-C socket of its own.
    That socket's supply pin feeds no rail.
 8. **Buses on pin headers, for developing the front panel board:**
-   the second SPI bus (J10), the two I2C buses (J8, J11), UART0 (J12)
+   the second SPI bus (J10), the two I2C buses (J8, J11), a UART (J12)
    and I2S (J7).
 9. **Test points** on the buses and the supply rails.
 

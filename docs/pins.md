@@ -18,8 +18,8 @@ An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO num
 | 5 | `GPIO5/ADC1_CH4` | `I2C0_SCL` | J8.2, R11, TP25 |
 | 6 | `GPIO6/ADC1_CH5` | `SPI3_CS_N` | J10.2, TP20 |
 | 7 | `GPIO7/ADC1_CH6` | `SPI3_MOSI` | J10.4, TP22 |
-| 8 | `GPIO15/ADC2_CH4/32K_P` | `ESP_UART0_TX` | J12.2, TP29 |
-| 9 | `GPIO16/ADC2_CH5/32K_N` | `ESP_UART0_RX` | J12.3, TP28 |
+| 8 | `GPIO15/ADC2_CH4/32K_P` | `PANEL_UART_TX` | J12.2, TP29 |
+| 9 | `GPIO16/ADC2_CH5/32K_N` | `PANEL_UART_RX` | J12.3, TP28 |
 | 10 | `GPIO17/ADC2_CH6` | `I2C1_SDA` | J11.3, R16, TP27 |
 | 11 | `GPIO18/ADC2_CH7` | `ESP_UART1_RX` | R3, TP16, U3.4 |
 | 12 | `GPIO8/ADC1_CH7` | `SPI3_SCLK` | J10.3, TP21 |
@@ -175,13 +175,13 @@ Not connected: A6 (`D+`), A7 (`D-`), A8 (`SBU1`), B6 (`D+`), B7 (`D-`), B8 (`SBU
 | 2 | `Pin_2` | `I2C1_SCL` | R15, TP26, U1.20 (GPIO14) |
 | 3 | `Pin_3` | `I2C1_SDA` | R16, TP27, U1.10 (GPIO17) |
 
-### J12, `esp32/uart0_header`
+### J12, `esp32/panel_uart_header`
 
 | Pin | Name | Net | Also on the net |
 |---|---|---|---|
 | 1 | `Pin_1` | `GND` | supply net, 42 other pins |
-| 2 | `Pin_2` | `ESP_UART0_TX` | TP29, U1.8 (GPIO15) |
-| 3 | `Pin_3` | `ESP_UART0_RX` | TP28, U1.9 (GPIO16) |
+| 2 | `Pin_2` | `PANEL_UART_TX` | TP29, U1.8 (GPIO15) |
+| 3 | `Pin_3` | `PANEL_UART_RX` | TP28, U1.9 (GPIO16) |
 
 ### J13, `tang_nano_20k/analog_out`
 
@@ -257,8 +257,8 @@ Not connected: A8 (`SBU1`), B8 (`SBU2`).
 | TP25 | `I2C0_SCL` |
 | TP26 | `I2C1_SCL` |
 | TP27 | `I2C1_SDA` |
-| TP28 | `ESP_UART0_RX` |
-| TP29 | `ESP_UART0_TX` |
+| TP28 | `PANEL_UART_RX` |
+| TP29 | `PANEL_UART_TX` |
 | TP30 | `ESP_UART2_RX` |
 
 ## Parts by designator
@@ -284,7 +284,7 @@ part's own name.
 | J9 | `usb/power_socket/socket` | USB_C_Receptacle_USB2.0_16P |
 | J10 | `esp32/spi3_header` | Conn_01x05_Pin |
 | J11 | `esp32/i2c1_port/header` | Conn_01x03_Pin |
-| J12 | `esp32/uart0_header` | Conn_01x03_Pin |
+| J12 | `esp32/panel_uart_header` | Conn_01x03_Pin |
 | J13 | `tang_nano_20k/analog_out` | Conn_01x03_Pin |
 | J14 | `usb/data_socket/socket` | USB_C_Receptacle_USB2.0_16P |
 | JP1 | `tang_nano_20k/filter_jumper` | Jumper_2_Open |

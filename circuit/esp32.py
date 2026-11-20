@@ -11,8 +11,8 @@ The module's pins are named by GPIO number; the symbol's longer names
 """
 from skidl import *
 
-from global_nets import (ESP_3V3, ESP_5V, ESP_UART0_RX, ESP_UART0_TX, ESP_UART1_RX,
-                         ESP_UART2_RX, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
+from global_nets import (ESP_3V3, ESP_5V, ESP_UART1_RX, ESP_UART2_RX, GND, I2C0_SCL,
+                         I2C0_SDA, I2C1_SCL, I2C1_SDA, PANEL_UART_RX, PANEL_UART_TX,
                          SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS)
 from parts import PROJECT, capacitor, jlcpcb_part, pin_header, resistor, test_point
@@ -117,12 +117,12 @@ with SubCircuit("esp32", tag="esp32"):
              scl_pullup_ref="R15", sda_pullup_ref="R16", scl_test_point_ref="TP26",
              sda_test_point_ref="TP27", tag="i2c1_port")
 
-    uart0_header = pin_header(3, ref="J12", tag="uart0_header")
-    GND += uart0_header[1]
-    ESP_UART0_TX += esp["GPIO15"], uart0_header[2]
-    ESP_UART0_RX += esp["GPIO16"], uart0_header[3]
-    test_point(ESP_UART0_RX, "TP28")
-    test_point(ESP_UART0_TX, "TP29")
+    panel_uart_header = pin_header(3, ref="J12", tag="panel_uart_header")
+    GND += panel_uart_header[1]
+    PANEL_UART_TX += esp["GPIO15"], panel_uart_header[2]
+    PANEL_UART_RX += esp["GPIO16"], panel_uart_header[3]
+    test_point(PANEL_UART_RX, "TP28")
+    test_point(PANEL_UART_TX, "TP29")
 
     ESP_UART1_RX += esp["GPIO18"]
     ESP_UART2_RX += esp["GPIO1"]
