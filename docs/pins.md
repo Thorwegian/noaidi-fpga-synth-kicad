@@ -21,7 +21,7 @@ An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO num
 | 8 | `GPIO15/ADC2_CH4/32K_P` | `PANEL_UART_TX` | J12.2, TP29 |
 | 9 | `GPIO16/ADC2_CH5/32K_N` | `PANEL_UART_RX` | J12.3, TP28 |
 | 10 | `GPIO17/ADC2_CH6` | `I2C1_SDA` | J11.3, R16, TP27 |
-| 11 | `GPIO18/ADC2_CH7` | `ESP_UART1_RX` | R3, TP16, U3.4 |
+| 11 | `GPIO18/ADC2_CH7` | `MIDI1_RX` | R3, TP16, U3.4 |
 | 12 | `GPIO8/ADC1_CH7` | `SPI3_SCLK` | J10.3, TP21 |
 | 15 | `GPIO9/ADC1_CH8` | `SPI3_MISO` | J10.5, TP23 |
 | 16 | `GPIO10/ADC1_CH9` | `SPI2_CS_N` | TP1, U2.9 (28_IOB8B) |
@@ -35,7 +35,7 @@ An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO num
 | 24 | `GND` | `GND` | supply net, 39 other pins |
 | 25 | `GPIO19/USB_D-` | `USB_D-` | J14.A7, J14.B7 |
 | 26 | `GPIO20/USB_D+` | `USB_D+` | J14.A6, J14.B6 |
-| 41 | `GPIO1/ADC1_CH0` | `ESP_UART2_RX` | R4, TP30, U4.4 |
+| 41 | `GPIO1/ADC1_CH0` | `MIDI2_RX` | R4, TP30, U4.4 |
 | 44 | `GND` | `GND` | supply net, 39 other pins |
 
 Not connected: 3 (`CHIP_PU`), 13 (`GPIO3/ADC1_CH2`), 14 (`GPIO46`), 27 (`GPIO21`), 28 (`GPIO47`), 29 (`GPIO48`), 30 (`GPIO45`), 31 (`GPIO0`), 32 (`GPIO35`), 33 (`GPIO36`), 34 (`GPIO37`), 35 (`GPIO38`), 36 (`GPIO39/MTCK`), 37 (`GPIO40/MTDO`), 38 (`GPIO41/MTDI`), 39 (`GPIO42/MTMS`), 40 (`GPIO2/ADC1_CH1`), 42 (`GPIO44/U0RXD`), 43 (`GPIO43/U0TXD`).
@@ -246,7 +246,7 @@ Not connected: A8 (`SBU1`), B8 (`SBU2`).
 | TP13 | `PCM_3V3` |
 | TP14 | `SPDIF0` |
 | TP15 | `SPDIF1` |
-| TP16 | `ESP_UART1_RX` |
+| TP16 | `MIDI1_RX` |
 | TP18 | `GND` |
 | TP19 | `GND` |
 | TP20 | `SPI3_CS_N` |
@@ -259,7 +259,7 @@ Not connected: A8 (`SBU1`), B8 (`SBU2`).
 | TP27 | `I2C1_SDA` |
 | TP28 | `PANEL_UART_RX` |
 | TP29 | `PANEL_UART_TX` |
-| TP30 | `ESP_UART2_RX` |
+| TP30 | `MIDI2_RX` |
 
 ## Parts by designator
 
