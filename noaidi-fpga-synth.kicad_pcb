@@ -2489,7 +2489,7 @@
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART0_TX")
+			(net "PANEL_UART_TX")
 			(uuid "eaf55d91-63db-41ac-bc15-52c249062b67")
 		)
 		(pad "9" thru_hole oval
@@ -2498,7 +2498,7 @@
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART0_RX")
+			(net "PANEL_UART_RX")
 			(uuid "c6a93294-720e-472e-b540-d9dea8eef7c9")
 		)
 		(pad "10" thru_hole oval
@@ -6729,7 +6729,7 @@
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART0_TX")
+			(net "PANEL_UART_TX")
 			(uuid "039903a8-239a-47cc-8a89-0dc89329c815")
 		)
 		(pad "3" thru_hole circle
@@ -6738,7 +6738,7 @@
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART0_RX")
+			(net "PANEL_UART_RX")
 			(uuid "0ac2a91d-1778-451a-901a-adb52dfb3b54")
 		)
 		(embedded_fonts no)
@@ -8176,7 +8176,7 @@
 			(drill 1.5)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART0_TX")
+			(net "PANEL_UART_TX")
 			(uuid "fb47a19b-4b28-4dbf-a5f6-2c426b115a2a")
 		)
 		(embedded_fonts no)
@@ -11572,7 +11572,7 @@
 			(drill 1.5)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "ESP_UART0_RX")
+			(net "PANEL_UART_RX")
 			(uuid "ad5e4f1c-37a5-458d-b0ec-81bf4aaefce2")
 		)
 		(embedded_fonts no)
@@ -15856,7 +15856,7 @@
 		(end 137.7508 84.6961)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "575d0891-f05d-4076-b67d-41539073211e")
 	)
 	(segment
@@ -15864,7 +15864,7 @@
 		(end 137.019 83.9643)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "841870a0-7012-4c3a-9fac-c2c48c3e185e")
 	)
 	(segment
@@ -15872,7 +15872,7 @@
 		(end 134.2368 79.7953)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "9e9b790a-4091-4013-8489-020644d82ed3")
 	)
 	(segment
@@ -15880,7 +15880,7 @@
 		(end 137.019 82.5775)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "a6a6d574-849e-46e9-b549-898870ae3858")
 	)
 	(segment
@@ -15888,7 +15888,7 @@
 		(end 134.2368 73.238)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "aabd4849-21b5-41b2-9465-f7802cd3b26c")
 	)
 	(segment
@@ -15896,7 +15896,7 @@
 		(end 140.7277 84.6961)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "accc2793-fa0d-487d-88a9-08c8f9b43100")
 	)
 	(segment
@@ -15904,7 +15904,7 @@
 		(end 140.7277 84.6961)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "e8b5b1cf-e547-4301-a5ad-0b41e36e99b2")
 	)
 	(segment
@@ -15912,7 +15912,7 @@
 		(end 135.0809 72.3939)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "2764d5b5-51d0-44e3-bb1c-25909eed901b")
 	)
 	(segment
@@ -15920,7 +15920,7 @@
 		(end 135.0809 69.0707)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART0_TX")
+		(net "PANEL_UART_TX")
 		(uuid "a02ffafa-7e91-41e5-9d68-fc15faff5ac6")
 	)
 	(segment
@@ -15928,7 +15928,7 @@
 		(end 137.6209 72.3939)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_RX")
+		(net "PANEL_UART_RX")
 		(uuid "17dd7f11-e2c3-4983-87b2-16a2bb4f8b0d")
 	)
 	(segment
@@ -15936,7 +15936,7 @@
 		(end 136.7357 80.6407)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_RX")
+		(net "PANEL_UART_RX")
 		(uuid "26b51a3c-77a0-4cbf-badc-8d0c819938ad")
 	)
 	(segment
@@ -15944,7 +15944,7 @@
 		(end 136.7357 73.2791)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_RX")
+		(net "PANEL_UART_RX")
 		(uuid "462d15e7-9ff4-411a-8fb7-8bb49f20e370")
 	)
 	(segment
@@ -15952,7 +15952,7 @@
 		(end 138.1877 82.0927)
 		(width 0.2)
 		(layer "F.Cu")
-		(net "ESP_UART0_RX")
+		(net "PANEL_UART_RX")
 		(uuid "47cbff14-561c-412d-91a5-b42103debb6a")
 	)
 	(segment
@@ -15960,7 +15960,7 @@
 		(end 137.6209 72.3939)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART0_RX")
+		(net "PANEL_UART_RX")
 		(uuid "9e8e6561-5f21-444a-b4f7-d89681814cda")
 	)
 	(segment
@@ -15968,7 +15968,7 @@
 		(end 137.6209 72.1775)
 		(width 0.2)
 		(layer "B.Cu")
-		(net "ESP_UART0_RX")
+		(net "PANEL_UART_RX")
 		(uuid "d2c3d4b6-ac6f-4a6b-ab37-35662a8c0612")
 	)
 	(segment
