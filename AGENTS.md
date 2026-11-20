@@ -12,6 +12,8 @@
   - Issue relations live in GitHub's fields, never in prose.
   - An issue states a problem, not a symptom. A problem found while working on another issue gets its own issue at once.
   - An issue's title says in plain words what is wrong and who notices.
+  - An issue's body is trimmed of what belongs to its sub-issues: the child's problem is the child's.
+  - An undecided item is the agent's to settle or Thor's to answer. A technical item is the agent's: the investigation settles it, and the list holds only what his answer alone can settle.
   - A PR's relation to its issue is `Fixes #n` in the PR body.
   - Pull requests are drafts against `main`, opened as soon as the change exists; what was run and what it gave lands on them as comments.
   - A pull request's base is *never* another pull request's branch.
