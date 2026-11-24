@@ -31,9 +31,10 @@ around them, numbered as in the picture:
 8. **Pin headers** for the second SPI bus, two I2C buses, UART0, I2S and
    S/PDIF, and 29 test points.
 
-Two layers, 130.85 × 121.25 mm, both filled with ground. The modules, the DIN and RCA sockets,
-the pin headers and the test points are through-hole; the other parts
-are surface-mount.
+Two layers, 78.43 × 160.58 mm by `kicad-cli pcb export stats`, both
+filled with ground. The modules, the DIN and RCA sockets, the pin
+headers and the test points are through-hole; the other parts are
+surface-mount.
 
 The board is made from the circuit in text by script: see The circuit
 in text, below.
