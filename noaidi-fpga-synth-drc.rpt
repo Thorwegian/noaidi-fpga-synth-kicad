@@ -1,0 +1,26 @@
+** Drc report for noaidi-fpga-synth.kicad_pcb **
+** Created on 2026-11-24T14:27:46 **
+** Report includes: Errors **
+
+** Found 2 DRC violations **
+[shorting_items]: Items shorting two nets (nets <no net> and unconnected-(J2-PadSH))
+    Local override; error
+    @(132.0520 mm, 23.9444 mm): PTH pad [<no net>] of J2
+    @(132.0520 mm, 23.9444 mm): Track [unconnected-(J2-PadSH)] on F.Cu, length 5.0000 mm
+[shorting_items]: Items shorting two nets (nets unconnected-(J1-PadSH) and <no net>)
+    Local override; error
+    @(156.0520 mm, 23.9444 mm): Track [unconnected-(J1-PadSH)] on F.Cu, length 5.0000 mm
+    @(156.0520 mm, 23.9444 mm): PTH pad [<no net>] of J1
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

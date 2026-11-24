@@ -17751,22 +17751,6 @@
 		(net "SPDIF1")
 		(uuid "71a0d785-0565-40a2-9978-5bf45993ae69")
 	)
-	(segment
-		(start 156.052 23.9444)
-		(end 161.052 23.9444)
-		(width 0.2)
-		(layer "F.Cu")
-		(net "unconnected-(J1-PadSH)")
-		(uuid "46e8834f-e919-4708-a2ec-9d578842d45f")
-	)
-	(segment
-		(start 132.052 23.9444)
-		(end 137.052 23.9444)
-		(width 0.2)
-		(layer "F.Cu")
-		(net "unconnected-(J2-PadSH)")
-		(uuid "848c0140-22ae-44e3-b735-f11a44679485")
-	)
 	(zone
 		(net "GND")
 		(layer "F.Cu")
