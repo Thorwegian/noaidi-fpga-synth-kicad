@@ -51,7 +51,7 @@ def midi_input(name, uart_rx, supply, gnd, socket_ref, series_ref, clamp_ref, op
     uart_rx += opto[4], pullup[2]
     supply += opto[6], pullup[1], bypass[1]
     gnd += opto[5], bypass[2]
-    socket[1, 2, 3, "SH"] += NC
+    socket[1, 2, 3] += NC
     opto[3] += NC
     test_point(uart_rx, test_point_ref)
 

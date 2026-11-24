@@ -90,7 +90,7 @@ Not connected: 11 (`MU`), 12 (`MCK`), 14 (`DE`).
 | 4 |  | `MIDI1_SOURCE` | R1 |
 | 5 |  | `MIDI1_LED_K` | D1, U3.2 |
 
-Not connected: 1, 2, 3, SH (`SH`).
+Not connected: 1, 2, 3.
 
 ### J2, `esp32/midi2_input/socket`
 
@@ -99,7 +99,7 @@ Not connected: 1, 2, 3, SH (`SH`).
 | 4 |  | `MIDI2_SOURCE` | R2 |
 | 5 |  | `MIDI2_LED_K` | D2, U4.2 |
 
-Not connected: 1, 2, 3, SH (`SH`).
+Not connected: 1, 2, 3.
 
 ### J3, `tang_nano_20k/spdif0_output/socket`
 
