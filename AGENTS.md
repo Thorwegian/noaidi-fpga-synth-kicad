@@ -150,7 +150,6 @@ License: CERN-OHL-S v2
 - The *board* is `noaidi-fpga-synth.kicad_pcb`.
 - A *designator* is a part's name on the board (`R13`).
 - The synth repository's `docs/glossary.md` defines the project's other terms.
-- For those who know the gateware: the circuit in text is the RTL and `global_nets.py` its package; a block written as a function is a module with ports; the netlist comparison is the equivalence check; a SPICE bench is a simulation bench; layout is place and route, and DRC is its timing report; `docs/pins.md` is the debug symbols.
 
 ## The board
 
