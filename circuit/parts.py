@@ -16,7 +16,7 @@ PROJECT = "noaidi-fpga-synth"
 # has no part chosen for it, and asking for it is an error.
 RESISTOR_LCSC = {"120": "C17437", "220": "C17557", "470": "C17710", "4.7k": "C17673",
                  "5.1k": "C27834"}
-CAPACITOR_LCSC = {"100n": "C49678", "1u": "C28323"}
+CAPACITOR_LCSC = {"100n": "C49678", "1u": "C28323", "10u": "C15850"}
 
 # 0805 on the footprints with longer pads, so that a board can be repaired by hand.
 resistor_template = Part("Device", "R", dest=TEMPLATE,
