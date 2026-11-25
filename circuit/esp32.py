@@ -11,7 +11,7 @@ The module's pins are named by GPIO number; the symbol's longer names
 """
 from skidl import *
 
-from global_nets import (ESP_3V3, ESP_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
+from global_nets import (ESP_3V3, ESP_5V, EXT_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
                          MIDI1_RX, MIDI2_RX, PANEL_UART_RX, PANEL_UART_TX, SPI2_CS_N,
                          SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS)
@@ -74,15 +74,29 @@ def i2c_port(scl, sda, supply, gnd, header_ref, scl_pullup_ref, sda_pullup_ref,
 
 
 @subcircuit
-def led_chain(data, supply, gnd, buffer_ref, series_ref, bulk_ref, led_refs, capacitor_refs):
+def led_chain(data, supply, gnd, buffer_ref, input_series_ref, pull_down_ref, series_ref,
+              bulk_ref, led_refs, capacitor_refs):
     """Four RGBW pixels in a chain, for the light in the case.
 
-    The chain is driven through a buffer on the LEDs' own rail. The part's
-    input threshold is 0.65 x VDD (data sheet, section 9): 3.25 V at 5.0 V and
-    3.41 V at 5.25 V, so a 3.3 V pin is inside the limit at nominal and outside
-    it at the top of a USB port's range. KiCad's symbol for the buffer names
-    none of its pins: 1 is the output enable, 2 the input, 3 ground, 4 the
-    output, 5 the supply.
+    The chain hangs on the power socket's own rail, not on the module's 5 V:
+    that rail reaches the module's USB sockets through a Schottky each
+    (docs/esp32s3_hw678.md), so a chain on it is fed by whichever port is
+    plugged in, the computer running the console included.
+
+    The two rails can then disagree, and two parts keep that harmless. A 10 k
+    pull-down holds the buffer's input at ground while the rail is live and the
+    module is unpowered: an AHCT input must not float, or the pixels latch
+    whatever they see at power-up. A 1 k in series limits what a live GPIO
+    pushes into an unpowered buffer to about 2.6 mA, and the divider it makes
+    with the pull-down leaves 3.0 V at the input, well over the 2.0 V an AHCT
+    input needs.
+
+    The buffer itself is what lifts the ESP32's 3.3 V to the pixels' domain.
+    The part's input threshold is 0.65 x VDD (data sheet, section 9): 3.25 V at
+    5.0 V and 3.41 V at 5.25 V, so a 3.3 V pin is inside the limit at nominal
+    and outside it at the top of a USB port's range. KiCad's symbol for the
+    buffer names none of its pins: 1 is the output enable, 2 the input, 3
+    ground, 4 the output, 5 the supply.
 
     Each pixel reshapes what it receives and forwards it, so one buffer drives
     the whole chain. The 470 ohm resistor sits at the first input, where
@@ -91,10 +105,15 @@ def led_chain(data, supply, gnd, buffer_ref, series_ref, bulk_ref, led_refs, cap
     """
     buffer = jlcpcb_part(Part("74xGxx", "74AHCT1G125", ref=buffer_ref, tag="level_shifter",
                               footprint="Package_TO_SOT_SMD:SOT-23-5"), "C7484")
+    input_series = resistor(ref=input_series_ref, value="1k", tag="input_series")
+    pull_down = resistor(ref=pull_down_ref, value="10k", tag="pull_down")
     series = resistor(ref=series_ref, value="470", tag="series")
     bulk = capacitor(ref=bulk_ref, value="10u", tag="bulk")
 
-    data += buffer[2]
+    buffer_input = Net("LED_BUFFER_IN")
+    buffer_input += input_series[2], pull_down[1], buffer[2]
+    data += input_series[1]
+    pull_down[2] += gnd
     buffer[1] += gnd
     buffer[3] += gnd
     buffer[5] += supply
@@ -181,9 +200,20 @@ with SubCircuit("esp32", tag="esp32"):
 
     led_data = Net("LED_DATA")
     led_data += esp["GPIO21"]
-    led_chain(led_data, ESP_5V, GND, buffer_ref="U8", series_ref="R19", bulk_ref="C5",
+    led_chain(led_data, EXT_5V, GND, buffer_ref="U8", input_series_ref="R20",
+              pull_down_ref="R21", series_ref="R19", bulk_ref="C5",
               led_refs=("D3", "D4", "D5", "D6"), capacitor_refs=("C6", "C7", "C8", "C9"),
               tag="led_chain")
+
+    # Whether the power socket is in, read as a voltage rather than as a logic
+    # level, so the firmware can tell a charger from a computer's port: 1.56 V
+    # at 4.75 V, 1.64 V at 5.0 V and 1.72 V at 5.25 V, at 340 uA.
+    sense_top = resistor(ref="R22", value="10k", tag="sense_top")
+    sense_bottom = resistor(ref="R23", value="4.7k", tag="sense_bottom")
+    ext_5v_sense = Net("EXT_5V_SENSE")
+    EXT_5V += sense_top[1]
+    ext_5v_sense += sense_top[2], sense_bottom[1], esp["GPIO2"]
+    GND += sense_bottom[2]
 
     MIDI1_RX += esp["GPIO18"]
     MIDI2_RX += esp["GPIO1"]
