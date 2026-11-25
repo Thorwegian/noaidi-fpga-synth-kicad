@@ -29,7 +29,7 @@ An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO num
 | 18 | `GPIO12/ADC2_CH1` | `SPI2_SCLK` | TP2, U2.10 (25_IOB6A) |
 | 19 | `GPIO13/ADC2_CH2` | `SPI2_MISO` | TP4, U2.12 (29_IOB14A) |
 | 20 | `GPIO14/ADC2_CH3` | `I2C1_SCL` | J11.2, R15, TP26 |
-| 21 | `5V` | `ESP_5V` | supply net, 3 other pins |
+| 21 | `5V` | `ESP_5V` | supply net, 4 other pins |
 | 22 | `GND` | `GND` | supply net, 39 other pins |
 | 23 | `GND` | `GND` | supply net, 39 other pins |
 | 24 | `GND` | `GND` | supply net, 39 other pins |
@@ -182,6 +182,7 @@ Not connected: A6 (`D+`), A7 (`D-`), A8 (`SBU1`), B6 (`D+`), B7 (`D-`), B8 (`SBU
 | 1 | `Pin_1` | `GND` | supply net, 42 other pins |
 | 2 | `Pin_2` | `PANEL_UART_TX` | TP29, U1.8 (GPIO15) |
 | 3 | `Pin_3` | `PANEL_UART_RX` | TP28, U1.9 (GPIO16) |
+| 4 | `Pin_4` | `ESP_5V` | supply net, 4 other pins |
 
 ### J13, `tang_nano_20k/analog_out`
 
@@ -284,7 +285,7 @@ part's own name.
 | J9 | `usb/power_socket/socket` | USB_C_Receptacle_USB2.0_16P |
 | J10 | `esp32/spi3_header` | Conn_01x05_Pin |
 | J11 | `esp32/i2c1_port/header` | Conn_01x03_Pin |
-| J12 | `esp32/panel_uart_header` | Conn_01x03_Pin |
+| J12 | `esp32/panel_uart_header` | Conn_01x04_Pin |
 | J13 | `tang_nano_20k/analog_out` | Conn_01x03_Pin |
 | J14 | `usb/data_socket/socket` | USB_C_Receptacle_USB2.0_16P |
 | JP1 | `tang_nano_20k/filter_jumper` | Jumper_2_Open |

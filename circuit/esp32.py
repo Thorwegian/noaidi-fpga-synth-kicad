@@ -117,10 +117,13 @@ with SubCircuit("esp32", tag="esp32"):
              scl_pullup_ref="R15", sda_pullup_ref="R16", scl_test_point_ref="TP26",
              sda_test_point_ref="TP27", tag="i2c1_port")
 
-    panel_uart_header = pin_header(3, ref="J12", tag="panel_uart_header")
+    panel_uart_header = pin_header(4, ref="J12", tag="panel_uart_header")
     GND += panel_uart_header[1]
     PANEL_UART_TX += esp["GPIO15"], panel_uart_header[2]
     PANEL_UART_RX += esp["GPIO16"], panel_uart_header[3]
+    # The panel board's supply, on the pin after the UART so that a three-pin
+    # cable still fits the first three.
+    ESP_5V += panel_uart_header[4]
     test_point(PANEL_UART_RX, "TP28")
     test_point(PANEL_UART_TX, "TP29")
 
