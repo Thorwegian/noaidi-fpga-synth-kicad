@@ -28,46 +28,133 @@ field `LCSC`. A part without one is soldered by hand and is in neither list.
 
 A position is the footprint's own, in millimetres from the same origin as
 the Gerber files, with y upwards. JLCPCB's library holds some packages
-turned against KiCad's footprint for them. The rotations to add are those
-of the Fabrication Toolkit, the KiCad plugin JLCPCB's article recommends
-(https://github.com/bennymeg/Fabrication-Toolkit, plugins/transformations.csv);
-the script fetches that table into build/tools/ and checks it against a
-SHA-256. Whether a part sits right on its pads shows in the placement
-preview of JLCPCB's order page and nowhere before it.
+turned against KiCad's footprint for them, and how a package is drawn there
+goes by the part, not by the package's name. So the script fetches each
+part's package from that library (EasyEDA's component API, by LCSC number,
+kept in build/tools/jlcpcb-library/) and turns the board's footprint until
+every pad number lies on the library's pad of that number. A part's
+rotation in the list is its orientation on the board less that turn, with
+the library's drawing taken as JLCPCB's 0 degrees.
+
+A footprint whose pad numbers lie where the library has them at no turn
+stops the script: its pads are not where the part's pins are.
 
 The board file is not changed.
 """
 import argparse
 import collections
 import csv
-import hashlib
+import json
+import math
 import os
 import re
 import subprocess
 import sys
+import time
 import urllib.request
 import zipfile
 
 import pcbnew
 
-TURNS_COMMIT = "038cd1ddbe36c1e013aa3b4f284b0326cc4bdb77"
-TURNS_URL = f"https://raw.githubusercontent.com/bennymeg/Fabrication-Toolkit/{TURNS_COMMIT}/plugins/transformations.csv"
-TURNS_SHA256 = "f02b3353de29331b1b740cc0bf9da11157bc9a9803f6ddb264e30b4ca8f1e6d1"
-TURNS_FILE = "build/tools/jlcpcb-rotations.csv"
+LIBRARY_URL = "https://easyeda.com/api/products/{number}/components?version=6.4.19.5"
+LIBRARY_FOLDER = "build/tools/jlcpcb-library"
+LIBRARY_UNIT_MM = 0.254     # the library's coordinates are in units of 10 mil
+# The API answers a request without a browser's name with 403, and now and then one with it.
+BROWSER = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+ATTEMPTS = 4
 OTHER_LAYERS = ["F.Mask", "B.Mask", "F.Silkscreen", "B.Silkscreen", "F.Paste", "B.Paste", "Edge.Cuts"]
 
 
-def turns():
-    """The Fabrication Toolkit's table as [(pattern, degrees)]."""
-    if not os.path.exists(TURNS_FILE):
-        os.makedirs(os.path.dirname(TURNS_FILE), exist_ok=True)
-        with urllib.request.urlopen(TURNS_URL) as answer, open(TURNS_FILE, "wb") as file:
-            file.write(answer.read())
-    with open(TURNS_FILE, "rb") as file:
-        if hashlib.sha256(file.read()).hexdigest() != TURNS_SHA256:
-            sys.exit(f"{TURNS_FILE} is not the table this script was written against")
-    with open(TURNS_FILE, encoding="utf-8", newline="") as file:
-        return [(row["Regex To Match"], float(row["Rotation"])) for row in csv.DictReader(file)]
+def library_pads(number):
+    """The pads of a part's package in JLCPCB's library, as {pad number:
+    [(x, y), ...]} in millimetres with y downwards, as in KiCad."""
+    path = os.path.join(LIBRARY_FOLDER, f"{number}.json")
+    if not os.path.exists(path):
+        request = urllib.request.Request(LIBRARY_URL.format(number=number),
+                                         headers={"Accept": "application/json", "User-Agent": BROWSER})
+        for attempt in range(1, ATTEMPTS + 1):
+            try:
+                with urllib.request.urlopen(request, timeout=30) as answer:
+                    fetched = answer.read()
+                json.loads(fetched)["result"]["packageDetail"]["dataStr"]["shape"]
+                break
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                if attempt == ATTEMPTS:
+                    sys.exit(f"JLCPCB's library gave no package for {number}: {error}")
+                time.sleep(3 * attempt)
+        os.makedirs(LIBRARY_FOLDER, exist_ok=True)
+        with open(path, "wb") as file:
+            file.write(fetched)
+    with open(path, encoding="utf-8") as file:
+        package = json.load(file)["result"]["packageDetail"]["dataStr"]
+    origin_x, origin_y = float(package["head"]["x"]), float(package["head"]["y"])
+    pads = collections.defaultdict(list)
+    for shape in package["shape"]:
+        # PAD~shape~x~y~width~height~layer~net~number~...
+        fields = shape.split("~")
+        if fields[0] == "PAD":
+            pads[fields[8]].append(((float(fields[2]) - origin_x) * LIBRARY_UNIT_MM,
+                                    (float(fields[3]) - origin_y) * LIBRARY_UNIT_MM))
+    return pads
+
+
+def turned(pads, degrees):
+    """The pads with their footprint turned counter-clockwise as seen on the
+    board, which is KiCad's positive direction, y downwards."""
+    cosine, sine = math.cos(math.radians(degrees)), math.sin(math.radians(degrees))
+    return {number: [(x * cosine + y * sine, -x * sine + y * cosine) for x, y in places]
+            for number, places in pads.items()}
+
+
+def own_pads(footprint):
+    """The footprint's pads as {pad number: [(x, y), ...]} in millimetres
+    from the footprint's position, with the footprint not turned."""
+    centre = footprint.GetPosition()
+    pads = collections.defaultdict(list)
+    for pad in footprint.Pads():
+        pads[pad.GetNumber()].append((pcbnew.ToMM(pad.GetPosition().x - centre.x), pcbnew.ToMM(pad.GetPosition().y - centre.y)))
+    return turned(pads, -footprint.GetOrientationDegrees())
+
+
+def about_their_middle(pads, numbers):
+    """The pads of the numbers given, from the middle of the rectangle around them."""
+    places = [place for number in numbers for place in pads[number]]
+    middle_x = (min(x for x, _ in places) + max(x for x, _ in places)) / 2
+    middle_y = (min(y for _, y in places) + max(y for _, y in places)) / 2
+    return {number: [(x - middle_x, y - middle_y) for x, y in pads[number]] for number in numbers}
+
+
+def furthest_apart(ours, theirs):
+    """The largest distance from a pad to the nearest pad of its number in the other set."""
+    return max(min(math.dist(place, other) for other in second[number])
+               for first, second in ((ours, theirs), (theirs, ours)) for number in first for place in first[number])
+
+
+def turn_to_library(footprint, number):
+    """The degrees the footprint is turned by, counter-clockwise, to lie as
+    the part's package is drawn in JLCPCB's library.
+
+    The pads that have the same number on both sides are compared. A pad
+    fits when it is nearer the library's pad of its number than half the
+    smallest distance between two pads of the package: nearer its own place
+    than any other pad's."""
+    designator = footprint.GetReference()
+    if footprint.IsFlipped():
+        sys.exit(f"{designator} is on the back: the turn against JLCPCB's library is worked out for the front only")
+    ours, library = own_pads(footprint), library_pads(number)
+    shared = sorted(set(ours) & set(library))
+    if not shared:
+        sys.exit(f"{designator}: no pad of its footprint has a number that JLCPCB's package for {number} has")
+    theirs = about_their_middle(library, shared)
+    places = sorted({place for group in theirs.values() for place in group})
+    fits_within = min(math.dist(first, second) for index, first in enumerate(places) for second in places[index + 1:]) / 2
+    turns = [degrees for degrees in (0, 90, 180, 270)
+             if furthest_apart(about_their_middle(turned(ours, degrees), shared), theirs) < fits_within]
+    if len(turns) != 1:
+        sys.exit(f"{designator}: its footprint's pad numbers lie where JLCPCB's package for {number} has them "
+                 f"at {'no turn' if not turns else 'the turns ' + ', '.join(map(str, turns))}: "
+                 f"the pads are not where the part's pins are")
+    return turns[0]
 
 
 def run(*command):
@@ -100,20 +187,19 @@ def main():
         for name in plotted:
             archive.write(os.path.join(plots, name), name)
 
-    table = turns()
     lines = collections.defaultdict(list)
-    placements, turned = [], []
+    placements, turned_parts = [], []
     for footprint, number in placed_footprints(board):
         designator = footprint.GetReference()
         package = str(footprint.GetFPID().GetLibItemName())
         lines[(number, footprint.GetValue(), package)].append(designator)
-        add = next((degrees for pattern, degrees in table if re.search(pattern, package)), 0.0)
-        if add:
-            turned.append(designator)
+        turn = turn_to_library(footprint, number)
+        if turn:
+            turned_parts.append(f"{designator} by {turn}")
         position = footprint.GetPosition()
         placements.append((designator, f"{pcbnew.ToMM(position.x):.4f}", f"{-pcbnew.ToMM(position.y):.4f}",
                            "bottom" if footprint.IsFlipped() else "top",
-                           f"{(footprint.GetOrientationDegrees() + add) % 360:g}"))
+                           f"{(footprint.GetOrientationDegrees() - turn) % 360:g}"))
 
     with open(os.path.join(out, "bom.csv"), "w", encoding="utf-8", newline="") as file:
         rows = csv.writer(file)
@@ -128,7 +214,7 @@ def main():
     print(f"gerbers.zip: {len(plotted)} files: {' '.join(plotted)}")
     print(f"bom.csv: {len(placements)} parts in {len(lines)} lines")
     print(f"placement.csv: {len(placements)} parts, {sum(1 for row in placements if row[3] == 'bottom')} of them on the back; "
-          f"turned for JLCPCB's library: {' '.join(turned) or 'none'}")
+          f"drawn turned in JLCPCB's library: {', '.join(turned_parts) or 'none'}")
 
 
 def placed_footprints(board):
