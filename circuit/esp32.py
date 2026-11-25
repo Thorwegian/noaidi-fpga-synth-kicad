@@ -73,6 +73,58 @@ def i2c_port(scl, sda, supply, gnd, header_ref, scl_pullup_ref, sda_pullup_ref,
     test_point(sda, sda_test_point_ref)
 
 
+@subcircuit
+def led_chain(data, supply, gnd, buffer_ref, series_ref, bulk_ref, led_refs, capacitor_refs):
+    """Four RGBW pixels in a chain, for the light in the case.
+
+    The chain is driven through a buffer on the LEDs' own rail. The part's
+    input threshold is 0.65 x VDD (data sheet, section 9): 3.25 V at 5.0 V and
+    3.41 V at 5.25 V, so a 3.3 V pin is inside the limit at nominal and outside
+    it at the top of a USB port's range. KiCad's symbol for the buffer names
+    none of its pins: 1 is the output enable, 2 the input, 3 ground, 4 the
+    output, 5 the supply.
+
+    Each pixel reshapes what it receives and forwards it, so one buffer drives
+    the whole chain. The 470 ohm resistor sits at the first input, where
+    section 12 of the data sheet asks for it, and the last pixel's output is
+    left open.
+    """
+    buffer = jlcpcb_part(Part("74xGxx", "74AHCT1G125", ref=buffer_ref, tag="level_shifter",
+                              footprint="Package_TO_SOT_SMD:SOT-23-5"), "C7484")
+    series = resistor(ref=series_ref, value="470", tag="series")
+    bulk = capacitor(ref=bulk_ref, value="10u", tag="bulk")
+
+    data += buffer[2]
+    buffer[1] += gnd
+    buffer[3] += gnd
+    buffer[5] += supply
+    supply += bulk[1]
+    gnd += bulk[2]
+
+    line = Net("LED_DATA_5V")
+    line += buffer[4], series[1]
+    pixel_input = Net("LED_DIN")
+    pixel_input += series[2]
+
+    for number, (led_ref, capacitor_ref) in enumerate(zip(led_refs, capacitor_refs), 1):
+        led = jlcpcb_part(Part(PROJECT, "LED_SK6812MINIRGBW", ref=led_ref, tag=f"led_{number}",
+                               footprint=f"{PROJECT}:LED_SK6812MINIRGBW_3.5x3.5mm"), "C7423106")
+        decoupling = capacitor(ref=capacitor_ref, value="100n", tag=f"decoupling_{number}")
+
+        led[1] += NC
+        led[2] += gnd
+        led[3] += pixel_input
+        led[4] += supply
+        led[6] += supply
+        supply += decoupling[1]
+        gnd += decoupling[2]
+        if number == len(led_refs):
+            led[5] += NC
+        else:
+            pixel_input = Net(f"LED_{number}_DOUT")
+            pixel_input += led[5]
+
+
 with SubCircuit("esp32", tag="esp32"):
     esp = Part(PROJECT, "ESP32-S3-DevKitC", ref="U1", tag="esp", pin_splitters="/",
                footprint="noaidi-fpga-synth:ESP32-S3-DevKitC")
@@ -126,6 +178,12 @@ with SubCircuit("esp32", tag="esp32"):
     ESP_5V += panel_uart_header[4]
     test_point(PANEL_UART_RX, "TP28")
     test_point(PANEL_UART_TX, "TP29")
+
+    led_data = Net("LED_DATA")
+    led_data += esp["GPIO21"]
+    led_chain(led_data, ESP_5V, GND, buffer_ref="U8", series_ref="R19", bulk_ref="C5",
+              led_refs=("D3", "D4", "D5", "D6"), capacitor_refs=("C6", "C7", "C8", "C9"),
+              tag="led_chain")
 
     MIDI1_RX += esp["GPIO18"]
     MIDI2_RX += esp["GPIO1"]

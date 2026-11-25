@@ -31,6 +31,8 @@ around them, numbered as in the picture:
 8. **Pin headers** for the second SPI bus, two I2C buses, UART0, I2S and
    S/PDIF, the ESP32 module's 5 V beside the UART for a front panel
    board, and 29 test points.
+9. **Four RGBW LEDs** (D3–D6) in a chain, on the ESP32's GPIO21 through a
+   buffer (U8), for a light inside the case.
 
 Two layers, 78.43 × 160.58 mm by `kicad-cli pcb export stats`, both
 filled with ground. The modules, the DIN and RCA sockets, the pin
