@@ -60,7 +60,9 @@ with an ARM processor to drive the user interface.
     chain, driven from one ESP32 pin through a buffer, on the power
     socket's 5 V, so that the charger pays for it and not the computer
     the console runs on. They draw at most 240 mA between them, at full
-    white.
+    white. A divider on GPIO2 tells the firmware whether that rail is
+    in, and the data pin is driven only while it is: the buffer is dead
+    with the rail, and a live pin would feed it through its input.
 
 The S/PDIF outputs are there because they are very useful in the lab.
 They will not necessarily be kept in a final design.

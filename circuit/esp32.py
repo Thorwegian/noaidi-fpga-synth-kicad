@@ -205,6 +205,16 @@ with SubCircuit("esp32", tag="esp32"):
               led_refs=("D3", "D4", "D5", "D6"), capacitor_refs=("C6", "C7", "C8", "C9"),
               tag="led_chain")
 
+    # Whether the power socket is in, read as a voltage rather than as a logic
+    # level, so the firmware can tell a charger from a computer's port: 1.56 V
+    # at 4.75 V, 1.64 V at 5.0 V and 1.72 V at 5.25 V, at 340 uA.
+    sense_top = resistor(ref="R22", value="10k", tag="sense_top")
+    sense_bottom = resistor(ref="R23", value="4.7k", tag="sense_bottom")
+    ext_5v_sense = Net("EXT_5V_SENSE")
+    EXT_5V += sense_top[1]
+    ext_5v_sense += sense_top[2], sense_bottom[1], esp["GPIO2"]
+    GND += sense_bottom[2]
+
     MIDI1_RX += esp["GPIO18"]
     MIDI2_RX += esp["GPIO1"]
     midi_input("MIDI1", MIDI1_RX, ESP_3V3, GND, socket_ref="J1", series_ref="R1",
