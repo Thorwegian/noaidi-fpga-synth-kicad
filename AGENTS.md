@@ -106,6 +106,14 @@
 
 - A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
 
+- A part is in JLCPCB's library or it is hand-soldered. Missing and surface-mount, it is redesigned out; missing and through-hole, it is soldered by hand.
+
+- Basic before extended: the $3.07 of a unique extended part is paid only when no basic part does the job.
+
+- Through-hole placement moves the order to Standard assembly, whose fixed fees rule it out for a one-off board.
+
+- A part is named with its LCSC number and its library class.
+
 - Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files with `scripts/fab_files.py`; Thor uploads them and orders.
 
 - What an order costs is estimated with `scripts/cost_estimate.py`, not by hand. The estimate is posted on its issue as one comment, and is made anew when the layer count, the board's size, the quantity or a placed part changes.
@@ -142,7 +150,6 @@ License: CERN-OHL-S v2
 - The *board* is `noaidi-fpga-synth.kicad_pcb`.
 - A *designator* is a part's name on the board (`R13`).
 - The synth repository's `docs/glossary.md` defines the project's other terms.
-- For those who know the gateware: the circuit in text is the RTL and `global_nets.py` its package; a block written as a function is a module with ports; the netlist comparison is the equivalence check; a SPICE bench is a simulation bench; layout is place and route, and DRC is its timing report; `docs/pins.md` is the debug symbols.
 
 ## The board
 
