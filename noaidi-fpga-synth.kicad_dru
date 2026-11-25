@@ -39,9 +39,10 @@
 	(condition "A.Type == 'Pad'"))
 
 # A differential pair is laid as a pair (scripts/lay_pairs.py). Its two
-# tracks part only to reach their pads: on this board the USB data pair's
-# tracks part for 5.9 mm, to the ESP32 module's pins, which are 2.54 mm
-# apart, and in the branches to the socket's second pads. Routed as two
+# tracks part only to reach their pads and to come out equally long: on this
+# board the USB data pair's tracks part for 8.7 mm, to the ESP32 module's
+# pins, which are 2.54 mm apart, in the branches to the socket's second pads,
+# and in the two detours of USB_D- that make up its length. Routed as two
 # unrelated tracks, the whole of a net counts as parted.
 
 (rule "the two tracks of a pair run side by side"
