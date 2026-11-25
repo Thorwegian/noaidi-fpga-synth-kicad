@@ -12215,22 +12215,20 @@
 			(net "MIDI2_LED_K")
 			(uuid "0cc5be22-d888-40c2-a5fa-0804f0d82d4d")
 		)
-		(pad "SH" thru_hole circle
+		(pad "" thru_hole circle
 			(at -10 -9.9)
 			(size 2.0066 2.0066)
 			(drill 1.4986)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J2-PadSH)")
 			(uuid "63f14b90-0698-4577-9f4a-203d742db9c3")
 		)
-		(pad "SH" thru_hole circle
+		(pad "" thru_hole circle
 			(at -5 -9.9)
 			(size 2.0066 2.0066)
 			(drill 1.4986)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J2-PadSH)")
 			(uuid "de13ad81-4d51-4e7f-a35d-85795c4a436f")
 		)
 		(embedded_fonts no)
@@ -12608,22 +12606,20 @@
 			(net "MIDI1_LED_K")
 			(uuid "a5c5e988-df90-4601-a0d6-d061b9806bc0")
 		)
-		(pad "SH" thru_hole circle
+		(pad "" thru_hole circle
 			(at -10 -9.9)
 			(size 2.0066 2.0066)
 			(drill 1.4986)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J1-PadSH)")
 			(uuid "81000487-4d59-4b43-b498-2ad81457b801")
 		)
-		(pad "SH" thru_hole circle
+		(pad "" thru_hole circle
 			(at -5 -9.9)
 			(size 2.0066 2.0066)
 			(drill 1.4986)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J1-PadSH)")
 			(uuid "9b33104e-064c-452d-8e16-0edef4d6f88e")
 		)
 		(embedded_fonts no)
@@ -17754,22 +17750,6 @@
 		(layer "B.Cu")
 		(net "SPDIF1")
 		(uuid "71a0d785-0565-40a2-9978-5bf45993ae69")
-	)
-	(segment
-		(start 156.052 23.9444)
-		(end 161.052 23.9444)
-		(width 0.2)
-		(layer "F.Cu")
-		(net "unconnected-(J1-PadSH)")
-		(uuid "46e8834f-e919-4708-a2ec-9d578842d45f")
-	)
-	(segment
-		(start 132.052 23.9444)
-		(end 137.052 23.9444)
-		(width 0.2)
-		(layer "F.Cu")
-		(net "unconnected-(J2-PadSH)")
-		(uuid "848c0140-22ae-44e3-b735-f11a44679485")
 	)
 	(zone
 		(net "GND")
