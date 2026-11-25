@@ -57,8 +57,10 @@ with an ARM processor to drive the user interface.
    run from.
 9. **Test points** on the buses and the supply rails.
 10. **A light in the case:** four warm-white addressable RGBW LEDs in a
-    chain, driven from one ESP32 pin through a buffer, on the module's
-    5 V. They draw at most 240 mA between them, at full white.
+    chain, driven from one ESP32 pin through a buffer, on the power
+    socket's 5 V, so that the charger pays for it and not the computer
+    the console runs on. They draw at most 240 mA between them, at full
+    white.
 
 The S/PDIF outputs are there because they are very useful in the lab.
 They will not necessarily be kept in a final design.
