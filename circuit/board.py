@@ -24,6 +24,14 @@ import kicad_netlist
 import net_classes
 import pin_map
 
+from parts import mounting_hole
+
+# The case bolts the board down through four holes of its own, which are no
+# part of a sheet and carry no net.
+with SubCircuit("mounting_holes", tag="mounting_holes"):
+    for ref in ("H1", "H2", "H3", "H4"):
+        mounting_hole(ref)
+
 ERC()
 kicad_netlist.write("board.net")
 net_classes.write()
