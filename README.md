@@ -29,7 +29,8 @@ around them, numbered as in the picture:
 7. **USB-C socket for data** (J14): the ESP32's USB data pair, below the
    module's USB pins.
 8. **Pin headers** for the second SPI bus, two I2C buses, UART0, I2S and
-   S/PDIF, and 29 test points.
+   S/PDIF, the ESP32 module's 5 V beside the UART for a front panel
+   board, and 29 test points.
 
 Two layers, 78.43 × 160.58 mm by `kicad-cli pcb export stats`, both
 filled with ground. The modules, the DIN and RCA sockets, the pin

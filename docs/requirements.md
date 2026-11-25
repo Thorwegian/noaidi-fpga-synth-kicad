@@ -52,7 +52,9 @@ with an ARM processor to drive the user interface.
    That socket's supply pin feeds no rail.
 8. **Buses on pin headers, for developing the front panel board:**
    the second SPI bus (J10), the two I2C buses (J8, J11), a UART (J12)
-   and I2S (J7).
+   and I2S (J7). The UART's header carries the ESP32 module's 5 V
+   beside it, on the pin after the UART's three, for the panel board to
+   run from.
 9. **Test points** on the buses and the supply rails.
 
 The S/PDIF outputs are there because they are very useful in the lab.
@@ -224,9 +226,9 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 
 ## Open
 
-- **Power:** the measured budget, and the board-to-board path that
-  forwards power to the front panel board. The pin headers of
-  requirement 8 carry signals and ground only; the supply rails reach
+- **Power:** the measured budget. The front panel board is fed from
+  `ESP_5V` on J12, the UART header; the headers of requirement 8 other
+  than J12 carry signals and ground only, and the supply rails reach
   test points, not headers.
 - **What the board does on a weak supply.** Through a USB-A to USB-C
   cable, or from a computer's port, the source may offer only 0.5 to
