@@ -35,8 +35,8 @@ around the board's bounding rectangle:
 - The base and the lid stand clear of the parts by UNDERSIDE_CLEARANCE and
   LID_CLEARANCE, and further apart where an opening needs it: OPENING_LAND of
   wall is left below the lowest opening and above the highest.
-- The board stands on four acrylic posts. The board has no mounting holes:
-  the posts stand in for whatever will hold it.
+- The board stands on four acrylic posts. The board's four mounting holes
+  are not placed yet, so the posts stand in for them.
 
 The light is path traced from four LEDs, point lights of four colours inside
 the lid, one at each corner, and there is no other light in the scene. Three

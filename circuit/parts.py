@@ -27,6 +27,8 @@ ideal_diode = Part("Power_Management", "LM66100DCK", dest=TEMPLATE,
                    footprint="Package_TO_SOT_SMD:SOT-363_SC-70-6")
 test_point_template = Part("Connector", "TestPoint", dest=TEMPLATE,
                            footprint="TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm")
+mounting_hole_template = Part("Mechanical", "MountingHole", dest=TEMPLATE,
+                              footprint="MountingHole:MountingHole_3.2mm_M3")
 
 
 def test_point(net, ref):
@@ -38,6 +40,19 @@ def test_point(net, ref):
     point.exclude_from_bom = True
     point.exclude_from_pos_files = True
     net += point[1]
+
+
+def mounting_hole(ref):
+    """A hole through the board for an M3 bolt, in the block of the circuit it
+    is called in.
+
+    It reaches no pin and no net, and there is no part to buy for it: it is
+    KiCad's footprint of the hole and nothing else, so it is in neither the
+    BOM nor the position files."""
+    hole = mounting_hole_template(ref=ref, tag=ref.lower())
+    hole.exclude_from_bom = True
+    hole.exclude_from_pos_files = True
+    return hole
 
 
 def jlcpcb_part(part, lcsc_number):

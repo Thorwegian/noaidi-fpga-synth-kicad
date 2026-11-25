@@ -235,7 +235,8 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   the stackup: the figure above is an approximation, and the layer under
   the pair is `ESP_5V`, where Espressif recommends ground.
 - **The fixed positions:** which connectors sit at which edge, the
-  board's outline and its mounting holes wait for the enclosure.
+  board's outline and where its four mounting holes sit wait for the
+  enclosure.
 - **The radio's range with the antenna over the board** is not
   measured. Espressif's guidelines ask for the end product to be
   tested for throughput and communication range.
