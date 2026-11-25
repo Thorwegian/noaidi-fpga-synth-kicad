@@ -84,6 +84,14 @@
 
 - A pull request that changes the board gives the counts of KiCad's DRC beside those of `main`, type for type, and explains a difference.
 
+- Routing:
+  - The placements are what the user meets: the LEDs stay in their corners and the connectors at the edges. The wires are autorouted.
+  - SKiDL's ERC and KiCad's DRC pass, with no connection open.
+  - A trace runs as far from pads as it can, with no more bends than needed. A slightly longer trace is better than one that runs close to pads.
+  - An autorouter's result is a hint and the look of the picture is another. They are weighed.
+  - A routed board is looked at zoomed in, and what the zoom spots is routed around. Then it is looked at zoomed out, for structural problems. Then it gets its pull request.
+  - The measure is the worst case, not the typical one.
+
 - A part has a descriptive name in the code (`cc1_pulldown`), which is also its `tag`, and a regular designator on the board (`R13`). A new part takes the next free number; existing designators are not renumbered, and a gap stays a gap.
 
 - A net that crosses sheets is defined once, in `circuit/global_nets.py`, and imported. Every net a person may want to probe has a name. A circuit that appears twice is written once, as a function that takes its nets as arguments.
@@ -158,7 +166,7 @@ License: CERN-OHL-S v2
 - `docs/pins.md`: which pin of which module carries what, the connectors, the test points, each part's name in the code.
 - `docs/esp32s3_hw678.md`: the ESP32-S3 boards in hand, which stand in for Espressif's ESP32-S3-DevKitC-1.
 - `docs/thirdparty/`: the vendors' drawings, schematics and data sheets.
-- `noaidi-fpga-synth.kicad_pcb`: the board. Thor lays it out by hand in KiCad.
+- `noaidi-fpga-synth.kicad_pcb`: the board. Thor places the parts in KiCad; the wires are autorouted.
 - `noaidi-fpga-synth.kicad_pro` and `noaidi-fpga-synth.kicad_dru`: the design rules. The second names the row of JLCPCB's capability page each figure comes from.
 - `noaidi-fpga-synth.kicad_sym` and `noaidi-fpga-synth.pretty/`: the project's own symbols and footprints.
 - The goal is issue #5: get the board fabricated at JLCPCB, so development moves onto it.
