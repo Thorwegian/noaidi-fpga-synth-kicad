@@ -30,11 +30,17 @@ A position is the footprint's own, in millimetres from the same origin as
 the Gerber files, with y upwards. JLCPCB's library holds some packages
 turned against KiCad's footprint for them, and how a package is drawn there
 goes by the part, not by the package's name. So the script fetches each
-part's package from that library (EasyEDA's component API, by LCSC number,
-kept in build/tools/jlcpcb-library/) and turns the board's footprint until
-every pad number lies on the library's pad of that number. A part's
-rotation in the list is its orientation on the board less that turn, with
-the library's drawing taken as JLCPCB's 0 degrees.
+part's package from that library (EasyEDA's component API, by LCSC number)
+and turns the board's footprint until every pad number lies on the
+library's pad of that number. A part's rotation in the list is its
+orientation on the board less that turn, with the library's drawing taken
+as JLCPCB's 0 degrees.
+
+The packages are kept in docs/thirdparty/jlcpcb-library/, one file for each
+LCSC number, as the API gave them. A package that is there is not fetched:
+the API refuses a host that has asked some tens of times, and the order
+files must not wait for it. A new part's package is fetched on the first
+run and committed with the part; to take a package anew, delete its file.
 
 A footprint whose pad numbers lie where the library has them at no turn
 stops the script: its pads are not where the part's pins are.
@@ -57,7 +63,7 @@ import zipfile
 import pcbnew
 
 LIBRARY_URL = "https://easyeda.com/api/products/{number}/components?version=6.4.19.5"
-LIBRARY_FOLDER = "build/tools/jlcpcb-library"
+LIBRARY_FOLDER = "docs/thirdparty/jlcpcb-library"
 LIBRARY_UNIT_MM = 0.254     # the library's coordinates are in units of 10 mil
 # The API answers a request without a browser's name with 403, and now and then one with it.
 BROWSER = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
