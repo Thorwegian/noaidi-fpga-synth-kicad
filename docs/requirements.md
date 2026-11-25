@@ -115,46 +115,36 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 
 ## The layers
 
-- **Four copper layers,** on JLCPCB's stackup JLC04161H-7628 for a
-  1.6 mm board, which has 0.21 mm between each outer layer and the
-  inner layer next to it (https://jlcpcb.com/impedance).
-  `circuit/layers.toml` states what each carries:
-  - front and back: the signals, with ground filled around them;
-  - inner layer 1: `ESP_5V`, one unbroken fill;
-  - inner layer 2: `NANO_5V`, one unbroken fill.
+- **Two copper layers,** the front and the back of a 1.6 mm board.
+  Each carries signals, with ground filled around them. The supplies
+  run as tracks 0.4 mm wide.
 - **Ground is one net everywhere.** A fill on a layer that also takes
   tracks is cut into pieces by them. The two ground fills are tied
   together by a via every 10 mm and by every through-hole ground pad,
   so that a piece of one is joined through the other.
-- **A supply with a layer of its own reaches a pad through a via
-  beside the pad,** and the router lays no track for it.
 - **A bypass capacitor is joined to the pins it serves by a track,**
-  pad to pad on the front, beside the vias to the fills: the way from
-  pin to capacitor does not run through a via, a fill and another via.
+  pad to pad on the front: the way from pin to capacitor does not run
+  through a via, a fill and another via.
   Analog Devices' MT-101 (figure 6) has the capacitor at the supply pin
   with both connections as short as possible
   (https://www.analog.com/media/en/training-seminars/tutorials/MT-101.pdf),
   and Texas Instruments' notes on decoupling have it joined to the
   planes by vias and to the device's rail by a short thick track
   (https://www.ti.com/content/dam/videos/external-videos/en-us/9/3816841626001/6313253251112.mp4/subassets/notes-decoupling_capacitors.pdf).
-  The rule that does it names no kind of part: two pads of one fill's
-  net on two parts of one block of the circuit, no further apart than
-  6 mm, get a track (`scripts/lay_fill_vias.py`).
-- **The USB data pair is 0.3 mm tracks 0.2 mm apart,** which over a
-  layer 0.21 mm below comes to about 87 Ω between the two lines by the
-  microstrip approximation JLCPCB prints
+- **The USB data pair is 0.3 mm tracks 0.2 mm apart.** With the back of
+  the board 1.5 mm below, that comes to about 143 Ω between the two
+  lines by the microstrip approximation JLCPCB prints
   (https://jlcpcb.com/blog/standard-pcb-thickness), with their
   dielectric constant of 4.6. Espressif's hardware design guidelines
-  for the ESP32-S3 ask for 90 Ω ±10 %. On a two-layer board, with the
-  nearest layer 1.5 mm below, the same pair comes to about 143 Ω.
+  for the ESP32-S3 ask for 90 Ω ±10 % (Open).
 - **The USB data pair is laid as a pair:** its two tracks side by side
   on the front from the socket to the module, equally long, without a
-  via, straight from the one to the other (`circuit/pair_paths.toml`). Espressif's
-  guidelines ask for the pair in parallel at equal lengths, with as few
-  vias as possible
+  via, straight from the one to the other. Espressif's guidelines ask
+  for the pair in parallel at equal lengths, with as few vias as
+  possible
   (https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32s3/pcb-layout-design.html,
   USB).
-- **No copper is filled under the ESP32 module's antenna,** on any
+- **No copper is filled under the ESP32 module's antenna,** on either
   layer.
 
 ## Where the parts sit
@@ -206,7 +196,7 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   (https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32s3/pcb-layout-design.html,
   Positioning a module on a base board). Three things make up for it:
   the module sits on headers, away from the board; no copper is filled
-  under the antenna on any layer (The layers); and what the guidelines
+  under the antenna on either layer (The layers); and what the guidelines
   want kept away from the antenna is kept away from it.
 - **The USB data pair and its socket stay 15 mm or more from the
   antenna's area.** The same guidelines (RF): "the USB port,
@@ -240,9 +230,12 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
 - **What the board does on a weak supply.** Through a USB-A to USB-C
   cable, or from a computer's port, the source may offer only 0.5 to
   1.5 A.
-- **The USB data pair's impedance,** by JLCPCB's own calculator for
-  the stackup: the figure above is an approximation, and the layer under
-  the pair is `ESP_5V`, where Espressif recommends ground.
+- **The USB data pair's impedance:** about 143 Ω by the approximation
+  in The layers, where Espressif asks for 90 Ω ±10 %. The link is
+  full-speed USB, 12 Mbit/s (`docs/thirdparty/esp-dev-kits-en-master-esp32s3.pdf`:
+  "full-speed USB OTG interface, compliant with the USB 1.1
+  specification"), over 25 mm of track. Whether the difference has an
+  effect on it is not measured.
 - **The fixed positions:** which connectors sit at which edge, the
   board's outline and where its four mounting holes sit wait for the
   enclosure.
