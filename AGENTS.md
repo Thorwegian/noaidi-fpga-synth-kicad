@@ -46,6 +46,8 @@
 
 - A finding states where it is (file, sheet, designator, pin), the evidence taken from the files that day, the arithmetic in full, and whether it has any electrical effect. A value that is within its specification is called acceptable in the first sentence.
 
+- Faults are reported worst effect first.
+
 - A figure is measured, taken from a named document (file, section or table, page), or labelled as a bound or a guess. Catalogue stock and prices, and the fab's limits, are fetched the day they are quoted.
 
 - Sources are not equal, and a claim says which kind it rests on:
@@ -122,7 +124,19 @@
 
 - A part is named with its LCSC number and its library class.
 
+- A footprint that is not KiCad's own is held against the data sheet's top view and JLCPCB's package, pad by pad, before it enters the board.
+
+- The pin 1 mark is checked with the pads: JLCPCB places by the silkscreen when it disagrees with the placement list.
+
+- Rotations come from JLCPCB's package, *never* from a table.
+
 - Agents *never* order anything, and never upload files to a fab or a distributor. They prepare the files with `scripts/fab_files.py`; Thor uploads them and orders.
+
+- An answer to "ready to order" names each check and what it does not cover.
+
+- The order is placed with "Confirm Parts Placement", and the placement is approved before assembly.
+
+- The ordered commit is tagged with the revision and the date on the day of the order.
 
 - What an order costs is estimated with `scripts/cost_estimate.py`, not by hand. The estimate is posted on its issue as one comment, and is made anew when the layer count, the board's size, the quantity or a placed part changes.
 
