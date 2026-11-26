@@ -92,7 +92,7 @@ def led_chain(data, supply, gnd, buffer_ref, input_series_ref, pull_down_ref, se
     input needs.
 
     The buffer itself is what lifts the ESP32's 3.3 V to the pixels' domain.
-    The part's input threshold is 0.65 x VDD (data sheet, section 9): 3.25 V at
+    A pixel's input threshold is 0.65 x VDD (data sheet, section 9): 3.25 V at
     5.0 V and 3.41 V at 5.25 V, so a 3.3 V pin is inside the limit at nominal
     and outside it at the top of a USB port's range. KiCad's symbol for the
     buffer names none of its pins: 1 is the output enable, 2 the input, 3
@@ -100,7 +100,7 @@ def led_chain(data, supply, gnd, buffer_ref, input_series_ref, pull_down_ref, se
 
     Each pixel reshapes what it receives and forwards it, so one buffer drives
     the whole chain. The 470 ohm resistor sits at the first input, where
-    section 12 of the data sheet asks for it, and the last pixel's output is
+    section 14 of the data sheet asks for it, and the last pixel's output is
     left open.
     """
     buffer = jlcpcb_part(Part("74xGxx", "74AHCT1G125", ref=buffer_ref, tag="level_shifter",
@@ -146,7 +146,7 @@ def led_chain(data, supply, gnd, buffer_ref, input_series_ref, pull_down_ref, se
 
 with SubCircuit("esp32", tag="esp32"):
     esp = Part(PROJECT, "ESP32-S3-DevKitC", ref="U1", tag="esp", pin_splitters="/",
-               footprint="noaidi-fpga-synth:ESP32-S3-DevKitC")
+               footprint=f"{PROJECT}:ESP32-S3-DevKitC")
     esp[:] += NC
 
     ESP_5V += esp["5V"]
@@ -206,8 +206,8 @@ with SubCircuit("esp32", tag="esp32"):
               tag="led_chain")
 
     # Whether the power socket is in, read as a voltage rather than as a logic
-    # level, so the firmware can tell a charger from a computer's port: 1.56 V
-    # at 4.75 V, 1.64 V at 5.0 V and 1.72 V at 5.25 V, at 340 uA.
+    # level, so the firmware can tell a charger from a computer's port: 1.52 V
+    # at 4.75 V, 1.60 V at 5.0 V and 1.68 V at 5.25 V, at 340 uA.
     sense_top = resistor(ref="R22", value="10k", tag="sense_top")
     sense_bottom = resistor(ref="R23", value="4.7k", tag="sense_bottom")
     ext_5v_sense = Net("EXT_5V_SENSE")

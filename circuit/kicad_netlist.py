@@ -28,9 +28,10 @@ A pin the circuit leaves unconnected, or marks as not connected, is written
 as a net of its own named unconnected-(<ref>-Pad<pin>), which is what
 eeschema writes for a pin that ends up alone in its net. KiCad's importer
 warns about every numbered pad on copper that the netlist says nothing
-about, so the netlist says something about these. A pad with no pin in the
-circuit at all keeps that warning: the two DIN jacks' footprints have
-MNT1 and MNT2, which the symbol Connector:DIN-5_180degree does not.
+about, so the netlist says something about these. A pad without a number
+gets no such warning and needs no pin: the two shielding contacts of each
+DIN jack are pads of that kind, soldered for the hold alone (esp32.py,
+midi_input).
 """
 from skidl import *
 
@@ -45,7 +46,13 @@ def write(path):
     circuit = default_circuit
     circuit.merge_net_names()
     circuit.check_for_empty_footprints()
-    circuit.check_tags()
+    # circuit.check_tags() without the root: SKiDL warns that its own root has
+    # no tag, and its netlist writer refuses a root that has one.
+    for part in circuit.parts:
+        part.check_tag(create_if_missing=True)
+    for node in circuit.nodes:
+        if node is not circuit.root:
+            node.check_tag()
     lines = ['(export (version "E")', "  (design", '    (source "circuit/board.py")', '    (tool "SKiDL"))',
              "  (components"]
     for part in sorted(circuit.parts, key=lambda part: str(part.ref)):

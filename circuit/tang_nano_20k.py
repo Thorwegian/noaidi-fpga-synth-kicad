@@ -42,6 +42,8 @@ with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
     dac["DE", "MCK", "MU"] += NC
 
     NANO_5V += fpga["5V"], dac["VIN"]
+    # The module has two pins named 3V3, 19 and 25. The rail is taken from 25
+    # alone, so this one pin is addressed by its number: the name means both.
     NANO_3V3 += fpga[25]
     PCM_3V3 += dac["3V"]
     test_point(NANO_5V, "TP11")

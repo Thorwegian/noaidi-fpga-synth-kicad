@@ -1,0 +1,36 @@
+{
+    "lib_search_paths": {
+        "kicad5": [
+            "."
+        ],
+        "kicad6": [
+            "."
+        ],
+        "kicad7": [
+            "."
+        ],
+        "kicad8": [
+            "."
+        ],
+        "kicad9": [
+            "."
+        ]
+    },
+    "footprint_search_paths": {
+        "kicad5": [
+            ""
+        ],
+        "kicad6": [
+            ""
+        ],
+        "kicad7": [
+            ""
+        ],
+        "kicad8": [
+            ""
+        ],
+        "kicad9": [
+            ""
+        ]
+    }
+}
