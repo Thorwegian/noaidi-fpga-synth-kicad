@@ -34,7 +34,10 @@ with an ARM processor to drive the user interface.
 4. **The 96 kHz S/PDIF stream on a coaxial output** (FPGA pin 27, RCA
    socket J3): the listening path, into the Focusrite interface. It
    delivers 0.5 to 0.6 V into a 75 Ω receiver, through a divider of
-   220 Ω in series and 120 Ω to ground.
+   220 Ω in series and 120 Ω to ground. A 100 nF capacitor in series
+   at the pin keeps DC off the cable, as AKM draws it for a transmitter
+   (AK4114 data sheet MS0098-E-04, page 22, figure 22:
+   https://media.digikey.com/pdf/Data%20Sheets/AKM%20Semiconductor%20Inc.%20PDFs/AK4114.pdf).
 5. **The 48 kHz S/PDIF stream for the lab's optical capture** (FPGA
    pin 86): it drives an LED into the optical input of the lab
    computer's USB audio interface, which the automated tests record
@@ -46,10 +49,16 @@ with an ARM processor to drive the user interface.
    circuit is noted at about 28 mA peaks.
 6. **Both S/PDIF signals straight from the FPGA pins on pin headers**
    (J5, J6), to tap in the lab: the 96 kHz stream ahead of its
-   divider, and the 48 kHz stream for the lab jig's LED.
+   capacitor and divider, and the 48 kHz stream for the lab jig's LED.
 7. **A USB connection to a computer** as a USB MIDI class device, on
    the ESP32's own USB data pair, through a USB-C socket of its own.
-   That socket's supply pin feeds no rail.
+   That socket's supply pin feeds no rail. A divider on GPIO47 tells
+   the firmware whether a host supplies it: a device with a supply of
+   its own may pull D+ up only while the host's supply is there (USB
+   2.0, sections 7.1.5.1 and 7.2.1), and Espressif's USB device stack
+   reads that from a pin
+   (https://docs.espressif.com/projects/esp-usb/en/latest/esp32s3/usb_device.html,
+   Self-Powered Device).
 8. **Buses on pin headers, for developing the front panel board:**
    the second SPI bus (J10), the two I2C buses (J8, J11), a UART (J12)
    and I2S (J7). The UART's header carries the ESP32 module's 5 V
@@ -75,7 +84,8 @@ They will not necessarily be kept in a final design.
   module's 5 V rail through an ideal diode of its own. A USB-C source
   can offer up to 3 A this way, 15 W.
 - **The USB MIDI socket is a second USB-C socket** (requirement 7).
-  It carries data only, so the board has one power entry.
+  It carries data only, and its supply pin is read and not drawn
+  from, so the board has one power entry.
 - **The front panel board is powered from the base board:** power is
   forwarded to it board to board from the main power connector. It
   has no supply or power connector of its own, and it may draw quite
@@ -236,6 +246,13 @@ panel board, 10 W together, both upper bounds. A USB 2.0 port supplies
   "full-speed USB OTG interface, compliant with the USB 1.1
   specification"), over 25 mm of track. Whether the difference has an
   effect on it is not measured.
+- **A transformer at the S/PDIF socket.** AKM and Cirrus draw one
+  after the divider (AK4114 data sheet, figure 22; CS8406 data sheet
+  DS580F3, page 35, figure 14:
+  https://www.farnell.com/datasheets/88462.pdf), and the board has
+  none: its ground reaches the receiver's through the cable's shield.
+  Whether that loop is heard through the Focusrite interface is not
+  measured.
 - **The fixed positions:** which connectors sit at which edge, the
   board's outline and where its four mounting holes sit wait for the
   enclosure.

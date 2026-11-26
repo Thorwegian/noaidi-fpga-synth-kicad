@@ -213,7 +213,14 @@ at the root, which is not committed:
 
 - `skidl`: circuits described in Python. It is not in Ubuntu's packages.
   It finds KiCad's symbol libraries through the environment variable
-  `KICAD10_SYMBOL_DIR` (`/usr/share/kicad/symbols` on Ubuntu).
+  `KICAD10_SYMBOL_DIR` (`/usr/share/kicad/symbols` on Ubuntu). It also
+  looks for KiCad 5 to 9 on every run, and warns about each one that is
+  not installed. `circuit/.skidlcfg` gives those five an empty answer; it
+  is read from SKiDL's own folder, where it is put once on each machine
+  (`~/Library/Application Support/skidl` on macOS):
+
+      mkdir -p ~/.local/share/skidl
+      cp circuit/.skidlcfg ~/.local/share/skidl/
 - `pillow`: for `scripts/crop.py` and `scripts/parts_picture.py`.
 
 ## The circuit in text

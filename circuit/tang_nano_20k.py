@@ -13,21 +13,36 @@ from skidl import *
 
 from global_nets import (GND, I2S_BCK, I2S_DATA, I2S_WS, NANO_3V3, NANO_5V, PCM_3V3,
                          SPDIF0, SPDIF1, SPI2_CS_N, SPI2_MISO, SPI2_MOSI, SPI2_SCLK)
-from parts import PROJECT, pin_header, resistor, test_point
+from parts import PROJECT, capacitor, pin_header, resistor, test_point
 
 
 @subcircuit
-def spdif_output(stream, gnd, series_ref, shunt_ref, socket_ref, tap_ref, test_point_ref):
-    """One S/PDIF stream to an RCA socket through a 220/120 divider, with the
-    undivided signal on a header ahead of it."""
+def spdif_output(stream, gnd, coupling_ref, series_ref, shunt_ref, socket_ref, tap_ref,
+                 test_point_ref):
+    """One S/PDIF stream to an RCA socket through a capacitor and a 220/120
+    divider, with the pin's own signal on a header ahead of them.
+
+    The capacitor keeps the pin's DC off the cable. The stream is high half of
+    the time, so without it the line rests at half its level, 0.29 V into 75
+    ohm. It sits at the pin, ahead of the divider, where AKM draws it (AK4114
+    data sheet, figure 22): the 120 ohm then holds the socket at ground. With
+    the 266 ohm it sees, 100 nF turns at 6 kHz, and the stream's slowest
+    alternation at 96 kHz is 2 MHz.
+
+    AKM and Cirrus (CS8406 data sheet, figure 14) draw a transformer at the
+    socket as well, which this output does not have: the socket's shell is
+    this board's ground."""
+    coupling = capacitor(ref=coupling_ref, value="100n", tag="coupling")
     series = resistor(ref=series_ref, value="220", tag="series")
     shunt = resistor(ref=shunt_ref, value="120", tag="shunt")
     socket = Part("Connector", "Conn_Coaxial", ref=socket_ref, tag="socket",
                   footprint=f"{PROJECT}:RCA_Kycon_KLPX-0848A")
     tap = pin_header(2, ref=tap_ref, tag="tap")
+    coupled = Net(f"{stream.name}_AC")
     coax = Net(f"{stream.name}_COAX")
 
-    stream += series[1], tap[2]
+    stream += coupling[1], tap[2]
+    coupled += coupling[2], series[1]
     coax += series[2], shunt[1], socket["In"]
     gnd += shunt[2], socket["Ext"], tap[1]
     test_point(stream, test_point_ref)
@@ -42,6 +57,8 @@ with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
     dac["DE", "MCK", "MU"] += NC
 
     NANO_5V += fpga["5V"], dac["VIN"]
+    # The module has two pins named 3V3, 19 and 25. The rail is taken from 25
+    # alone, so this one pin is addressed by its number: the name means both.
     NANO_3V3 += fpga[25]
     PCM_3V3 += dac["3V"]
     test_point(NANO_5V, "TP11")
@@ -65,8 +82,8 @@ with SubCircuit("tang_nano_20k", tag="tang_nano_20k"):
 
     SPDIF0 += fpga["27_IOB8A"]
     SPDIF1 += fpga["86_IOT4A"]
-    spdif_output(SPDIF0, GND, series_ref="R7", shunt_ref="R8", socket_ref="J3", tap_ref="J5",
-                 test_point_ref="TP14", tag="spdif0_output")
+    spdif_output(SPDIF0, GND, coupling_ref="C10", series_ref="R7", shunt_ref="R8",
+                 socket_ref="J3", tap_ref="J5", test_point_ref="TP14", tag="spdif0_output")
     # The 48 kHz stream has no coaxial output: its pin drives the lab's LED
     # from this header, and cannot drive a divider as well.
     lab_capture_tap = pin_header(2, ref="J6", tag="lab_capture_tap")
