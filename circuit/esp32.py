@@ -14,7 +14,7 @@ from skidl import *
 from global_nets import (ESP_3V3, ESP_5V, EXT_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_SCL, I2C1_SDA,
                          MIDI1_RX, MIDI2_RX, PANEL_UART_RX, PANEL_UART_TX, SPI2_CS_N,
                          SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
-                         SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS)
+                         SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS, USB_DATA_VBUS)
 from parts import PROJECT, capacitor, jlcpcb_part, pin_header, resistor, test_point
 
 
@@ -144,6 +144,19 @@ def led_chain(data, supply, gnd, buffer_ref, input_series_ref, pull_down_ref, se
             pixel_input += led[5]
 
 
+@subcircuit
+def supply_sense(supply, sense, gnd, top_ref, top_value, bottom_ref, bottom_value):
+    """A supply divided down onto a pin, for the firmware to read whether it
+    is in. The top resistor is all that stands between the supply and the pin
+    while the module is unpowered, so its value bounds what flows into it."""
+    divider_top = resistor(ref=top_ref, value=top_value, tag="divider_top")
+    divider_bottom = resistor(ref=bottom_ref, value=bottom_value, tag="divider_bottom")
+
+    supply += divider_top[1]
+    sense += divider_top[2], divider_bottom[1]
+    gnd += divider_bottom[2]
+
+
 with SubCircuit("esp32", tag="esp32"):
     esp = Part(PROJECT, "ESP32-S3-DevKitC", ref="U1", tag="esp", pin_splitters="/",
                footprint=f"{PROJECT}:ESP32-S3-DevKitC")
@@ -208,12 +221,23 @@ with SubCircuit("esp32", tag="esp32"):
     # Whether the power socket is in, read as a voltage rather than as a logic
     # level, so the firmware can tell a charger from a computer's port: 1.52 V
     # at 4.75 V, 1.60 V at 5.0 V and 1.68 V at 5.25 V, at 340 uA.
-    sense_top = resistor(ref="R22", value="10k", tag="sense_top")
-    sense_bottom = resistor(ref="R23", value="4.7k", tag="sense_bottom")
     ext_5v_sense = Net("EXT_5V_SENSE")
-    EXT_5V += sense_top[1]
-    ext_5v_sense += sense_top[2], sense_bottom[1], esp["GPIO2"]
-    GND += sense_bottom[2]
+    ext_5v_sense += esp["GPIO2"]
+    supply_sense(EXT_5V, ext_5v_sense, GND, top_ref="R22", top_value="10k", bottom_ref="R23",
+                 bottom_value="4.7k", tag="ext_5v_sense")
+
+    # Whether a host supplies the data socket, read as a logic level. The board
+    # has a supply of its own, and such a device has to know: it may pull D+ up
+    # only while the host's supply is there (USB 2.0, sections 7.1.5.1 and
+    # 7.2.1). Espressif asks for 0.75 x VDD on the pin at 4.4 V, which is
+    # 2.48 V; 100 k over 150 k passes 0.6 of the supply: 2.64 V at 4.4 V, 3.00 V
+    # at 5.0 V and 3.30 V at 5.5 V, the most a USB-C source gives. The module
+    # is unpowered whenever the computer is plugged in and the charger is not,
+    # and the 100 k then lets at most 55 uA into the dead pin.
+    usb_data_vbus_sense = Net("USB_DATA_VBUS_SENSE")
+    usb_data_vbus_sense += esp["GPIO47"]
+    supply_sense(USB_DATA_VBUS, usb_data_vbus_sense, GND, top_ref="R24", top_value="100k",
+                 bottom_ref="R25", bottom_value="150k", tag="usb_data_vbus_sense")
 
     MIDI1_RX += esp["GPIO18"]
     MIDI2_RX += esp["GPIO1"]
