@@ -22,6 +22,10 @@ for supply in (EXT_5V, ESP_5V, NANO_5V, ESP_3V3, NANO_3V3, PCM_3V3, GND):
     supply.drive = POWER
     supply.netclasses = SUPPLY
 
+# The data socket's supply pins. They feed no rail: the net is here for the
+# ESP32 to read whether a host is on the cable.
+USB_DATA_VBUS = Net("USB_DATA_VBUS")
+
 # KiCad takes the two for a differential pair by their names: one base name, ending in + and -.
 USB_D_PLUS = Net("USB_D+")
 USB_D_MINUS = Net("USB_D-")

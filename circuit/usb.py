@@ -6,10 +6,11 @@
 """usb.py -- the usb sheet: two USB-C sockets. One brings in EXT_5V, which
 feeds each module's 5 V rail through an ideal diode of its own, and carries
 no data; the other carries the ESP32's USB data pair, and its supply pins
-feed no rail."""
+feed no rail: the esp32 sheet reads them, to know whether a host is there."""
 from skidl import *
 
-from global_nets import ESP_5V, EXT_5V, GND, NANO_5V, USB_D_MINUS, USB_D_PLUS
+from global_nets import (ESP_5V, EXT_5V, GND, NANO_5V, USB_D_MINUS, USB_D_PLUS,
+                         USB_DATA_VBUS)
 from parts import PROJECT, ideal_diode_supply, jlcpcb_part, resistor, test_point
 
 
@@ -58,7 +59,7 @@ with SubCircuit("usb", tag="usb"):
     USB_D_MINUS += data_socket["D-"]
     # The data socket's supply pins feed no rail. They are one net all the
     # same: the footprint's pads for them lie on each other in pairs.
-    Net("USB_DATA_VBUS").connect(data_socket["VBUS"])
+    USB_DATA_VBUS += data_socket["VBUS"]
 
 if __name__ == "__main__":
     generate_netlist(file_="usb.net")
