@@ -32,25 +32,26 @@ mounting_hole_template = Part("Mechanical", "MountingHole", dest=TEMPLATE,
                               footprint="MountingHole:MountingHole_3.2mm_M3")
 
 
-def test_point(net, ref):
-    """A test point on the net, in the block of the circuit it is called in.
+def test_point(net):
+    """A test point on the net, in the block of the circuit it is called in,
+    and named after the net: spi2_cs_n_test_point.
 
     A test point is a bare pad: there is no part to buy for it and none to
     place, and KiCad's footprint for it says so with the two attributes."""
-    point = test_point_template(ref=ref, tag=ref.lower())
+    point = test_point_template(tag=f"{net.name.lower()}_test_point")
     point.exclude_from_bom = True
     point.exclude_from_pos_files = True
     net += point[1]
 
 
-def mounting_hole(ref):
+def mounting_hole(tag):
     """A hole through the board for an M3 bolt, in the block of the circuit it
     is called in.
 
     It reaches no pin and no net, and there is no part to buy for it: it is
     KiCad's footprint of the hole and nothing else, so it is in neither the
     BOM nor the position files."""
-    hole = mounting_hole_template(ref=ref, tag=ref.lower())
+    hole = mounting_hole_template(tag=tag)
     hole.exclude_from_bom = True
     hole.exclude_from_pos_files = True
     return hole
@@ -77,19 +78,19 @@ def pin_header(pins, **attributes):
 
 
 @subcircuit
-def ideal_diode_supply(source, rail, gnd, diode_ref, capacitor_ref, gnd_test_point_ref=None):
+def ideal_diode_supply(source, rail, gnd, gnd_test_point=False):
     """A supply onto a module's own rail through an LM66100 ideal diode.
 
     CE is tied to VOUT, the data sheet's always-on reverse current blocking:
     the diode opens when the rail is below the source and closes when the rail
     is held above it, as when the module runs from its own USB port.
     """
-    diode = jlcpcb_part(ideal_diode(ref=diode_ref, tag="diode"), "C2869734")
-    input_capacitor = capacitor(ref=capacitor_ref, value="1u", tag="input_capacitor")
+    diode = jlcpcb_part(ideal_diode(tag="diode"), "C2869734")
+    input_capacitor = capacitor(value="1u", tag="input_capacitor")
 
     source += diode["VIN"], input_capacitor[1]
     rail += diode["VOUT"], diode["~{CE}"]
     gnd += diode["GND"], diode["ST"], input_capacitor[2]
     diode["NC"] += NC
-    if gnd_test_point_ref:
-        test_point(gnd, gnd_test_point_ref)
+    if gnd_test_point:
+        test_point(gnd)

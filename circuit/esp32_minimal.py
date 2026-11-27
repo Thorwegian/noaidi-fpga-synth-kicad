@@ -20,6 +20,7 @@ board, so that the netlist can be held against that board.
 """
 from skidl import *
 
+import designators
 from parts import capacitor, jlcpcb_part, resistor
 
 # The variant is not decided: it is chosen when the module goes onto the
@@ -43,17 +44,24 @@ def gpio_pin(module, number):
     return module[PIN_OF_GPIO.get(number, f"IO{number}")]
 
 
-def switch_transistor(ref, tag):
+# The designators the circuit's parts have on Espressif's board, by tag.
+ON_ESPRESSIFS_BOARD = {
+    "module": "U4", "supply_link": "R24", "bulk": "C1", "bypass": "C2",
+    "enable_pullup": "R5", "enable_delay": "C6",
+    "reset_switch": "Q1", "reset_base": "R10", "reset_link": "R8",
+    "boot_switch": "Q2", "boot_base": "R12", "boot_link": "R13",
+}
+
+
+def switch_transistor(tag):
     """An NPN that pulls a 10 kΩ pull-up low: any small one does, and the
     SS8050 is the 8050 in JLCPCB's basic library (Espressif fits LRC's L8050)."""
-    return jlcpcb_part(Part("Transistor_BJT", "SS8050", ref=ref, tag=tag,
+    return jlcpcb_part(Part("Transistor_BJT", "SS8050", tag=tag,
                             footprint="Package_TO_SOT_SMD:SOT-23"), "C2150")
 
 
 @subcircuit
-def esp32_minimal(gpios, module_ref, supply_link_ref, bulk_ref, bypass_ref, enable_pullup_ref,
-                  enable_delay_ref, reset_switch_ref, reset_base_ref, reset_link_ref,
-                  boot_switch_ref, boot_base_ref, boot_link_ref):
+def esp32_minimal(gpios):
     """The module on a 3.3 V supply, programmed through four lines: UART0's
     two and a serial adapter's DTR and RTS. Returns what a sheet connects to,
     as SKiDL's documentation has a subcircuit do (Hierarchy, method 1):
@@ -98,20 +106,20 @@ def esp32_minimal(gpios, module_ref, supply_link_ref, bulk_ref, bypass_ref, enab
     if not_on_the_module:
         raise ValueError(f"esp32_minimal has no GPIO {not_on_the_module} for a sheet")
 
-    module = jlcpcb_part(Part("RF_Module", "ESP32-S3-WROOM-1", ref=module_ref, tag="module",
+    module = jlcpcb_part(Part("RF_Module", "ESP32-S3-WROOM-1", tag="module",
                               value=MODULE_VARIANT, footprint="RF_Module:ESP32-S3-WROOM-1"),
                          MODULE_LCSC)
-    supply_link = resistor(ref=supply_link_ref, value="0", tag="supply_link")
-    bulk = capacitor(ref=bulk_ref, value="10u", tag="bulk")
-    bypass = capacitor(ref=bypass_ref, value="100n", tag="bypass")
-    enable_pullup = resistor(ref=enable_pullup_ref, value="10k", tag="enable_pullup")
-    enable_delay = capacitor(ref=enable_delay_ref, value="1u", tag="enable_delay")
-    reset_switch = switch_transistor(ref=reset_switch_ref, tag="reset_switch")
-    reset_base = resistor(ref=reset_base_ref, value="10k", tag="reset_base")
-    reset_link = resistor(ref=reset_link_ref, value="0", tag="reset_link")
-    boot_switch = switch_transistor(ref=boot_switch_ref, tag="boot_switch")
-    boot_base = resistor(ref=boot_base_ref, value="10k", tag="boot_base")
-    boot_link = resistor(ref=boot_link_ref, value="0", tag="boot_link")
+    supply_link = resistor(value="0", tag="supply_link")
+    bulk = capacitor(value="10u", tag="bulk")
+    bypass = capacitor(value="100n", tag="bypass")
+    enable_pullup = resistor(value="10k", tag="enable_pullup")
+    enable_delay = capacitor(value="1u", tag="enable_delay")
+    reset_switch = switch_transistor(tag="reset_switch")
+    reset_base = resistor(value="10k", tag="reset_base")
+    reset_link = resistor(value="0", tag="reset_link")
+    boot_switch = switch_transistor(tag="boot_switch")
+    boot_base = resistor(value="10k", tag="boot_base")
+    boot_link = resistor(value="0", tag="boot_link")
 
     module[:] += NC
 
@@ -146,11 +154,9 @@ def esp32_minimal(gpios, module_ref, supply_link_ref, bulk_ref, bypass_ref, enab
 
 
 if __name__ == "__main__":
-    esp = esp32_minimal(gpios=(), module_ref="U4", supply_link_ref="R24", bulk_ref="C1",
-                        bypass_ref="C2", enable_pullup_ref="R5", enable_delay_ref="C6",
-                        reset_switch_ref="Q1", reset_base_ref="R10", reset_link_ref="R8",
-                        boot_switch_ref="Q2", boot_base_ref="R12", boot_link_ref="R13",
-                        tag="esp32_minimal")
+    esp = esp32_minimal(gpios=(), tag="esp32_minimal")
+    designators.assign({f"esp32_minimal.{tag}": designator
+                        for tag, designator in ON_ESPRESSIFS_BOARD.items()})
     supply, gnd = Net("VCC_3V3"), Net("GND")
     supply += esp.supply
     gnd += esp.gnd

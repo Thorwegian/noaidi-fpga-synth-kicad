@@ -10,16 +10,17 @@ import re
 
 from skidl import *
 
+from designators import tag_path
 from parts import REPO
 
 MODULES = (
-    ("U1", "the ESP32-S3 module",
+    ("esp32.esp", "the ESP32-S3 module",
      "An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO number in "
      "the name is the one the firmware uses."),
-    ("U2", "the Tang Nano 20K",
+    ("tang_nano_20k.fpga", "the Tang Nano 20K",
      "The leading number in the name is the FPGA's pin number, the one the gateware's "
      "constraints file uses."),
-    ("U5", "the Adafruit PCM510x DAC module", ""),
+    ("tang_nano_20k.dac", "the Adafruit PCM510x DAC module", ""),
 )
 
 
@@ -35,7 +36,7 @@ def label(pin):
     part = pin.part
     if len(part.pins) <= 2:
         return part.ref
-    if part.ref in [ref for ref, _, _ in MODULES]:
+    if tag_path(part) in [path for path, _, _ in MODULES]:
         return f"{part.ref}.{pin.num} ({pin.name.split('/')[0]})"
     return f"{part.ref}.{pin.num}"
 
@@ -63,6 +64,7 @@ def pin_table(part):
 
 def write():
     parts = {part.ref: part for part in default_circuit.parts}
+    modules = {tag_path(part): part for part in default_circuit.parts}
     lines = [
         "# Pins and parts",
         "",
@@ -72,11 +74,12 @@ def write():
         "",
         "## Modules",
     ]
-    for ref, title, note in MODULES:
-        lines += ["", f"### {ref}, {title}", ""]
+    for path, title, note in MODULES:
+        module = modules[path]
+        lines += ["", f"### {module.ref}, {title}", ""]
         if note:
             lines += [note, ""]
-        lines += pin_table(parts[ref])
+        lines += pin_table(module)
 
     lines += ["", "## Connectors, headers and jumpers"]
     for ref in sorted((r for r in parts if r.startswith("J")), key=natural):

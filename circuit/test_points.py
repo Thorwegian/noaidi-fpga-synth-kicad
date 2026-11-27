@@ -4,20 +4,19 @@
 #   License: CERN-OHL-S v2
 #
 """test_points.py -- the test_points sheet: the test points on supply nets
-that are in no block, TP10 on ESP_3V3 and TP19 on ground. A supply net is
+that are in no block, one on ESP_3V3 and one on ground. A supply net is
 no one part's, so these two stand outside the blocks of the other sheets,
-where every other test point is made beside what it probes. There is no
-TP17."""
+where every other test point is made beside what it probes."""
 from skidl import *
 
+import designators
 from global_nets import ESP_3V3, GND
 
 from parts import test_point
 
-TEST_POINTS = (("TP10", ESP_3V3), ("TP19", GND))
-
-for ref, net in TEST_POINTS:
-    test_point(net, ref)
+for rail in (ESP_3V3, GND):
+    test_point(rail)
 
 if __name__ == "__main__":
+    designators.assign(designators.read(), every_line=False)
     generate_netlist(file_="test_points.net")
