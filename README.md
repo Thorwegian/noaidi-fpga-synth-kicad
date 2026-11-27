@@ -144,7 +144,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   per sheet (`usb.py`, `esp32.py`, `tang_nano_20k.py`, `test_points.py`),
   the nets that cross sheets in `global_nets.py`, the parts used on more
   than one sheet in `parts.py`, and `board.py` for the whole board. See
-  The circuit in text, below. `esp32_minimal.py` is the ESP32-S3-WROOM-1
+  The circuit in text, below. `designators.toml` lists each part's
+  designator by the path of tags that leads to the part
+  (`esp32.midi1_input.opto` is U3), and `designators.py` holds it against
+  the designators the sheets give. `esp32_minimal.py` is the ESP32-S3-WROOM-1
   module with the least that belongs to it, after Espressif's
   ESP32-S3-DevKitC-1; no sheet uses it, as the board carries the bought
   module.

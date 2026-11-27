@@ -9,7 +9,8 @@ Run from build/skidl/ with the environment of scripts/requirements.txt:
 
     KICAD10_SYMBOL_DIR=/usr/share/kicad/symbols ../../circuit/board.py
 
-Writes board.net and net_classes.json there and rewrites docs/pins.md.
+Writes board.net and net_classes.json there and rewrites docs/pins.md, after
+holding the designators the sheets give against designators.toml.
 board.net is the netlist as KiCad's Import Netlist takes it without
 proposing a change to the board (kicad_netlist.py). Each sheet can be run
 the same way on its own and writes <sheet>.net, SKiDL's own netlist.
@@ -20,6 +21,7 @@ import esp32
 import tang_nano_20k
 import test_points
 import usb
+import designators
 import kicad_netlist
 import net_classes
 import pin_map
@@ -32,6 +34,7 @@ with SubCircuit("mounting_holes", tag="mounting_holes"):
     for ref in ("H1", "H2", "H3", "H4"):
         mounting_hole(ref)
 
+designators.check()
 ERC()
 kicad_netlist.write("board.net")
 net_classes.write()
