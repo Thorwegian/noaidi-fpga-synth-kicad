@@ -167,8 +167,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `scripts/netlist_import.py`: what KiCad's File > Import > Netlist
   would list for the netlist `circuit/board.py` writes and the board, in
   the dialog's own wording and without running KiCad, so that a mistake
-  in the circuit is found before anyone opens the board. KiCad's dialog
-  is the authority; this is the check that comes first.
+  in the circuit is found before anyone opens the board. It links
+  footprints by their tstamps, the dialog's "Link footprints using
+  component tstamps (unique ids)", unless it is given `--by-designator`.
+  KiCad's dialog is the authority; this is the check that comes first.
 - `docs/pins.md`: which pin of which module carries what, the
   connectors, the test points, and each part's name in the code.
   Written by `circuit/board.py`; not edited by hand.

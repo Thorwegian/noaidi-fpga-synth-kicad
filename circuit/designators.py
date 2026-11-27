@@ -7,9 +7,10 @@ that leads to the part.
 
 designators.toml is the table: "esp32.midi1_input.opto" = "U3". The path is
 a part's name in the circuit: the tags of the sheet and the blocks it is made
-in, then its own. SKiDL makes the part's tstamp from it, and it stays when a
-part is renumbered. The designator is what is printed on the board, and what
-KiCad links a footprint to its part by.
+in, then its own. SKiDL makes the part's tstamp from it, which is what KiCad
+links a footprint to its part by: the footprint stays when the part is
+renumbered, and a part whose path changes is a new part to KiCad. The
+designator is what is printed on the board.
 
 The sheets give no part a designator. assign() sets every part's from the
 table, once the circuit is built and before anything is written from it.

@@ -76,7 +76,7 @@
 
 ## The circuit and the board
 
-- The board is edited in KiCad, and the circuit in text (`circuit/`) is held against it: the netlist that `circuit/board.py` writes is right when KiCad's File > Import > Netlist, set to "Link footprints using reference designators", proposes no change to the board. KiCad is the authority on that.
+- The board is edited in KiCad, and the circuit in text (`circuit/`) is held against it: the netlist that `circuit/board.py` writes is right when KiCad's File > Import > Netlist, set to "Link footprints using component tstamps (unique ids)", proposes no change to the board. KiCad is the authority on that.
 
 - The KiCad project has no schematic, and the board is never updated from one in the KiCad GUI.
 
@@ -95,6 +95,8 @@
   - The measure is the worst case, not the typical one.
 
 - A part has a descriptive name in the code (`cc1_pulldown`), which is also its `tag`, and a regular designator on the board (`R13`), which `circuit/designators.toml` gives it. `circuit/board.py` writes a new part's line there, with the next free number, and the table is committed with the change. Existing designators are not renumbered, a gap stays a gap, and the number of a removed part is retired.
+
+- A footprint is linked to its part by the part's tags, from the sheet's down to its own. A designator can change and the footprint stays; a part whose tag, or whose block's tag, changes is a new part to KiCad, and its footprint loses its place.
 
 - A net that crosses sheets is defined once, in `circuit/global_nets.py`, and imported. Every net a person may want to probe has a name. A circuit that appears twice is written once, as a function that takes its nets as arguments.
 
@@ -188,7 +190,7 @@ License: CERN-OHL-S v2
 ## The tools
 
 - `README.md` lists the scripts and the build tools. Each script says in its heading what it does and needs.
-- `scripts/netlist_import.py` holds the circuit in text against the board, without running KiCad.
+- `scripts/netlist_import.py` holds the circuit in text against the board, without running KiCad. It links footprints by tstamps unless given `--by-designator`.
 - The scripts that read the board file run under the system's Python (`/usr/bin/python3`), which has KiCad's `pcbnew` module. The other Python tools live in the main checkout's `.venv/`, which serves every worktree.
 - Everything generated lands under `build/`.
 
