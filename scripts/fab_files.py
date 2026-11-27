@@ -26,15 +26,18 @@ https://jlcpcb.com/help/article/how-to-generate-the-bom-and-centroid-file-from-k
 JLCPCB places the parts that have an LCSC number, which is the footprint's
 field `LCSC`. A part without one is soldered by hand and is in neither list.
 
-A position is the footprint's own, in millimetres from the same origin as
-the Gerber files, with y upwards. JLCPCB's library holds some packages
-turned against KiCad's footprint for them, and how a package is drawn there
-goes by the part, not by the package's name. So the script fetches each
-part's package from that library (EasyEDA's component API, by LCSC number)
-and turns the board's footprint until every pad number lies on the
-library's pad of that number. A part's rotation in the list is its
-orientation on the board less that turn, with the library's drawing taken
-as JLCPCB's 0 degrees.
+JLCPCB places the package it has in its own library for a part, by that
+package's origin and from that package's 0 degrees. Its library holds some
+packages turned against KiCad's footprint for them, and some with their
+origin elsewhere among the pads; how a package is drawn there goes by the
+part, not by the package's name. So the script fetches each part's package
+from that library (EasyEDA's component API, by LCSC number) and turns the
+board's footprint until every pad number lies on the library's pad of that
+number. A part's rotation in the list is its orientation on the board less
+that turn, with the library's drawing taken as JLCPCB's 0 degrees. Its
+position is where the package's origin lies when the middle of the
+package's pads is on the middle of the footprint's, in millimetres from
+the same origin as the Gerber files, with y upwards.
 
 The packages are kept in docs/thirdparty/jlcpcb-library/, one file for each
 LCSC number, as the API gave them. A package that is there is not fetched:
@@ -122,11 +125,16 @@ def own_pads(footprint):
     return turned(pads, -footprint.GetOrientationDegrees())
 
 
+def middle(pads, numbers):
+    """The middle of the rectangle around the pads of the numbers given."""
+    places = [place for number in numbers for place in pads[number]]
+    return ((min(x for x, _ in places) + max(x for x, _ in places)) / 2,
+            (min(y for _, y in places) + max(y for _, y in places)) / 2)
+
+
 def about_their_middle(pads, numbers):
     """The pads of the numbers given, from the middle of the rectangle around them."""
-    places = [place for number in numbers for place in pads[number]]
-    middle_x = (min(x for x, _ in places) + max(x for x, _ in places)) / 2
-    middle_y = (min(y for _, y in places) + max(y for _, y in places)) / 2
+    middle_x, middle_y = middle(pads, numbers)
     return {number: [(x - middle_x, y - middle_y) for x, y in pads[number]] for number in numbers}
 
 
@@ -161,6 +169,20 @@ def turn_to_library(footprint, number):
                  f"at {'no turn' if not turns else 'the turns ' + ', '.join(map(str, turns))}: "
                  f"the pads are not where the part's pins are")
     return turns[0]
+
+
+def library_origin(footprint, number, turn):
+    """Where on the board, in millimetres with y downwards, the origin of
+    the part's package in JLCPCB's library lies when the middle of its pads
+    is on the middle of the footprint's. `turn` is the footprint's turn to
+    the library's drawing."""
+    ours, library = turned(own_pads(footprint), turn), library_pads(number)
+    shared = sorted(set(ours).intersection(library))
+    (our_x, our_y), (their_x, their_y) = middle(ours, shared), middle(library, shared)
+    # From the library's drawing back to the board: the turn undone, then the footprint's orientation.
+    [(across, down)] = turned({number: [(our_x - their_x, our_y - their_y)]}, footprint.GetOrientationDegrees() - turn)[number]
+    position = footprint.GetPosition()
+    return pcbnew.ToMM(position.x) + across, pcbnew.ToMM(position.y) + down
 
 
 def run(*command):
@@ -202,8 +224,8 @@ def main():
         turn = turn_to_library(footprint, number)
         if turn:
             turned_parts.append(f"{designator} by {turn}")
-        position = footprint.GetPosition()
-        placements.append((designator, f"{pcbnew.ToMM(position.x):.4f}", f"{-pcbnew.ToMM(position.y):.4f}",
+        across, down = library_origin(footprint, number, turn)
+        placements.append((designator, f"{across:.4f}", f"{-down:.4f}",
                            "bottom" if footprint.IsFlipped() else "top",
                            f"{(footprint.GetOrientationDegrees() - turn) % 360:g}"))
 
