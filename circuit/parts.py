@@ -63,6 +63,14 @@ def jlcpcb_part(part, lcsc_number):
     return part
 
 
+def hand_soldered_part(part):
+    """Mark a part that JLCPCB has in its library as one soldered by hand:
+    its LCSC field is there, and empty. The field is given because KiCad's
+    netlist import leaves a field alone that only the footprint has."""
+    part.fields["LCSC"] = ""
+    return part
+
+
 def resistor(value, **attributes):
     return jlcpcb_part(resistor_template(value=value, **attributes), RESISTOR_LCSC[value])
 

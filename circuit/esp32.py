@@ -16,7 +16,7 @@ from global_nets import (ESP_3V3, ESP_5V, EXT_5V, GND, I2C0_SCL, I2C0_SDA, I2C1_
                          MIDI1_RX, MIDI2_RX, PANEL_UART_RX, PANEL_UART_TX, SPI2_CS_N,
                          SPI2_MISO, SPI2_MOSI, SPI2_SCLK, SPI3_CS_N, SPI3_MISO,
                          SPI3_MOSI, SPI3_SCLK, USB_D_MINUS, USB_D_PLUS, USB_DATA_VBUS)
-from parts import PROJECT, capacitor, jlcpcb_part, pin_header, resistor, test_point
+from parts import PROJECT, capacitor, hand_soldered_part, jlcpcb_part, pin_header, resistor, test_point
 
 
 @subcircuit
@@ -124,8 +124,10 @@ def led_chain(data, supply, gnd, pixels):
     pixel_input += series[2]
 
     for number in range(1, pixels + 1):
-        led = jlcpcb_part(Part(PROJECT, "LED_SKC6812RGBW", tag=f"led_{number}",
-                               footprint=f"{PROJECT}:LED_SKC6812RGBW_5.0x4.85mm"), "C5378724")
+        # Soldered by hand: JLCPCB reviews an order that places an addressable
+        # LED after it is paid, and names the fee only then.
+        led = hand_soldered_part(Part(PROJECT, "LED_SKC6812RGBW", tag=f"led_{number}",
+                                      footprint=f"{PROJECT}:LED_SKC6812RGBW_5.0x4.85mm"))
         decoupling = capacitor(value="100n", tag=f"decoupling_{number}")
 
         led["GND"] += gnd
