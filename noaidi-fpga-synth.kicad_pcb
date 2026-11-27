@@ -162,6 +162,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/af70656f-e82a-5c12-a768-024567793d54")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -308,6 +310,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/b8e8e6c7-a37e-5384-82d5-01e40b442d9c")
+		(sheetname "/tang_nano_20k/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -546,6 +550,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/49d1504b-44b8-57d6-8835-ec183194f453")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -779,6 +785,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/6be60d8b-b504-53e0-aca2-e6ebe55a065b/b28a820c-d6b5-5c27-bbb6-beb0fed4d95f")
+		(sheetname "/esp32/midi1_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -925,6 +933,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/63443f75-e75c-5600-a0ed-bb69e1da26df/0aa2e5be-0c89-5576-9ae5-378da67a0ca5")
+		(sheetname "/esp32/i2c0_port/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1153,6 +1163,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/4bc66a16-8db8-5b61-bcab-47deea130d51/d613aeb8-da70-5028-a13c-f0fc7ae7a89f")
+		(sheetname "/tang_nano_20k/spdif0_output/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -1274,6 +1286,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/95a88627-df3e-5337-8c1a-84eeed943f83/527ce01a-cbf6-5469-9768-50e432750d8b")
+		(sheetname "/esp32/ext_5v_sense/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1412,6 +1426,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/4a9078c1-55fa-56fd-a1ee-f2a8a928b320")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -1532,6 +1548,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/1c80102e-4a72-557f-9ce8-1c4a1975df19/63878be8-262e-542a-95c1-4f6d7667c091")
+		(sheetname "/usb/power_socket/esp_5v_supply/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1861,6 +1879,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/4bc66a16-8db8-5b61-bcab-47deea130d51/741d23ff-d28c-5ab0-b3ba-5fe628969178")
+		(sheetname "/tang_nano_20k/spdif0_output/")
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start 5.1308 6.1346)
@@ -2132,6 +2152,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/f52543e3-e2f2-52e9-8f80-8f605d2cf934")
+		(sheetname "/usb/power_socket/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2266,6 +2288,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/7c04c2d1-3c5e-51d8-bfcf-6aa8abf2afea")
+		(sheetname "/esp32/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3498,6 +3522,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/5eaf8f0c-0f97-5612-8b2f-b8a9ece72b61/e39d64ac-240d-509b-be48-f7f9be749a59")
+		(sheetname "/usb/data_socket/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3656,6 +3682,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/63443f75-e75c-5600-a0ed-bb69e1da26df/a7aeed64-af80-5b5c-8d21-bbbb9fe16493")
+		(sheetname "/esp32/i2c0_port/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3814,6 +3842,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/79ade0b4-18d8-5094-83c3-add1cf13acc4/8cfc3d1a-d6f3-58b1-884f-2b43614c43a5")
+		(sheetname "/esp32/midi2_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3972,6 +4002,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/6be60d8b-b504-53e0-aca2-e6ebe55a065b/5bc97c5d-f5a8-562d-932f-cedf78d3fdfd")
+		(sheetname "/esp32/midi1_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4130,6 +4162,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/ca577ec9-e26c-505c-91d1-62eea1dbfe06/1f9b02f2-a8c9-5fdc-8a3e-ae5c9c38cb74")
+		(sheetname "/esp32/i2c1_port/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4268,6 +4302,8 @@
 				)
 			)
 		)
+		(path "/3f8decfc-c6e6-56fb-b62b-0f3674bfcf1c")
+		(sheetname "/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -4388,6 +4424,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/63443f75-e75c-5600-a0ed-bb69e1da26df/42e6d52f-564b-5cea-b08a-61e329abbf6b")
+		(sheetname "/esp32/i2c0_port/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4546,6 +4584,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/6be60d8b-b504-53e0-aca2-e6ebe55a065b/08ec295b-3afc-5354-9db9-356867a49b3c")
+		(sheetname "/esp32/midi1_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4696,6 +4736,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/5eaf8f0c-0f97-5612-8b2f-b8a9ece72b61/fa47e0f1-a8e4-5743-b8d6-27cb09fbb211")
+		(sheetname "/usb/data_socket/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5109,6 +5151,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/022c0b16-4515-562e-883d-50b9b6c4ee5d")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5259,6 +5303,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/6be60d8b-b504-53e0-aca2-e6ebe55a065b/689dd51d-e2a0-5c62-8cbe-4a9c1e96a057")
+		(sheetname "/esp32/midi1_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5556,6 +5602,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/6eb6f42e-ab56-59ec-a684-ee325ee28d54")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5950,6 +5998,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/5eaf8f0c-0f97-5612-8b2f-b8a9ece72b61/3a4ba376-54a9-5a41-92e2-38921544785d")
+		(sheetname "/usb/data_socket/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6088,6 +6138,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/ca577ec9-e26c-505c-91d1-62eea1dbfe06/0114f1dc-9482-5867-a7f0-70e18e06ce01")
+		(sheetname "/esp32/i2c1_port/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -6188,6 +6240,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/3ec34ff2-6760-5184-aad2-84a807f898c2")
+		(sheetname "/tang_nano_20k/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -6288,6 +6342,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/1f8f4aeb-c6a4-59a6-b88c-cc57bfccbd3e")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -6396,6 +6452,8 @@
 				)
 			)
 		)
+		(path "/3c07dc9c-2c0c-5752-811d-a3d86cd7f73c/6e1ae344-9643-5a92-bd83-b129812a4bab")
+		(sheetname "/mounting_holes/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -6515,6 +6573,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/5b10f794-8bc7-5a56-8d7a-3d195af1f3fc")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6673,6 +6733,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/882f2ec3-2760-577c-83c3-729a3b34bb13")
+		(sheetname "/usb/power_socket/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6811,6 +6873,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/91c640c3-5dfe-56cd-9312-913390f80f99")
+		(sheetname "/tang_nano_20k/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -6921,6 +6985,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/853923bd-b68c-5c76-a81a-9505a155c9bc")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7154,6 +7220,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/79ade0b4-18d8-5094-83c3-add1cf13acc4/ebd02bd1-9da0-53b4-9e4f-a18c3b1ff8f0")
+		(sheetname "/esp32/midi2_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7292,6 +7360,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/57aeb34c-9bd5-5000-ad94-7179ccde8e19")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -7412,6 +7482,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/b3ac1376-9386-5cd8-a6ec-538736e9a138/7df310c2-12cc-56c1-9f33-09bc49f6c3d8")
+		(sheetname "/usb/power_socket/nano_5v_supply/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7558,6 +7630,8 @@
 				)
 			)
 		)
+		(path "/3c07dc9c-2c0c-5752-811d-a3d86cd7f73c/0680b14c-8353-54a6-9007-44a2cfe1b310")
+		(sheetname "/mounting_holes/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -7668,6 +7742,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/6356b0d6-4958-59b7-8e4f-ade406f378b2")
+		(sheetname "/usb/power_socket/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8061,6 +8137,8 @@
 				)
 			)
 		)
+		(path "/8d1fcdfa-e303-56c1-8ae7-3ce9f1fa7d39")
+		(sheetname "/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -8161,6 +8239,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/63443f75-e75c-5600-a0ed-bb69e1da26df/143f96cd-89ef-5c91-8701-5365e40abb0a")
+		(sheetname "/esp32/i2c0_port/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -8282,6 +8362,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/401691e0-ab39-50e9-b114-215e48328d95")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8428,6 +8510,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/2d6f0684-b1be-593a-823d-96625b0ab34a")
+		(sheetname "/esp32/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8673,6 +8757,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/b7e135e3-bb4a-547d-ad62-f9d1438f46b6")
+		(sheetname "/esp32/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8931,6 +9017,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/79ade0b4-18d8-5094-83c3-add1cf13acc4/a6e4fcbc-971d-541a-bef2-7487f6f98b77")
+		(sheetname "/esp32/midi2_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9205,6 +9293,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/cab5379e-abbd-54fb-8db0-6f0544c838b1")
+		(sheetname "/tang_nano_20k/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9786,6 +9876,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/64b8f120-6ba6-51a7-a7cf-f2658f4484e6")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9945,6 +10037,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/95a88627-df3e-5337-8c1a-84eeed943f83/a188150c-4abc-5f67-b3e6-0ced31f184a8")
+		(sheetname "/esp32/ext_5v_sense/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10091,6 +10185,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/6d1657ae-13f2-504b-b97e-96f2f3e86266")
+		(sheetname "/tang_nano_20k/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10310,6 +10406,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/1d200d4a-ce2e-5943-bdb8-decfb9fead42")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -10418,6 +10516,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/a0b24d6c-83c9-5d7c-8373-759b8a34e239")
+		(sheetname "/tang_nano_20k/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10656,6 +10756,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/a332e05a-362a-52c3-840b-81b9896a90da")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -10756,6 +10858,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/049b0040-9227-582c-a0df-2df6f46d632b")
+		(sheetname "/tang_nano_20k/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -10856,6 +10960,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/1fad7a5d-0103-52ba-84f5-785a6208e932")
+		(sheetname "/tang_nano_20k/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -10956,6 +11062,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/c5d6f7ca-cd89-5020-a9af-219bb7721d6d")
+		(sheetname "/tang_nano_20k/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -11056,6 +11164,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/6be60d8b-b504-53e0-aca2-e6ebe55a065b/bb42562e-bcc8-51c7-bece-c71526843aef")
+		(sheetname "/esp32/midi1_input/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -11153,6 +11263,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/1c141664-e0d2-595a-8435-ccdabd4290c7")
+		(sheetname "/tang_nano_20k/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
@@ -11767,6 +11879,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/4bc66a16-8db8-5b61-bcab-47deea130d51/a0c9721a-7522-5d16-9e96-5504b034d239")
+		(sheetname "/tang_nano_20k/spdif0_output/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11926,6 +12040,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/0c0a4179-46d8-5602-b0e8-37207ab79f80")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12084,6 +12200,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/b3ac1376-9386-5cd8-a6ec-538736e9a138/26aabc62-5c9e-5641-b468-ff46bc2fa662")
+		(sheetname "/usb/power_socket/nano_5v_supply/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12416,6 +12534,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/4a0f0156-1185-5eb5-876d-816d40e56e4e")
+		(sheetname "/tang_nano_20k/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -12526,6 +12646,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/7b94962c-0e8b-5730-a0b4-2c8bfcd01ed1")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -12739,6 +12861,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/a6b2864e-e192-57bc-a225-fb702c7a89ef")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -12860,6 +12984,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/3c372c22-a69c-5526-a028-c17dc849c800/90a1fc23-36df-5793-93c6-84952075e127")
+		(sheetname "/esp32/usb_data_vbus_sense/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13006,6 +13132,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/33eef951-6bc8-5a73-af4c-b67d1b4cf6b8")
+		(sheetname "/tang_nano_20k/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13245,6 +13373,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/ca577ec9-e26c-505c-91d1-62eea1dbfe06/d499bea9-d477-591b-b651-037ae3f5c0fc")
+		(sheetname "/esp32/i2c1_port/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13404,6 +13534,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/c17c58e1-d5a4-5372-9612-c84e99142c2d")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13563,6 +13695,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/3c372c22-a69c-5526-a028-c17dc849c800/fb2829e2-6d2d-523f-b661-137feee37c98")
+		(sheetname "/esp32/usb_data_vbus_sense/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13709,6 +13843,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/becf1a7a-3643-590e-9168-baa7b0b93f0a")
+		(sheetname "/tang_nano_20k/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -13936,6 +14072,8 @@
 				)
 			)
 		)
+		(path "/3c07dc9c-2c0c-5752-811d-a3d86cd7f73c/a7a1af60-6087-56a6-9cbf-e67fa211e8c1")
+		(sheetname "/mounting_holes/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14034,6 +14172,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/b3ac1376-9386-5cd8-a6ec-538736e9a138/4339ee0b-63d0-54a3-8f9b-7ee4cd6f5a38")
+		(sheetname "/usb/power_socket/nano_5v_supply/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14134,6 +14274,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/8b2feb0e-a75d-5306-b698-cfa0fa6c1a99")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14242,6 +14384,8 @@
 				)
 			)
 		)
+		(path "/3c07dc9c-2c0c-5752-811d-a3d86cd7f73c/a6dca83e-999f-5705-afba-5550c2c6ed83")
+		(sheetname "/mounting_holes/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14340,6 +14484,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/c9cfb294-1da7-571d-9c20-f5f9cb0ef7a4")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14448,6 +14594,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/ca577ec9-e26c-505c-91d1-62eea1dbfe06/ccd04f2c-4a32-5512-9aa8-f1f40d61cabc")
+		(sheetname "/esp32/i2c1_port/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -14677,6 +14825,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/a7dcc882-bfa5-5967-9746-60f302c44977")
+		(sheetname "/usb/power_socket/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14777,6 +14927,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/5816a6b3-98a6-552f-8597-89a026fcbad7")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14877,6 +15029,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/63443f75-e75c-5600-a0ed-bb69e1da26df/a2585175-668d-5ae1-9803-9500e4ed45e6")
+		(sheetname "/esp32/i2c0_port/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -14997,6 +15151,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/6be60d8b-b504-53e0-aca2-e6ebe55a065b/d5e202c7-086f-5fd6-87ac-a64c38531fd1")
+		(sheetname "/esp32/midi1_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15249,6 +15405,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/79ade0b4-18d8-5094-83c3-add1cf13acc4/83584920-7237-5352-a120-2f9dc72b05a1")
+		(sheetname "/esp32/midi2_input/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15544,6 +15702,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/ca577ec9-e26c-505c-91d1-62eea1dbfe06/38fdbe3d-f3b9-5d62-bdca-b22bc0dc07a1")
+		(sheetname "/esp32/i2c1_port/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -15665,6 +15825,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/4bc66a16-8db8-5b61-bcab-47deea130d51/02bd8bdf-20a9-575d-94c5-71caa39c8ef6")
+		(sheetname "/tang_nano_20k/spdif0_output/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -15799,6 +15961,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/6be60d8b-b504-53e0-aca2-e6ebe55a065b/7ec943cf-2e95-5cf8-b683-005b89648363")
+		(sheetname "/esp32/midi1_input/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16094,6 +16258,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/b3c8460f-ab06-5e20-b1ef-b8022372d5c3")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -16194,6 +16360,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/79ade0b4-18d8-5094-83c3-add1cf13acc4/5922ae08-4c5c-5282-9934-500db33b07a2")
+		(sheetname "/esp32/midi2_input/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -16315,6 +16483,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/d98cfa10-54fa-51c5-8c57-14c10f119dbc")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16463,6 +16633,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/56d592c9-6e0c-5fb2-80c7-8962c9172546/a1492a9a-eb81-5935-8186-ad0b3196b825")
+		(sheetname "/esp32/led_chain/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16676,6 +16848,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/0d8d4c76-6514-51b2-8d8a-c63357c854d1")
+		(sheetname "/tang_nano_20k/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -16796,6 +16970,8 @@
 				)
 			)
 		)
+		(path "/2500deb9-bb4c-5b15-b8e0-5232ce6d6f19/f23f7f9b-197c-5edf-b9f1-f8d02730b096/1c80102e-4a72-557f-9ce8-1c4a1975df19/f9052d55-8721-5f8c-93f4-bbc905f43560")
+		(sheetname "/usb/power_socket/esp_5v_supply/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -16954,6 +17130,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/79ade0b4-18d8-5094-83c3-add1cf13acc4/30deab2a-00c7-5c91-900f-ae636b7957ed")
+		(sheetname "/esp32/midi2_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -17112,6 +17290,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/4bc66a16-8db8-5b61-bcab-47deea130d51/f50028ed-d77b-54af-ab11-0f6c71a7b5c5")
+		(sheetname "/tang_nano_20k/spdif0_output/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -17258,6 +17438,8 @@
 				)
 			)
 		)
+		(path "/621164aa-7a07-59b6-b8a2-d2eda57f7c06/4bc66a16-8db8-5b61-bcab-47deea130d51/96fbca60-37e7-5fa4-aa73-9f89e2ad3c96")
+		(sheetname "/tang_nano_20k/spdif0_output/")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -17477,6 +17659,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/a4011f50-23ee-54e6-b72c-d4cbb7b14eed")
+		(sheetname "/esp32/")
 		(attr exclude_from_pos_files exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -17597,6 +17781,8 @@
 				)
 			)
 		)
+		(path "/9aff867a-0e8f-55df-86c4-918088a91489/79ade0b4-18d8-5094-83c3-add1cf13acc4/660ace59-7a33-5d08-ab2b-f34276fb2686")
+		(sheetname "/esp32/midi2_input/")
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
