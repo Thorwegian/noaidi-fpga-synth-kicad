@@ -89,6 +89,12 @@ where the part has sixteen, the two of each supply and ground pair
 drawn as one. Its shell, mouth, legs and pegs are where Hroparts'
 drawing has them.
 
+The four LEDs are rendered from the model in JLCPCB's library for the
+part they place, C7423106
+(`docs/thirdparty/SK6812MINIRGBW-WS-P6-A_model_EasyEDA.step`): one
+solid of 3.7 × 3.5 × 1.9 mm, the figures of OPSCO's data sheet, with
+the cut corner of its top at pad 1.
+
 The ESP32 module's model is from DigiKey's page for the part, the DAC
 module's from Adafruit's repository of CAD files on GitHub
 ([adafruit/Adafruit_CAD_Parts](https://github.com/adafruit/Adafruit_CAD_Parts)).
@@ -100,7 +106,11 @@ model is Kycon's own, and so is its
 [dimension drawing](https://cloud.kycon.com/Pub_Eng_Draw/KLPX-0848A-2-x.pdf).
 The USB sockets' model is ai03's, from the KiCad library
 [ai03-2725/Type-C.pretty](https://github.com/ai03-2725/Type-C.pretty)
-on GitHub, which states no licence.
+on GitHub, which states no licence. The LEDs' model is the one
+EasyEDA's library holds for the package
+`LED-SMD_6P-L3.5-W3.5_SK6812MINIRGBW-WS-P6-A`, fetched from EasyEDA by
+the uuid in `docs/thirdparty/jlcpcb-library/C7423106.json`; it states
+no licence either.
 
 ## Files
 
@@ -189,8 +199,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   dimensions, a 3D model of the Lumberg 0105 05 DIN socket made
   from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`),
   Kycon's 3D model of the KLPX-0848A-2-x RCA socket (`.IGS`) with its
-  dimension drawing, which has the recommended PCB layout, and ai03's
-  3D model of the Hroparts TYPE-C-31-M-12 USB-C socket (`.step`).
+  dimension drawing, which has the recommended PCB layout, ai03's
+  3D model of the Hroparts TYPE-C-31-M-12 USB-C socket (`.step`) and
+  EasyEDA's 3D model of the SK6812MINI RGBW LED (`.step`).
   Electrical: the Tang Nano 20K's schematic and pinout, the
   GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide and pinouts, and
   Espressif's reference design for that board (v1.1) in a folder of its
