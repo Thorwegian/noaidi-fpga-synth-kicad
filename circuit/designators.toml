@@ -3,9 +3,21 @@
 #   License: CERN-OHL-S v2
 #
 # Each part's designator on the board, by the path of tags that leads to the
-# part: the sheet, the blocks, the part (designators.py). A number that is
-# missing (R5, TP17) is a gap, and stays one.
+# part: the sheet, the blocks, the part. circuit/board.py adds the line of a
+# new part and takes out the line of one that is gone (designators.py).
+#
+# retired lists the designators that have been on the board and are on no
+# part: none of them is given to another part.
 
+retired = [
+    "R5",
+    "R6",
+    "R9",
+    "R10",
+    "TP17",
+]
+
+[parts]
 "esp32.esp" = "U1"
 "esp32.esp_5v_test_point" = "TP9"
 "esp32.ext_5v_sense.divider_bottom" = "R23"

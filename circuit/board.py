@@ -10,7 +10,9 @@ Run from build/skidl/ with the environment of scripts/requirements.txt:
     KICAD10_SYMBOL_DIR=/usr/share/kicad/symbols ../../circuit/board.py
 
 Writes board.net and net_classes.json there and rewrites docs/pins.md, after
-giving every part its designator from designators.toml.
+giving every part its designator from designators.toml. A new part's line
+is written into that table first, and the line of a part that is gone taken
+out of it.
 board.net is the netlist as KiCad's Import Netlist takes it without
 proposing a change to the board (kicad_netlist.py). Each sheet can be run
 the same way on its own and writes <sheet>.net, SKiDL's own netlist.
@@ -34,6 +36,7 @@ with SubCircuit("mounting_holes", tag="mounting_holes"):
     for number in range(1, 5):
         mounting_hole(tag=f"hole_{number}")
 
+designators.update()
 designators.assign(designators.read())
 ERC()
 kicad_netlist.write("board.net")
