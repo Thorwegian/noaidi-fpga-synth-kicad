@@ -3,9 +3,9 @@
 #   Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 #   License: CERN-OHL-S v2
 #
-"""esp32_core.py -- the ESP32-S3-WROOM-1 module with the parts that belong to
-it: what stands between the bare module and a board that can be programmed
-over four wires.
+"""esp32_minimal.py -- the ESP32-S3-WROOM-1 module with the least that
+belongs to it: what stands between the bare module and a board that can be
+programmed over four wires. Anything a board can do without is outside it.
 
 The circuit is that of Espressif's ESP32-S3-DevKitC-1 v1.1, part for part
 (docs/thirdparty/ESP32-S3-DevKitC-1_Reference_Design/), with the board's own
@@ -13,10 +13,10 @@ chip parts in place of Espressif's 0402s. What that board has beside the
 module is left out: its regulator, its USB sockets with their ESD diodes, its
 USB-to-UART bridge, its buttons and its LEDs.
 
-No sheet uses the core: the board carries a bought DevKitC-1 as U1
-(esp32.py). Run on its own, this file writes the core alone as
-esp32_core.net, under the designators the parts have on Espressif's board,
-so that the netlist can be held against that board.
+No sheet uses the circuit: the board carries a bought DevKitC-1 as U1
+(esp32.py). Run on its own, this file writes the circuit alone as
+esp32_minimal.net, under the designators the parts have on Espressif's
+board, so that the netlist can be held against that board.
 """
 from skidl import *
 
@@ -55,9 +55,10 @@ def switch_transistor(ref, tag):
 
 
 @subcircuit
-def esp32_core(supply, gnd, u0txd, u0rxd, dtr, rts, module_ref, supply_link_ref, bulk_ref,
-               bypass_ref, enable_pullup_ref, enable_delay_ref, reset_switch_ref,
-               reset_base_ref, reset_link_ref, boot_switch_ref, boot_base_ref, boot_link_ref):
+def esp32_minimal(supply, gnd, u0txd, u0rxd, dtr, rts, module_ref, supply_link_ref, bulk_ref,
+                  bypass_ref, enable_pullup_ref, enable_delay_ref, reset_switch_ref,
+                  reset_base_ref, reset_link_ref, boot_switch_ref, boot_base_ref,
+                  boot_link_ref):
     """The module on a 3.3 V supply, programmed through four nets: UART0's
     two lines and a serial adapter's DTR and RTS. Returns the module, for the
     sheet to connect its GPIOs; a pin the sheet leaves alone is not connected.
@@ -133,10 +134,10 @@ if __name__ == "__main__":
     supply, gnd = Net("VCC_3V3"), Net("GND")
     for rail in (supply, gnd):
         rail.drive = POWER
-    esp32_core(supply, gnd, Net("U0TXD"), Net("U0RXD"), Net("DTR"), Net("RTS"),
-               module_ref="U4", supply_link_ref="R24", bulk_ref="C1", bypass_ref="C2",
-               enable_pullup_ref="R5", enable_delay_ref="C6", reset_switch_ref="Q1",
-               reset_base_ref="R10", reset_link_ref="R8", boot_switch_ref="Q2",
-               boot_base_ref="R12", boot_link_ref="R13", tag="esp32_core")
+    esp32_minimal(supply, gnd, Net("U0TXD"), Net("U0RXD"), Net("DTR"), Net("RTS"),
+                  module_ref="U4", supply_link_ref="R24", bulk_ref="C1", bypass_ref="C2",
+                  enable_pullup_ref="R5", enable_delay_ref="C6", reset_switch_ref="Q1",
+                  reset_base_ref="R10", reset_link_ref="R8", boot_switch_ref="Q2",
+                  boot_base_ref="R12", boot_link_ref="R13", tag="esp32_minimal")
     ERC()
-    generate_netlist(file_="esp32_core.net")
+    generate_netlist(file_="esp32_minimal.net")
