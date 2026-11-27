@@ -3149,7 +3149,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "LED_SK6812MINIRGBW"
+	(symbol "LED_SKC6812RGBW"
 		(pin_names
 			(offset 1.016)
 		)
@@ -3168,7 +3168,7 @@
 				)
 			)
 		)
-		(property "Value" "LED_SK6812MINIRGBW"
+		(property "Value" "LED_SKC6812RGBW"
 			(at 0 -6.35 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3178,7 +3178,7 @@
 				)
 			)
 		)
-		(property "Footprint" "noaidi-fpga-synth:LED_SK6812MINIRGBW_3.5x3.5mm"
+		(property "Footprint" "noaidi-fpga-synth:LED_SKC6812RGBW_5.0x4.85mm"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3189,7 +3189,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://datasheet.lcsc.com/datasheet/pdf/a2bc892b0af22abe04f5c8a837afb921.pdf?productCode=C7423106"
+		(property "Datasheet" "https://www.lcsc.com/datasheet/lcsc_datasheet_2312081532_OPSCO-Optoelectronics-SKC6812RGBW-WS_C5378724.pdf"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3200,7 +3200,7 @@
 				)
 			)
 		)
-		(property "Description" "Addressable RGBW LED with its controller inside, 3.5 x 3.5 mm, 800 kbit/s, 32-bit GRBW frames"
+		(property "Description" "Addressable RGBW LED with its controller inside, a 5050 body of 4.8 x 4.85 mm, 800 kbit/s, 32-bit GRBW frames"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3211,7 +3211,7 @@
 				)
 			)
 		)
-		(property "ki_keywords" "RGBW LED addressable SK6812 chain"
+		(property "ki_keywords" "RGBW LED addressable SKC6812 chain"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3222,7 +3222,7 @@
 				)
 			)
 		)
-		(property "ki_fp_filters" "LED_SK6812*"
+		(property "ki_fp_filters" "LED_SKC6812*"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3233,7 +3233,7 @@
 				)
 			)
 		)
-		(symbol "LED_SK6812MINIRGBW_0_1"
+		(symbol "LED_SKC6812RGBW_0_1"
 			(rectangle
 				(start -3.81 3.81)
 				(end 3.81 -3.81)
@@ -3246,47 +3246,11 @@
 				)
 			)
 		)
-		(symbol "LED_SK6812MINIRGBW_1_1"
-			(pin no_connect line
+		(symbol "LED_SKC6812RGBW_1_1"
+			(pin power_in line
 				(at -6.35 2.54 0)
 				(length 2.54)
-				(name "NC"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at -6.35 0 0)
-				(length 2.54)
-				(name "GND"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -6.35 -2.54 0)
-				(length 2.54)
-				(name "DIN"
+				(name "VDD"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -3301,17 +3265,35 @@
 					)
 				)
 			)
-			(pin power_in line
-				(at 6.35 -2.54 180)
+			(pin input line
+				(at -6.35 0 0)
 				(length 2.54)
-				(name "VDD"
+				(name "DIN"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "4"
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at -6.35 -2.54 0)
+				(length 2.54)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -3329,25 +3311,7 @@
 						)
 					)
 				)
-				(number "5"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at 6.35 2.54 180)
-				(length 2.54)
-				(name "VDD"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "6"
+				(number "4"
 					(effects
 						(font
 							(size 1.27 1.27)

@@ -147,14 +147,14 @@ Not connected: 1, 2, 3.
 | Pin | Name | Net | Also on the net |
 |---|---|---|---|
 | A1 | `GND` | `GND` | supply net, 52 other pins |
-| A4 | `VBUS` | `EXT_5V` | supply net, 20 other pins |
+| A4 | `VBUS` | `EXT_5V` | supply net, 16 other pins |
 | A5 | `CC1` | `USB_POWER_CC1` | R13 |
-| A9 | `VBUS` | `EXT_5V` | supply net, 20 other pins |
+| A9 | `VBUS` | `EXT_5V` | supply net, 16 other pins |
 | A12 | `GND` | `GND` | supply net, 52 other pins |
 | B1 | `GND` | `GND` | supply net, 52 other pins |
-| B4 | `VBUS` | `EXT_5V` | supply net, 20 other pins |
+| B4 | `VBUS` | `EXT_5V` | supply net, 16 other pins |
 | B5 | `CC2` | `USB_POWER_CC2` | R14 |
-| B9 | `VBUS` | `EXT_5V` | supply net, 20 other pins |
+| B9 | `VBUS` | `EXT_5V` | supply net, 16 other pins |
 | B12 | `GND` | `GND` | supply net, 52 other pins |
 | SH | `SHIELD` | `GND` | supply net, 52 other pins |
 
@@ -284,10 +284,10 @@ part's own name.
 | C10 | `tang_nano_20k/spdif0_output/coupling` | 100n |
 | D1 | `esp32/midi1_input/clamp` | 1N4148W |
 | D2 | `esp32/midi2_input/clamp` | 1N4148W |
-| D3 | `esp32/led_chain/led_1` | LED_SK6812MINIRGBW |
-| D4 | `esp32/led_chain/led_2` | LED_SK6812MINIRGBW |
-| D5 | `esp32/led_chain/led_3` | LED_SK6812MINIRGBW |
-| D6 | `esp32/led_chain/led_4` | LED_SK6812MINIRGBW |
+| D3 | `esp32/led_chain/led_1` | LED_SKC6812RGBW |
+| D4 | `esp32/led_chain/led_2` | LED_SKC6812RGBW |
+| D5 | `esp32/led_chain/led_3` | LED_SKC6812RGBW |
+| D6 | `esp32/led_chain/led_4` | LED_SKC6812RGBW |
 | H1 | `mounting_holes/hole_1` | MountingHole |
 | H2 | `mounting_holes/hole_2` | MountingHole |
 | H3 | `mounting_holes/hole_3` | MountingHole |
