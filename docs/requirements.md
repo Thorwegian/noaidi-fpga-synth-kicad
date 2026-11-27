@@ -27,6 +27,9 @@ with an ARM processor to drive the user interface.
 
 1. **Carry the two modules on headers:** the Tang Nano 20K (the sound
    engine) and the ESP32-S3-DevKitC (MIDI, voices, presets, console).
+   The ESP32's place takes Espressif's board, whose two pin rows are
+   22.86 mm apart, and the HW-678 (`docs/esp32s3_hw678.md`), whose rows
+   are 25.4 mm apart.
 2. **Two MIDI inputs** on DIN sockets, each isolated by an
    optocoupler: one for the keyboard, one for the development host.
 3. **Analog audio out** through the Adafruit PCM510x DAC module, with
