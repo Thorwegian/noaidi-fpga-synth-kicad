@@ -144,7 +144,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   per sheet (`usb.py`, `esp32.py`, `tang_nano_20k.py`, `test_points.py`),
   the nets that cross sheets in `global_nets.py`, the parts used on more
   than one sheet in `parts.py`, and `board.py` for the whole board. See
-  The circuit in text, below.
+  The circuit in text, below. `esp32_minimal.py` is the ESP32-S3-WROOM-1
+  module with the least that belongs to it, after Espressif's
+  ESP32-S3-DevKitC-1; no sheet uses it, as the board carries the bought
+  module.
 - `scripts/layout_pictures.py`: pictures of the board's copper and print to judge
   a layout by: the whole board, its quarters, tiles small enough for an
   agent to see every track, each layer with its fill, and the fills
@@ -182,8 +185,11 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   dimension drawing, which has the recommended PCB layout, and ai03's
   3D model of the Hroparts TYPE-C-31-M-12 USB-C socket (`.step`).
   Electrical: the Tang Nano 20K's schematic and pinout, the
-  GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide, pinouts and
-  schematic (v1.1), the
+  GW2AR data sheet, the ESP32-S3-DevKitC-1 user guide and pinouts, and
+  Espressif's reference design for that board (v1.1) in a folder of its
+  own: the schematic, the layout as a PADS file, the Gerber files, the
+  fabrication requirements, the bill of materials and the placement
+  list. Then the
   Adafruit PCM510x guide and schematic, the 6N138 MIDI input circuit and
   the TOTX1950A optical transmitter's data sheet. The board's own parts,
   from the links in their symbols' Datasheet fields: the LM66100 ideal
@@ -193,7 +199,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   (J1, J2), the Kycon KLPX RCA socket (J3) and the Hroparts
   TYPE-C-31-M-12 USB-C socket (J9, J14; drawing). Two parts that are
   not on the board: the 6N138 optocoupler and the GCT USB4085 USB-C
-  receptacle (specification and drawing).
+  receptacle (specification and drawing). The parts of
+  `circuit/esp32_minimal.py`, which are not on the board either: the
+  ESP32-S3-WROOM-1 module and JSCJ's SS8050 transistor.
 
 ## Build tools
 
