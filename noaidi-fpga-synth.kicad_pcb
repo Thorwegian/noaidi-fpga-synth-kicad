@@ -1214,11 +1214,11 @@
 	(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 		(layer "F.Cu")
 		(uuid "0ca42670-0838-40e1-a65c-0aa291b1b03a")
-		(at 148.3477 111.2 -90)
+		(at 149.25 112.5)
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R23"
-			(at -0.019742 -2.832143 0)
+			(at 3.75 0.25 180)
 			(layer "F.SilkS")
 			(uuid "473618a9-78ff-4758-a106-56beb3e67b77")
 			(effects
@@ -1229,7 +1229,7 @@
 			)
 		)
 		(property "Value" "4.7k"
-			(at 0 1.65 90)
+			(at 0 1.65 0)
 			(layer "F.Fab")
 			(uuid "fb1c3e03-7597-4468-81b2-c6921945a515")
 			(effects
@@ -1240,7 +1240,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 90)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "b39eae6e-d0ec-474b-ba91-05973e3cc493")
@@ -1251,7 +1251,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 90)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "30be4cf1-91a6-43ce-97ce-c5d0906e196c")
@@ -1262,7 +1262,7 @@
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
-			(at 0 0 90)
+			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "95595c29-b26b-4492-bad6-7b945b9d7251")
@@ -1274,7 +1274,7 @@
 			)
 		)
 		(property "LCSC" "C17673"
-			(at 0 0 270)
+			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
@@ -1291,16 +1291,6 @@
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
-			(start -0.227064 0.735)
-			(end 0.227064 0.735)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "f8f9fdee-5923-4620-94e1-20133002ac4f")
-		)
-		(fp_line
 			(start -0.227064 -0.735)
 			(end 0.227064 -0.735)
 			(stroke
@@ -1309,6 +1299,16 @@
 			)
 			(layer "F.SilkS")
 			(uuid "12fdaab7-4070-490b-8085-8742bc4cb119")
+		)
+		(fp_line
+			(start -0.227064 0.735)
+			(end 0.227064 0.735)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "f8f9fdee-5923-4620-94e1-20133002ac4f")
 		)
 		(fp_rect
 			(start -1.85 -0.95)
@@ -1333,7 +1333,7 @@
 			(uuid "c5bd19a3-3b73-41de-be60-8f3a626a19f6")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 90)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "97d6dbb1-d31b-49c7-9a9d-6239a31cda68")
 			(effects
@@ -1344,7 +1344,7 @@
 			)
 		)
 		(pad "1" smd roundrect
-			(at -1 0 270)
+			(at -1 0)
 			(size 1.2 1.4)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.208333)
@@ -1352,7 +1352,7 @@
 			(uuid "d3f89434-8b58-43e8-af50-8ccfdaa03bbe")
 		)
 		(pad "2" smd roundrect
-			(at 1 0 270)
+			(at 1 0)
 			(size 1.2 1.4)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.208333)
@@ -9965,7 +9965,7 @@
 	(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 		(layer "F.Cu")
 		(uuid "75514ba4-2193-430c-8d0a-2bab50e0ce14")
-		(at 144.9 110.2)
+		(at 144.9 112.5)
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor handsolder")
 		(property "Reference" "R22"
@@ -18053,14 +18053,6 @@
 		(uuid "223b04e5-5e25-4b79-8de1-51cfff09c58d")
 	)
 	(segment
-		(start 118.75 136.5821)
-		(end 118.75 116.3)
-		(width 0.4)
-		(layer "F.Cu")
-		(net "EXT_5V")
-		(uuid "304c5c2e-764f-4d5c-b6a2-c35ffcde13e1")
-	)
-	(segment
 		(start 100.45 178.4)
 		(end 99.65 178.4)
 		(width 0.4)
@@ -18147,14 +18139,6 @@
 		(layer "F.Cu")
 		(net "EXT_5V")
 		(uuid "4ef12900-a636-4759-9771-ed59f876f340")
-	)
-	(segment
-		(start 118.75 116.3)
-		(end 124.85 110.2)
-		(width 0.4)
-		(layer "F.Cu")
-		(net "EXT_5V")
-		(uuid "50b1315c-1190-43db-864c-824ec30c4e22")
 	)
 	(segment
 		(start 99.15 180.1)
@@ -18301,6 +18285,22 @@
 		(uuid "8e754b69-7306-4ed7-b9f3-c86984eaf15e")
 	)
 	(segment
+		(start 118.75 116.25)
+		(end 122.5 112.5)
+		(width 0.4)
+		(layer "F.Cu")
+		(net "EXT_5V")
+		(uuid "90e33ca0-b9d8-4390-88f0-1894d33a2629")
+	)
+	(segment
+		(start 108.3977 146.9344)
+		(end 118.75 136.5821)
+		(width 0.4)
+		(layer "F.Cu")
+		(net "EXT_5V")
+		(uuid "99b55db6-1e6a-4961-b518-15479eee12c6")
+	)
+	(segment
 		(start 107.3696 130.6304)
 		(end 107.5 130.5)
 		(width 0.4)
@@ -18341,12 +18341,28 @@
 		(uuid "b940b6f6-2c9b-4a2c-bbd2-29aeb17e401b")
 	)
 	(segment
+		(start 122.5 112.5)
+		(end 124.85 112.5)
+		(width 0.4)
+		(layer "F.Cu")
+		(net "EXT_5V")
+		(uuid "bfb85569-1729-403c-8b85-8007bd4c47c9")
+	)
+	(segment
 		(start 171.4 22.9)
 		(end 172.7 22.9)
 		(width 0.4)
 		(layer "F.Cu")
 		(net "EXT_5V")
 		(uuid "c0572644-9506-499e-9f1d-1f5257100cf3")
+	)
+	(segment
+		(start 118.75 136.5821)
+		(end 118.75 116.25)
+		(width 0.4)
+		(layer "F.Cu")
+		(net "EXT_5V")
+		(uuid "c0612850-1543-4260-8d8c-2b7ede1ae77d")
 	)
 	(segment
 		(start 107.5 158.549999)
@@ -18381,16 +18397,8 @@
 		(uuid "d07cd000-d796-4df2-bd80-3636ea00b688")
 	)
 	(segment
-		(start 108.3977 146.9344)
-		(end 118.75 136.5821)
-		(width 0.4)
-		(layer "F.Cu")
-		(net "EXT_5V")
-		(uuid "d0a3c6a7-282b-4450-ba0a-5f2b9302f5c0")
-	)
-	(segment
-		(start 124.85 110.2)
-		(end 143.9 110.2)
+		(start 124.85 112.5)
+		(end 143.9 112.5)
 		(width 0.4)
 		(layer "F.Cu")
 		(net "EXT_5V")
@@ -20270,20 +20278,28 @@
 		(uuid "ea9f0a44-320b-47e1-a866-a71c1b6b548a")
 	)
 	(segment
-		(start 145.9 110.2)
-		(end 148.3477 110.2)
+		(start 145.9 112.5)
+		(end 148.3477 112.5)
 		(width 0.2)
 		(layer "F.Cu")
 		(net "EXT_5V_SENSE")
 		(uuid "28d6a281-ebf2-4b94-af36-ce53a6c2b0d1")
 	)
 	(segment
-		(start 148.3477 106.2544)
-		(end 148.3477 110.2)
+		(start 148.3477 112.4023)
+		(end 148.25 112.5)
 		(width 0.2)
 		(layer "F.Cu")
 		(net "EXT_5V_SENSE")
-		(uuid "b6948d23-c4a8-4928-b886-5d607bf3461a")
+		(uuid "93ff633f-1e8e-4ebc-b5a1-58a4cbb517ad")
+	)
+	(segment
+		(start 148.3477 106.2544)
+		(end 148.3477 112.4023)
+		(width 0.2)
+		(layer "F.Cu")
+		(net "EXT_5V_SENSE")
+		(uuid "fdf829c7-4c98-4d96-a054-62ebb982706d")
 	)
 	(segment
 		(start 138.908324 67.910024)
