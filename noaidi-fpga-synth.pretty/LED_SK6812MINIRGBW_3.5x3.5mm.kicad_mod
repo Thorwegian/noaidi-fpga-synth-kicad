@@ -202,4 +202,15 @@
 		(uuid "6b2a8d50-9c14-4e7f-b3a9-0f5d7c1e8b26")
 	)
 	(embedded_fonts no)
+	(model "${KIPRJMOD}/docs/thirdparty/SK6812MINIRGBW-WS-P6-A_model_EasyEDA.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
 )
