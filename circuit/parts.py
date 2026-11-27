@@ -14,9 +14,9 @@ PROJECT = "noaidi-fpga-synth"
 
 # The parts JLCPCB places, by LCSC number. A value that is not listed here
 # has no part chosen for it, and asking for it is an error.
-RESISTOR_LCSC = {"120": "C17437", "220": "C17557", "470": "C17710", "1k": "C17513",
-                 "4.7k": "C17673", "5.1k": "C27834", "10k": "C17414", "100k": "C149504",
-                 "150k": "C17470"}
+RESISTOR_LCSC = {"0": "C17477", "120": "C17437", "220": "C17557", "470": "C17710",
+                 "1k": "C17513", "4.7k": "C17673", "5.1k": "C27834", "10k": "C17414",
+                 "100k": "C149504", "150k": "C17470"}
 CAPACITOR_LCSC = {"100n": "C49678", "1u": "C28323", "10u": "C15850"}
 
 # 0805 on the footprints with longer pads, so that a board can be repaired by hand.
