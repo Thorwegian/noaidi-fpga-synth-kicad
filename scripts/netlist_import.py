@@ -5,7 +5,7 @@
 #
 """netlist_import.py -- what KiCad's Import Netlist would do to the board with a netlist.
 
-    scripts/netlist_import.py [--by-tstamps] <netlist> <board>
+    scripts/netlist_import.py [--by-designator] <netlist> <board>
 
 Prints the lines the PCB editor's File > Import > Netlist lists under
 "Changes to Be Applied" for the netlist and the board, in KiCad's own
@@ -19,9 +19,9 @@ two files and applies the rules of KiCad 10.0.8's pcbnew/netlist_reader
 (board_netlist_updater.cpp, kicad_netlist_reader.cpp) as read from its
 source, so a later KiCad can differ from it.
 
-Footprints are matched to the netlist's parts by reference designator, the
-dialog's "Link footprints using reference designators"; --by-tstamps
-matches them by the link to a symbol that a footprint holds in its path,
+Footprints are matched to the netlist's parts by the link to a symbol that
+a footprint holds in its path, the dialog's "Link footprints using component
+tstamps (unique ids)"; --by-designator matches them by reference designator,
 the dialog's other choice. For each part KiCad then compares:
 
   - the value, and the footprint's name (listed by the dialog only with
@@ -43,7 +43,7 @@ component classes, units and variants are compared only for being absent on
 both sides, and are named when either side has one.
 
 A footprint that is on the board and not in the netlist is listed by the
-dialog only with "Delete footprints with no symbols" ticked.
+dialog only with "Delete footprints with no components in netlist" ticked.
 """
 import re
 import sys
@@ -265,7 +265,7 @@ def report(netlist_path, board_path, by_tstamps):
         in_netlist = (any(part["path"] == footprint["path"] for part in parts.values()) if by_tstamps
                       else footprint["reference"] in parts)
         if not in_netlist:
-            changes.append(f"Remove unused footprint {footprint['reference']}. (with \"Delete footprints with no symbols\")")
+            changes.append(f"Remove unused footprint {footprint['reference']}. (with \"Delete footprints with no components in netlist\")")
         for pad in footprint["pads"]:
             nets_of_pads[index, id(pad)] = pad["net"]
     for net in sorted(zone_nets - set(nets_of_pads.values())):
@@ -274,10 +274,10 @@ def report(netlist_path, board_path, by_tstamps):
 
 
 if __name__ == "__main__":
-    arguments = [argument for argument in sys.argv[1:] if argument != "--by-tstamps"]
+    arguments = [argument for argument in sys.argv[1:] if argument != "--by-designator"]
     if len(arguments) != 2:
         sys.exit(__doc__)
-    by_tstamps = "--by-tstamps" in sys.argv[1:]
+    by_tstamps = "--by-designator" not in sys.argv[1:]
     changes, silent, warnings, errors = report(arguments[0], arguments[1], by_tstamps)
     print(f"Using {'tstamps (unique IDs)' if by_tstamps else 'reference designators'} to match symbols and footprints.")
     for line in changes + warnings + errors:

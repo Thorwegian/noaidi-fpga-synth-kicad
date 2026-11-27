@@ -7,7 +7,7 @@ proposing a change to the board.
 
 The board is edited in KiCad, and its File > Import > Netlist is what the
 circuit in text is held against: the netlist is right when that dialog,
-linking footprints by reference designator, lists no change. So the netlist
+linking footprints by their tstamps, lists no change. So the netlist
 states what the board's footprints hold, and nothing they do not:
 
   - each part's designator, value and footprint;
