@@ -710,6 +710,17 @@
 			(uuid "4ff723c2-5601-4755-88f9-faedafb66d48")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/docs/thirdparty/SK6812MINIRGBW-WS-P6-A_model_EasyEDA.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 		(layer "F.Cu")
@@ -7145,6 +7156,17 @@
 			(uuid "c24671b8-71a2-44a1-a7d6-d1ccc6d7d2cf")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/docs/thirdparty/SK6812MINIRGBW-WS-P6-A_model_EasyEDA.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 		(layer "F.Cu")
@@ -12806,6 +12828,17 @@
 			(uuid "ff704880-de2f-4f3f-9fe4-9392123616c0")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/docs/thirdparty/SK6812MINIRGBW-WS-P6-A_model_EasyEDA.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm"
 		(layer "F.Cu")
@@ -16793,6 +16826,17 @@
 			(uuid "48c198c2-fa42-4b40-9f1b-b472ff3f30a0")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/docs/thirdparty/SK6812MINIRGBW-WS-P6-A_model_EasyEDA.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "TestPoint:TestPoint_THTPad_D3.0mm_Drill1.5mm"
 		(layer "F.Cu")
