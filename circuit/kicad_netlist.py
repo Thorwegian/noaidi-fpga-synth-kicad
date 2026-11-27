@@ -11,6 +11,11 @@ linking footprints by reference designator, lists no change. So the netlist
 states what the board's footprints hold, and nothing they do not:
 
   - each part's designator, value and footprint;
+  - each part's link: the sheet path, which is the tags of the blocks the
+    part is made in, and the tstamps, SKiDL's UUIDs of that path and of the
+    part's own (gen_netlist.py). A footprint holds the two as its path and
+    the path in words as its sheet name, and by its path KiCad knows the
+    footprint again when the part's designator changes;
   - the fields the circuit gives a part, which is its LCSC number. KiCad
     compares every field of the netlist with the footprint's, and leaves a
     field that only the footprint has as it is;
@@ -18,10 +23,8 @@ states what the board's footprints hold, and nothing they do not:
     for a part the circuit marks so;
   - each net by its name, with its pins and its classes.
 
-It has no sheet path and no tstamps: the footprints hold no link to a
-symbol, and KiCad would write the netlist's into every one of them. It has
-no pin types: KiCad copies those onto the pads without listing it. SKiDL's
-own generate_netlist() writes all three, and a tag and a source line as
+It has no pin types: KiCad copies those onto the pads without listing it.
+SKiDL's own generate_netlist() writes them, and a tag and a source line as
 fields of every part.
 
 A pin the circuit leaves unconnected, or marks as not connected, is written
@@ -34,6 +37,7 @@ DIN jack are pads of that kind, soldered for the hold alone (esp32.py,
 midi_input).
 """
 from skidl import *
+from skidl.tools.kicad10.gen_netlist import gen_part_tstamp, gen_sheetpath, gen_sheetpath_tstamp
 
 PROPERTIES = ("dnp", "exclude_from_bom", "exclude_from_pos_files")
 
@@ -57,7 +61,10 @@ def write(path):
              "  (components"]
     for part in sorted(circuit.parts, key=lambda part: str(part.ref)):
         lines += ["    (comp", f"      (ref {quoted(part.ref)})", f"      (value {quoted(part.value)})",
-                  f"      (footprint {quoted(part.footprint)})"]
+                  f"      (footprint {quoted(part.footprint)})",
+                  f"      (sheetpath (names {quoted(gen_sheetpath(part.hiertuple))})"
+                  f" (tstamps {quoted(gen_sheetpath_tstamp(part.hiertuple))}))",
+                  f"      (tstamps {quoted(gen_part_tstamp(part))})"]
         if part.fields:
             lines.append("      (fields")
             lines += [f"        (field (name {quoted(name)}) {quoted(text)})" for name, text in part.fields.items()]
