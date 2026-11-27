@@ -80,6 +80,8 @@
 
 - The KiCad project has no schematic, and the board is never updated from one in the KiCad GUI.
 
+- Thor changes the board. Agents change the circuit and the libraries, *never* the board file: a change reaches the board through his netlist import.
+
 - The KiCad project file is the authority on the design rules. Scripts read them off the board and carry no copy of their own: a clearance, a width, a via size or an annular ring written into a script is a defect.
 
 - JLCPCB's published limits are the authority behind the design rules, and a layout never undercuts one. Where the fab's minimum is the edge of its process the layout stays above it.
