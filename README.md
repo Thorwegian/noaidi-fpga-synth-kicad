@@ -128,7 +128,10 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   footprint is Espressif's, from
   [espressif/kicad-libraries](https://github.com/espressif/kicad-libraries)
   (CC-BY-SA 4.0 with the exception KiCad's own libraries have), with a
-  keep-out for copper fills under the antenna. The USB sockets'
+  keep-out for copper fills under the antenna and, beside each pad of
+  pins 23 to 44, a second hole 2.54 mm further out on the same copper:
+  Espressif's board has its pin rows 22.86 mm apart, the HW-678 has
+  them 25.4 mm apart, and either plugs in. The USB sockets'
   footprint, `USB_C_Receptacle_HRO_TYPE-C-31-M-12`, is the one of that
   name in KiCad's library `Connector_USB` (the same licence), naming a
   3D model that the repository holds: KiCad's names one that KiCad does
