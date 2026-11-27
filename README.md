@@ -89,8 +89,8 @@ where the part has sixteen, the two of each supply and ground pair
 drawn as one. Its shell, mouth, legs and pegs are where Hroparts'
 drawing has them.
 
-The four LEDs are rendered from the model in JLCPCB's library for the
-part they place, C5378724
+The four LEDs are rendered from the model in JLCPCB's library for
+OPSCO's SKC6812RGBW-WS, C5378724
 (`docs/thirdparty/SKC6812RGBW_model_EasyEDA.step`): 5.1 × 4.9 × 1.6 mm
 over its leads, where OPSCO's data sheet has 5.0 × 4.85 × 1.6, with the
 cut corner of its top at pad 1.

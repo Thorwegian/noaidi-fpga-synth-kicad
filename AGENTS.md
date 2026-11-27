@@ -116,6 +116,8 @@
 
 - JLCPCB fabricates the board and places the surface-mount parts. The modules, the DIN and RCA sockets and the pin headers are through-hole and soldered by hand.
 
+- The LEDs are surface-mount and soldered by hand.
+
 - Chip parts are 0805 on KiCad's hand-solder footprints (the ones named `..._HandSolder`), and come from JLCPCB's basic library where it has the value.
 
 - A part that JLCPCB places carries its LCSC number in the symbol's `LCSC` field.
