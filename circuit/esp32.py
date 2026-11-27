@@ -124,22 +124,20 @@ def led_chain(data, supply, gnd, pixels):
     pixel_input += series[2]
 
     for number in range(1, pixels + 1):
-        led = jlcpcb_part(Part(PROJECT, "LED_SK6812MINIRGBW", tag=f"led_{number}",
-                               footprint=f"{PROJECT}:LED_SK6812MINIRGBW_3.5x3.5mm"), "C7423106")
+        led = jlcpcb_part(Part(PROJECT, "LED_SKC6812RGBW", tag=f"led_{number}",
+                               footprint=f"{PROJECT}:LED_SKC6812RGBW_5.0x4.85mm"), "C5378724")
         decoupling = capacitor(value="100n", tag=f"decoupling_{number}")
 
-        led[1] += NC
-        led[2] += gnd
-        led[3] += pixel_input
-        led[4] += supply
-        led[6] += supply
+        led["GND"] += gnd
+        led["DIN"] += pixel_input
+        led["VDD"] += supply
         supply += decoupling[1]
         gnd += decoupling[2]
         if number == pixels:
-            led[5] += NC
+            led["DOUT"] += NC
         else:
             pixel_input = Net(f"LED_{number}_DOUT")
-            pixel_input += led[5]
+            pixel_input += led["DOUT"]
 
 
 @subcircuit
