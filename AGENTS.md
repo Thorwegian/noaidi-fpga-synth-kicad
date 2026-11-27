@@ -190,7 +190,7 @@ License: CERN-OHL-S v2
 ## The tools
 
 - `README.md` lists the scripts and the build tools. Each script says in its heading what it does and needs.
-- `scripts/netlist_import.py` holds the circuit in text against the board, without running KiCad.
+- `scripts/netlist_import.py` holds the circuit in text against the board, without running KiCad. It links footprints by tstamps unless given `--by-designator`.
 - The scripts that read the board file run under the system's Python (`/usr/bin/python3`), which has KiCad's `pcbnew` module. The other Python tools live in the main checkout's `.venv/`, which serves every worktree.
 - Everything generated lands under `build/`.
 

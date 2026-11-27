@@ -7,6 +7,9 @@
 
     scripts/netlist_import.py [--by-designator] <netlist> <board>
 
+Links footprints by tstamps, the setting the board's netlist is judged with
+(AGENTS.md). --by-designator links them by reference designator instead.
+
 Prints the lines the PCB editor's File > Import > Netlist lists under
 "Changes to Be Applied" for the netlist and the board, in KiCad's own
 wording, and exits 1 when one of them is a change or an error. A netlist
@@ -19,10 +22,10 @@ two files and applies the rules of KiCad 10.0.8's pcbnew/netlist_reader
 (board_netlist_updater.cpp, kicad_netlist_reader.cpp) as read from its
 source, so a later KiCad can differ from it.
 
-Footprints are matched to the netlist's parts by the link to a symbol that
-a footprint holds in its path, the dialog's "Link footprints using component
-tstamps (unique ids)"; --by-designator matches them by reference designator,
-the dialog's other choice. For each part KiCad then compares:
+A footprint's link is the path to a symbol that it holds, and matching by it
+is the dialog's "Link footprints using component tstamps (unique ids)";
+matching by reference designator is the dialog's other choice. For each part
+KiCad then compares:
 
   - the value, and the footprint's name (listed by the dialog only with
     "Replace footprints with those specified in netlist" ticked);
