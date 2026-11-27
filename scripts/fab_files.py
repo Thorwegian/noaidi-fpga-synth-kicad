@@ -26,15 +26,22 @@ https://jlcpcb.com/help/article/how-to-generate-the-bom-and-centroid-file-from-k
 JLCPCB places the parts that have an LCSC number, which is the footprint's
 field `LCSC`. A part without one is soldered by hand and is in neither list.
 
-A position is the footprint's own, in millimetres from the same origin as
-the Gerber files, with y upwards. JLCPCB's library holds some packages
-turned against KiCad's footprint for them, and how a package is drawn there
-goes by the part, not by the package's name. So the script fetches each
-part's package from that library (EasyEDA's component API, by LCSC number)
-and turns the board's footprint until every pad number lies on the
-library's pad of that number. A part's rotation in the list is its
-orientation on the board less that turn, with the library's drawing taken
-as JLCPCB's 0 degrees.
+JLCPCB places the package it has in its own library for a part, by that
+package's origin and from that package's 0 degrees. Its library holds some
+packages turned against KiCad's footprint for them, and some with their
+origin elsewhere among the pads; how a package is drawn there goes by the
+part, not by the package's name. So the script fetches each part's package
+from that library (EasyEDA's component API, by LCSC number) and turns the
+board's footprint until every pad number lies on the library's pad of that
+number. A part's rotation in the list is its orientation on the board less
+that turn, with the library's drawing taken as JLCPCB's 0 degrees. Its
+position is where the package's origin lies when the package lies on the
+footprint, in millimetres from the same origin as the Gerber files, with y
+upwards. A package with holes lies with the middle of its holes on the
+middle of the footprint's: a part with pegs or legs sits where its holes
+are, wherever the two libraries draw the pads around them. A package
+without holes lies with the middle of its pads on the middle of the
+footprint's.
 
 The packages are kept in docs/thirdparty/jlcpcb-library/, one file for each
 LCSC number, as the API gave them. A package that is there is not fetched:
@@ -71,9 +78,9 @@ ATTEMPTS = 4
 OTHER_LAYERS = ["F.Mask", "B.Mask", "F.Silkscreen", "B.Silkscreen", "F.Paste", "B.Paste", "Edge.Cuts"]
 
 
-def library_pads(number):
-    """The pads of a part's package in JLCPCB's library, as {pad number:
-    [(x, y), ...]} in millimetres with y downwards, as in KiCad."""
+def library_shapes(number):
+    """The shapes of a part's package in JLCPCB's library, each as its
+    fields, with the package's origin."""
     path = os.path.join(LIBRARY_FOLDER, f"{number}.json")
     if not os.path.exists(path):
         request = urllib.request.Request(LIBRARY_URL.format(number=number),
@@ -93,15 +100,31 @@ def library_pads(number):
             file.write(fetched)
     with open(path, encoding="utf-8") as file:
         package = json.load(file)["result"]["packageDetail"]["dataStr"]
-    origin_x, origin_y = float(package["head"]["x"]), float(package["head"]["y"])
+    return [shape.split("~") for shape in package["shape"]], (float(package["head"]["x"]), float(package["head"]["y"]))
+
+
+def library_place(x, y, origin):
+    """A place of JLCPCB's library in millimetres from the package's origin, y downwards, as in KiCad."""
+    return (float(x) - origin[0]) * LIBRARY_UNIT_MM, (float(y) - origin[1]) * LIBRARY_UNIT_MM
+
+
+def library_pads(number):
+    """The pads of a part's package in JLCPCB's library, as {pad number: [(x, y), ...]}."""
+    shapes, origin = library_shapes(number)
     pads = collections.defaultdict(list)
-    for shape in package["shape"]:
-        # PAD~shape~x~y~width~height~layer~net~number~...
-        fields = shape.split("~")
+    for fields in shapes:
+        # PAD~shape~x~y~width~height~layer~net~number~hole radius~...
         if fields[0] == "PAD":
-            pads[fields[8]].append(((float(fields[2]) - origin_x) * LIBRARY_UNIT_MM,
-                                    (float(fields[3]) - origin_y) * LIBRARY_UNIT_MM))
+            pads[fields[8]].append(library_place(fields[2], fields[3], origin))
     return pads
+
+
+def library_holes(number):
+    """The holes of a part's package in JLCPCB's library: its pads with a hole, and its holes without copper."""
+    shapes, origin = library_shapes(number)
+    # HOLE~x~y~radius~...
+    return ([library_place(fields[2], fields[3], origin) for fields in shapes if fields[0] == "PAD" and float(fields[9] or 0)]
+            + [library_place(fields[1], fields[2], origin) for fields in shapes if fields[0] == "HOLE"])
 
 
 def turned(pads, degrees):
@@ -122,11 +145,24 @@ def own_pads(footprint):
     return turned(pads, -footprint.GetOrientationDegrees())
 
 
+def own_holes(footprint):
+    """The footprint's holes as [(x, y), ...] in millimetres from the
+    footprint's position, with the footprint not turned."""
+    centre = footprint.GetPosition()
+    holes = [(pcbnew.ToMM(pad.GetPosition().x - centre.x), pcbnew.ToMM(pad.GetPosition().y - centre.y))
+             for pad in footprint.Pads() if pad.HasHole()]
+    return turned({"holes": holes}, -footprint.GetOrientationDegrees())["holes"]
+
+
+def middle(places):
+    """The middle of the rectangle around the places."""
+    return ((min(x for x, _ in places) + max(x for x, _ in places)) / 2,
+            (min(y for _, y in places) + max(y for _, y in places)) / 2)
+
+
 def about_their_middle(pads, numbers):
     """The pads of the numbers given, from the middle of the rectangle around them."""
-    places = [place for number in numbers for place in pads[number]]
-    middle_x = (min(x for x, _ in places) + max(x for x, _ in places)) / 2
-    middle_y = (min(y for _, y in places) + max(y for _, y in places)) / 2
+    middle_x, middle_y = middle([place for number in numbers for place in pads[number]])
     return {number: [(x - middle_x, y - middle_y) for x, y in pads[number]] for number in numbers}
 
 
@@ -161,6 +197,28 @@ def turn_to_library(footprint, number):
                  f"at {'no turn' if not turns else 'the turns ' + ', '.join(map(str, turns))}: "
                  f"the pads are not where the part's pins are")
     return turns[0]
+
+
+def library_origin(footprint, number, turn):
+    """Where on the board, in millimetres with y downwards, the origin of
+    the part's package in JLCPCB's library lies when the package lies on the
+    footprint: the middle of its holes on the middle of the footprint's, or
+    of its pads where it has no holes. `turn` is the footprint's turn to the
+    library's drawing."""
+    our_holes, their_holes = turned({"holes": own_holes(footprint)}, turn)["holes"], library_holes(number)
+    if len(our_holes) != len(their_holes):
+        sys.exit(f"{footprint.GetReference()}: its footprint has {len(our_holes)} holes and JLCPCB's package for {number} has {len(their_holes)}")
+    if their_holes:
+        ours, theirs = our_holes, their_holes
+    else:
+        our_pads, their_pads = turned(own_pads(footprint), turn), library_pads(number)
+        shared = sorted(set(our_pads).intersection(their_pads))
+        ours, theirs = ([place for shared_number in shared for place in pads[shared_number]] for pads in (our_pads, their_pads))
+    (our_x, our_y), (their_x, their_y) = middle(ours), middle(theirs)
+    # From the library's drawing back to the board: the turn undone, then the footprint's orientation.
+    [(across, down)] = turned({"origin": [(our_x - their_x, our_y - their_y)]}, footprint.GetOrientationDegrees() - turn)["origin"]
+    position = footprint.GetPosition()
+    return pcbnew.ToMM(position.x) + across, pcbnew.ToMM(position.y) + down
 
 
 def run(*command):
@@ -202,8 +260,8 @@ def main():
         turn = turn_to_library(footprint, number)
         if turn:
             turned_parts.append(f"{designator} by {turn}")
-        position = footprint.GetPosition()
-        placements.append((designator, f"{pcbnew.ToMM(position.x):.4f}", f"{-pcbnew.ToMM(position.y):.4f}",
+        across, down = library_origin(footprint, number, turn)
+        placements.append((designator, f"{across:.4f}", f"{-down:.4f}",
                            "bottom" if footprint.IsFlipped() else "top",
                            f"{(footprint.GetOrientationDegrees() - turn) % 360:g}"))
 
