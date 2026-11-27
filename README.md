@@ -147,7 +147,9 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   The circuit in text, below. `designators.toml` lists each part's
   designator by the path of tags that leads to the part
   (`esp32.midi1_input.opto` is U3), and `designators.py` gives every part
-  its designator from it: the sheets name none. `esp32_minimal.py` is the ESP32-S3-WROOM-1
+  its designator from it: the sheets name none. `board.py` writes a new
+  part's line into it, with the next free number, and retires the
+  designator of a part that is gone. `esp32_minimal.py` is the ESP32-S3-WROOM-1
   module with the least that belongs to it, after Espressif's
   ESP32-S3-DevKitC-1; no sheet uses it, as the board carries the bought
   module.

@@ -94,7 +94,7 @@
   - A routed board is looked at zoomed in, and what the zoom spots is routed around. Then it is looked at zoomed out, for structural problems. Then it gets its pull request.
   - The measure is the worst case, not the typical one.
 
-- A part has a descriptive name in the code (`cc1_pulldown`), which is also its `tag`, and a regular designator on the board (`R13`), which `circuit/designators.toml` gives it. A new part takes the next free number; existing designators are not renumbered, and a gap stays a gap.
+- A part has a descriptive name in the code (`cc1_pulldown`), which is also its `tag`, and a regular designator on the board (`R13`), which `circuit/designators.toml` gives it. `circuit/board.py` writes a new part's line there, with the next free number, and the table is committed with the change. Existing designators are not renumbered, a gap stays a gap, and the number of a removed part is retired.
 
 - A net that crosses sheets is defined once, in `circuit/global_nets.py`, and imported. Every net a person may want to probe has a name. A circuit that appears twice is written once, as a function that takes its nets as arguments.
 
