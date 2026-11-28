@@ -194,7 +194,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
-  the HW-678's manual from its seller (`.pdf`),
+  the HW-678's manual from its seller (`.pdf`) and the dimension drawing
+  of the YD-ESP32-S3, the design it copies, from its designer (`.pdf`),
   the Adafruit PCM510x's 3D model (`.step`) and fab print with its
   dimensions, a 3D model of the Lumberg 0105 05 DIN socket made
   from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`),
@@ -207,7 +208,7 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   Espressif's reference design for that board (v1.1) in a folder of its
   own: the schematic, the layout as a PADS file, the Gerber files, the
   fabrication requirements, the bill of materials and the placement
-  list. Then the
+  list. The YD-ESP32-S3's schematic (V1.4) from its designer. Then the
   Adafruit PCM510x guide and schematic, the 6N138 MIDI input circuit and
   the TOTX1950A optical transmitter's data sheet. The board's own parts,
   from the links in their symbols' Datasheet fields: the LM66100 ideal

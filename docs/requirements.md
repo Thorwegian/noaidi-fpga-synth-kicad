@@ -107,8 +107,9 @@ They will not necessarily be kept in a final design.
     HW-678 does once its `IN-OUT` pads are bridged
     (`docs/esp32s3_hw678.md`).
   - **An HW-678 as shipped** runs from its own USB sockets and, by its
-    seller's manual, keeps that supply off its 5 V pin: the rail and
-    the panel header's 5 V pin are live only with the power socket.
+    designer's schematic and its seller's manual, keeps that supply off
+    its 5 V pin: the rail and the panel header's 5 V pin are live only
+    with the power socket.
   - **The Tang Nano's own USB port** feeds its rail, and with it the
     DAC module, and nothing else.
   - **Any of them together with the power socket:** the higher source
