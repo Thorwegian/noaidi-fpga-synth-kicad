@@ -8,7 +8,7 @@ run: change the circuit, not this file.
 
 ### U1, the ESP32-S3 module
 
-An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO number in the name is the one the firmware uses.
+An HW-678, a copy of the YD-ESP32-S3 with the ESP32-S3-DevKitC-1's pin order (`docs/yd_esp32_s3.md`). The GPIO number in the name is the one the firmware uses.
 
 | Pin | Name | Net | Also on the net |
 |---|---|---|---|

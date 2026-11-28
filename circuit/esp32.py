@@ -76,10 +76,13 @@ def i2c_port(scl, sda, supply, gnd):
 def led_chain(data, supply, gnd, pixels):
     """RGBW pixels in a chain, for the light in the case.
 
-    The chain hangs on the power socket's own rail, not on the module's 5 V:
-    that rail reaches the module's USB sockets through a Schottky each
-    (docs/esp32s3_hw678.md), so a chain on it is fed by whichever port is
-    plugged in, the computer running the console included.
+    The chain hangs on the power socket's own rail, not on the module's 5 V,
+    so that the charger pays for the light (requirement 10). The module's
+    rail can be fed by the module's own USB sockets: on Espressif's board
+    always, through a Schottky each, and on an HW-678 once its IN-OUT pads
+    are bridged (docs/yd_esp32_s3.md). A chain on that rail would then
+    draw from whichever port is plugged in, the computer running the
+    console included.
 
     The two rails can then disagree, and two parts keep that harmless. A 10 k
     pull-down holds the buffer's input at ground while the rail is live and the

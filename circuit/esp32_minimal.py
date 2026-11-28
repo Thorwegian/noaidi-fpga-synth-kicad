@@ -25,7 +25,7 @@ from parts import capacitor, jlcpcb_part, resistor
 
 # The variant is not decided: it is chosen when the module goes onto the
 # board, from what JLCPCB has then. This one matches the boards in hand,
-# 16 MB of flash and 8 MB of PSRAM (docs/esp32s3_hw678.md). Its PSRAM is
+# 16 MB of flash and 8 MB of PSRAM (docs/yd_esp32_s3.md). Its PSRAM is
 # octal and takes GPIO35, 36 and 37, which a variant without it leaves free.
 MODULE_VARIANT = "ESP32-S3-WROOM-1-N16R8"
 MODULE_LCSC = "C2913202"

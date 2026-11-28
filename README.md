@@ -19,7 +19,7 @@ around them, numbered as in the picture:
    the dev host.
 2. **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, presets and the
    console. The picture shows Espressif's board; the boards in hand are
-   copies with the same pin layout (`docs/esp32s3_hw678.md`).
+   copies with the same pin layout (`docs/yd_esp32_s3.md`).
 3. **Tang Nano 20K** (U2) on headers: the sound engine.
 4. **Adafruit PCM510x I2S DAC module** (U5): analog audio out, on its
    own 3.5 mm jack and on a pin header.
@@ -189,15 +189,13 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   Written by `circuit/board.py`; not edited by hand.
 - `docs/requirements.md`: what the board has to do; the circuit and
   the layout are checked against it.
-- `docs/esp32s3_hw678.md`: what the two HW-678 copies of the
-  ESP32-S3-DevKitC-1 are, measured: the pins the module takes, the
-  free pins, the USB bridge and the open USB-OTG pads, and the header
-  pins read from two photos of the board, `docs/esp32s3_hw678_top.jpg`
-  and `docs/esp32s3_hw678_bottom.jpg`. The synth repository carries the
-  same file without the Header pins section.
+- [`docs/yd_esp32_s3.md`](docs/yd_esp32_s3.md): the YD-ESP32-S3, the
+  design of the ESP32-S3 boards in hand, and those boards in detail.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
+  the HW-678's manual from its seller (`.pdf`) and the dimension drawing
+  of the YD-ESP32-S3, the design it copies, from its designer (`.pdf`),
   the Adafruit PCM510x's 3D model (`.step`) and fab print with its
   dimensions, a 3D model of the Lumberg 0105 05 DIN socket made
   from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`),
@@ -210,7 +208,7 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   Espressif's reference design for that board (v1.1) in a folder of its
   own: the schematic, the layout as a PADS file, the Gerber files, the
   fabrication requirements, the bill of materials and the placement
-  list. Then the
+  list. The YD-ESP32-S3's schematic (V1.4) from its designer. Then the
   Adafruit PCM510x guide and schematic, the 6N138 MIDI input circuit and
   the TOTX1950A optical transmitter's data sheet. The board's own parts,
   from the links in their symbols' Datasheet fields: the LM66100 ideal
