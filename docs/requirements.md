@@ -97,6 +97,28 @@ They will not necessarily be kept in a final design.
   power comes from the two modules' own USB ports, and with the full
   lab jig connected those ports and the board's power socket can all
   be powered at the same time.
+  Each module's 5 V rail has an ideal diode of its own from the power
+  socket, which closes when the rail is held above the socket's supply.
+  The cases:
+  - **The power socket alone** feeds both modules and the light.
+  - **An ESP32 board that puts its USB sockets' 5 V on its 5 V pin**
+    feeds its own rail from them, and with it the 5 V pin of the
+    panel's header (J12), and nothing else. Espressif's board does; an
+    HW-678 does once its `IN-OUT` pads are bridged
+    (`docs/esp32s3_hw678.md`).
+  - **An HW-678 as shipped** runs from its own USB sockets and, by its
+    seller's manual, keeps that supply off its 5 V pin: the rail and
+    the panel header's 5 V pin are live only with the power socket.
+  - **The Tang Nano's own USB port** feeds its rail, and with it the
+    DAC module, and nothing else.
+  - **Any of them together with the power socket:** the higher source
+    supplies each rail, and no source feeds another module or the
+    light. One path stays open: the Tang Nano joins its USB socket's
+    supply to its 5 V pin through a fuse and no diode
+    (`thirdparty/Tang_Nano_20K_3923_Schematics.pdf`, sheet 3), so with
+    its cable in and the power socket powered, the board's supply
+    reaches the computer's port. The fuse is inside the module. That
+    is the lab jig's case, not the instrument's.
 
 The budget is a guess until parts are picked and the prototype is
 measured: about 1 A for the base board and about 1 A for the front
