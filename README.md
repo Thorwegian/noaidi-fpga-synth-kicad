@@ -193,11 +193,15 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   ESP32-S3-DevKitC-1 are, measured: the pins the module takes, the
   free pins, the USB bridge and the open USB-OTG pads, and the header
   pins read from two photos of the board, `docs/esp32s3_hw678_top.jpg`
-  and `docs/esp32s3_hw678_bottom.jpg`. The synth repository carries the
-  same file without the Header pins section.
+  and `docs/esp32s3_hw678_bottom.jpg`. It also says where the board is
+  bought, and what the seller's manual gives for its size and its three
+  pairs of solder pads. The synth repository carries the same file
+  without the Header pins section.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),
+  the HW-678's manual from its seller, with its size drawing, solder
+  pads and pin diagram (`.pdf`),
   the Adafruit PCM510x's 3D model (`.step`) and fab print with its
   dimensions, a 3D model of the Lumberg 0105 05 DIN socket made
   from Lumberg's models of the 0105 05 and the 0105 08-1 (`.step`),
