@@ -15,7 +15,8 @@ from parts import REPO
 
 MODULES = (
     ("esp32.esp", "the ESP32-S3 module",
-     "An HW-678 copy of the ESP32-S3-DevKitC-1 (`docs/esp32s3_hw678.md`). The GPIO number in "
+     "An HW-678, a copy of the YD-ESP32-S3 with the ESP32-S3-DevKitC-1's pin order "
+     "(`docs/yd_esp32_s3.md`). The GPIO number in "
      "the name is the one the firmware uses."),
     ("tang_nano_20k.fpga", "the Tang Nano 20K",
      "The leading number in the name is the FPGA's pin number, the one the gateware's "

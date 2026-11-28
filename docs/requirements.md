@@ -28,7 +28,7 @@ with an ARM processor to drive the user interface.
 1. **Carry the two modules on headers:** the Tang Nano 20K (the sound
    engine) and the ESP32-S3-DevKitC (MIDI, voices, presets, console).
    The ESP32's place takes Espressif's board, whose two pin rows are
-   22.86 mm apart, and the HW-678 (`docs/esp32s3_hw678.md`), whose rows
+   22.86 mm apart, and the HW-678 (`docs/yd_esp32_s3.md`), whose rows
    are 25.4 mm apart.
 2. **Two MIDI inputs** on DIN sockets, each isolated by an
    optocoupler: one for the keyboard, one for the development host.
@@ -105,7 +105,7 @@ They will not necessarily be kept in a final design.
     feeds its own rail from them, and with it the 5 V pin of the
     panel's header (J12), and nothing else. Espressif's board does; an
     HW-678 does once its `IN-OUT` pads are bridged
-    (`docs/esp32s3_hw678.md`).
+    (`docs/yd_esp32_s3.md`).
   - **An HW-678 as shipped** runs from its own USB sockets and, by its
     designer's schematic and its seller's manual, keeps that supply off
     its 5 V pin: the rail and the panel header's 5 V pin are live only

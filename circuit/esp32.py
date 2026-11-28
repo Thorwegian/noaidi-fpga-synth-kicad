@@ -80,7 +80,7 @@ def led_chain(data, supply, gnd, pixels):
     so that the charger pays for the light (requirement 10). The module's
     rail can be fed by the module's own USB sockets: on Espressif's board
     always, through a Schottky each, and on an HW-678 once its IN-OUT pads
-    are bridged (docs/esp32s3_hw678.md). A chain on that rail would then
+    are bridged (docs/yd_esp32_s3.md). A chain on that rail would then
     draw from whichever port is plugged in, the computer running the
     console included.
 

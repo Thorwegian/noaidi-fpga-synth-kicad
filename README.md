@@ -19,7 +19,7 @@ around them, numbered as in the picture:
    the dev host.
 2. **ESP32-S3-DevKitC** (U1) on headers: MIDI, voices, presets and the
    console. The picture shows Espressif's board; the boards in hand are
-   copies with the same pin layout (`docs/esp32s3_hw678.md`).
+   copies with the same pin layout (`docs/yd_esp32_s3.md`).
 3. **Tang Nano 20K** (U2) on headers: the sound engine.
 4. **Adafruit PCM510x I2S DAC module** (U5): analog audio out, on its
    own 3.5 mm jack and on a pin header.
@@ -189,8 +189,8 @@ the licence. Scripts go in `scripts/`, documents in `docs/`.
   Written by `circuit/board.py`; not edited by hand.
 - `docs/requirements.md`: what the board has to do; the circuit and
   the layout are checked against it.
-- [`docs/esp32s3_hw678.md`](docs/esp32s3_hw678.md): the HW-678 copies of
-  the ESP32-S3-DevKitC-1 in detail.
+- [`docs/yd_esp32_s3.md`](docs/yd_esp32_s3.md): the YD-ESP32-S3, the
+  design of the ESP32-S3 boards in hand, and those boards in detail.
 - `docs/thirdparty/`: the vendors' documents the board is drawn from.
   Mechanical: the Tang Nano 20K's dimension drawing (`.pdf`, `.dxf`) and
   3D model (`.step`), the ESP32-S3-DevKitC-1-N8R2's 3D model (`.STEP`),

@@ -184,7 +184,7 @@ License: CERN-OHL-S v2
 - `README.md`: what is on it, the files, the build tools.
 - `docs/requirements.md`: what the board has to do, and the reference the design is checked against.
 - `docs/pins.md`: which pin of which module carries what, the connectors, the test points, each part's name in the code.
-- `docs/esp32s3_hw678.md`: the ESP32-S3 boards in hand, which stand in for Espressif's ESP32-S3-DevKitC-1.
+- `docs/yd_esp32_s3.md`: the ESP32-S3 boards in hand, which stand in for Espressif's ESP32-S3-DevKitC-1.
 - `docs/thirdparty/`: the vendors' drawings, schematics and data sheets.
 - `noaidi-fpga-synth.kicad_pcb`: the board. Thor places the parts in KiCad; the wires are autorouted.
 - `noaidi-fpga-synth.kicad_pro` and `noaidi-fpga-synth.kicad_dru`: the design rules. The second names the row of JLCPCB's capability page each figure comes from.

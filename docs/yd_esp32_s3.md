@@ -1,4 +1,4 @@
-# The HW-678 ESP32-S3 boards: what they are and what to watch for
+# The YD-ESP32-S3: VCC-GND Studio's ESP32-S3 board, and the HW-678 copies in hand
 
 Copyright © 2026 Thor H. Linløkken <thj@thj.no>
 License: CERN-OHL-S v2
@@ -20,14 +20,22 @@ The top and the underside of one board (Thor's photos, 2026-11-14).
 
 ## Where it is bought
 
-AliExpress, Veeket Store, the item "ESP32-S3 WiFi Bluetooth Module 3.3-5V"
-(<https://www.aliexpress.com/item/1005009330328373.html>, read
-2026-11-28), variant "N16R8 Pin Soldered" or "N16R8 no soldered". The
-listing does not print `HW678`; the two boards here came from it. The
-seller's manual from that page is
-`thirdparty/ESP32-S3_HW-678_manual_Veeket.pdf`: 35 pages, most of them
-photos, with the board's size on page 30, its solder pads on page 31 and
-its pins on page 32.
+- **The boards in hand:** AliExpress, Veeket Store, the item "ESP32-S3
+  WiFi Bluetooth Module 3.3-5V"
+  (<https://www.aliexpress.com/item/1005009330328373.html>, read
+  2026-11-28), variant "N16R8 Pin Soldered" or "N16R8 no soldered". The
+  store is a reseller, and the listing prints neither `HW678` nor the
+  designer's name; the two boards here came from it. The seller's manual
+  from that page is `thirdparty/ESP32-S3_HW-678_manual_Veeket.pdf`: 35
+  pages, most of them photos, with the board's size on page 30, its
+  solder pads on page 31 and its pins on page 32.
+- **The designer's own shops:** VCC-GND Studio's site
+  (<https://vcc-gnd.com>, read 2026-11-28) links a store on AliExpress,
+  <https://vcc-gnd.aliexpress.com/>, and one on Taobao,
+  <https://vcc-gnd.taobao.com/>. By the designer's README its own boards
+  are version 1.4, the one the schematic here describes. The AliExpress
+  store asks for a login before it shows its items: whether it lists the
+  N16R8 board, and at what price, has not been read.
 
 ## The design
 
